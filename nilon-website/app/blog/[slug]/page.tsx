@@ -24,7 +24,6 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
     notFound();
   }
 
-  const otherPosts = blogPosts.filter((p) => p.id !== post.id).slice(0, 3);
 
   return (
     <div className="py-12 bg-white">

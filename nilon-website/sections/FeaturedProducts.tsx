@@ -1,3 +1,7 @@
+"use client";
+import { motion } from "framer-motion";
+import { staggerContainer, slideUp } from "@/lib/animations";
+
 export default function FeaturedProducts() {
   const products = [
     {
@@ -51,9 +55,19 @@ export default function FeaturedProducts() {
           <div className="w-16 h-1 bg-[#fc6c29] mx-auto rounded"></div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-3 gap-8"
+          variants={staggerContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.2 }}
+        >
           {products.map((product, index) => (
-            <div key={index} className={`bg-white rounded-xl shadow-sm border ${product.featured ? 'border-secondary-container shadow-md relative scale-105 z-10' : 'border-gray-200'} overflow-hidden flex flex-col`}>
+            <motion.div 
+              key={index} 
+              variants={slideUp}
+              className={`bg-white rounded-xl shadow-sm border ${product.featured ? 'border-secondary-container shadow-lg relative lg:scale-105 z-10' : 'border-gray-200'} overflow-hidden flex flex-col group hover:shadow-xl transition-shadow duration-300`}
+            >
               <div className="relative h-48 bg-gray-100">
                 <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
                 {product.badge && (
@@ -78,13 +92,17 @@ export default function FeaturedProducts() {
                   ))}
                 </div>
                 
-                <button className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}>
+                <motion.button 
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.95 }}
+                  className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}
+                >
                   {product.btnText}
-                </button>
+                </motion.button>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

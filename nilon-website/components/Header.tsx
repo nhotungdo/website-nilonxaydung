@@ -1,6 +1,17 @@
+"use client";
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export default function Header() {
+  const pathname = usePathname();
+
+  const navLinks = [
+    { name: 'Trang chủ', href: '/' },
+    { name: 'Công dụng', href: '/cong-dung' },
+    { name: 'Bảo hộ lao động', href: '/danh-muc/bao-ho-lao-dong' },
+    { name: 'Dịch vụ', href: '/dich-vu' },
+    { name: 'Liên hệ', href: '/lien-he' },
+  ];
   return (
     <header className="sticky top-0 z-50 bg-white border-b border-gray-100 shadow-sm">
       <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
@@ -8,17 +19,28 @@ export default function Header() {
           {/* Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-xl font-extrabold text-primary tracking-tight">
-              VẬT LIỆU XÂY DỰNG
+              NILON lót sàn Việt
             </Link>
           </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-8 items-center">
-            <Link href="/san-pham" className="text-gray-600 hover:text-primary px-2 py-2 text-sm font-semibold transition-colors">Sản phẩm</Link>
-            <Link href="/danh-muc/nilon-lot-san-be-tong" className="text-gray-600 hover:text-primary px-2 py-2 text-sm font-semibold transition-colors">Nilon lót sàn</Link>
-            <Link href="/danh-muc/bao-ho-lao-dong" className="text-gray-600 hover:text-primary px-2 py-2 text-sm font-semibold transition-colors">Bảo hộ</Link>
-            <Link href="/blog" className="text-gray-600 hover:text-primary px-2 py-2 text-sm font-semibold transition-colors">Công trình</Link>
-            <Link href="/lien-he" className="text-primary border-b-2 border-primary px-2 py-2 text-sm font-bold">Báo giá</Link>
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+              return (
+                <Link 
+                  key={link.href}
+                  href={link.href} 
+                  className={`px-2 py-2 text-sm transition-colors ${
+                    isActive 
+                      ? 'text-primary font-bold border-b-2 border-primary' 
+                      : 'text-gray-600 font-semibold hover:text-primary'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
           </nav>
 
           {/* CTA Button */}
