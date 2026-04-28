@@ -1,6 +1,7 @@
 import { products } from '@/data/products';
 import ProductCard from '@/components/ProductCard';
 import { generateSEO } from '@/lib/seo';
+import AnimatedPageWrapper from '@/components/AnimatedPageWrapper';
 
 export const metadata = generateSEO({
   title: 'Tất cả sản phẩm',
@@ -9,7 +10,7 @@ export const metadata = generateSEO({
 
 export default function ProductsPage() {
   return (
-    <div className="py-12 bg-white">
+    <AnimatedPageWrapper className="py-12 bg-white">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Tất Cả Sản Phẩm</h1>
@@ -22,6 +23,6 @@ export default function ProductsPage() {
           ))}
         </div>
       </div>
-    </div>
+    </AnimatedPageWrapper>
   );
 }

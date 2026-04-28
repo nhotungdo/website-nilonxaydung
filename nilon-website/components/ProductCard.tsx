@@ -20,16 +20,23 @@ export default function ProductCard({ product }: ProductCardProps) {
     <motion.div 
       className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow relative flex flex-col"
       whileHover="hover"
-      initial="initial"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-50px" }}
+      variants={{
+        hidden: { opacity: 0, y: 50 },
+        visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
+      }}
     >
       <Link href={`/san-pham/${product.slug}`} className="block relative aspect-square bg-gray-100 overflow-hidden">
+
         {/* Using standard img instead of Next Image to avoid config issues for now, since we have mock paths */}
         <motion.img 
           src={product.image} 
           alt={product.name}
           className="object-cover w-full h-full"
           variants={{
-            initial: { scale: 1 },
+            hidden: { scale: 1 },
             hover: { scale: 1.1 }
           }}
           transition={{ duration: 0.4, ease: "easeOut" }}
@@ -37,7 +44,7 @@ export default function ProductCard({ product }: ProductCardProps) {
         <motion.div 
           className="absolute inset-0 bg-black/10"
           variants={{
-            initial: { opacity: 0 },
+            hidden: { opacity: 0 },
             hover: { opacity: 1 }
           }}
           transition={{ duration: 0.3 }}
@@ -59,7 +66,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <motion.div
             variants={{
-              initial: { y: 15, opacity: 0 },
+              hidden: { y: 15, opacity: 0 },
               hover: { y: 0, opacity: 1 }
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
