@@ -45,11 +45,14 @@ export default function Header() {
 
           {/* CTA Button */}
           <div className="hidden md:flex items-center space-x-4">
-            <a href="tel:0901234567" className="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center shadow-sm">
+            <a href="tel:0931982568" className="bg-primary hover:bg-primary-container text-white px-5 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center shadow-sm">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-              Gọi: 090xxxxxxx
+              Gọi: 0931.982.568
             </a>
-            <a href="https://zalo.me/0901234567" target="_blank" rel="noopener noreferrer" className="border border-blue-500 text-blue-600 hover:bg-blue-50 px-4 py-2.5 rounded-md text-sm font-bold transition-colors">
+            <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2 shadow-sm">
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12.047 3.01C7.82 3.01 4.388 5.432 4.388 8.42c0 1.636.945 3.093 2.417 4.103-.13.475-.465 1.705-.533 1.956-.1.353.116.34.243.257.1-.065 1.595-1.077 2.228-1.51.433.125.885.19 1.348.19 4.228 0 7.659-2.422 7.659-5.41 0-2.988-3.431-5.41-7.659-5.41l-.046-.006zm3.327 7.91l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002zm-3.327-1.53l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002zm-3.328 1.53l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002z" />
+              </svg>
               Zalo
             </a>
           </div>

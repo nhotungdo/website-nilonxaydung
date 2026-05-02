@@ -32,7 +32,7 @@ export default function ContactPage() {
 
   const contactCards = [
     { icon: <MapPin className="w-6 h-6 text-primary" />, title: "Địa chỉ", desc: "Châu Ninh, Khoái Châu, Hưng Yên, Việt Nam" },
-    { icon: <Phone className="w-6 h-6 text-primary" />, title: "Hotline", desc: "0901.234.567\n0988.765.432" },
+    { icon: <Phone className="w-6 h-6 text-primary" />, title: "Hotline", desc: "0931.982.568" },
     { icon: <MessageCircle className="w-6 h-6 text-primary" />, title: "Zalo", desc: "Nhắn tin nhận báo giá nhanh chóng qua Zalo OA" },
     { icon: <Mail className="w-6 h-6 text-primary" />, title: "Email", desc: "baogia@nilonlotsan.vn\ninfo@nilonlotsan.vn" },
   ];
@@ -75,8 +75,8 @@ export default function ContactPage() {
               transition={{ duration: 0.6, delay: 0.4 }}
               className="flex flex-wrap gap-4"
             >
-              <a href="tel:0901234567" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg flex items-center gap-2">
-                <Phone className="w-5 h-5" /> Gọi ngay: 0901 234 567
+              <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg flex items-center gap-2">
+                <Phone className="w-5 h-5" /> Gọi ngay: 0931 982 568
               </a>
               <a href="#form" className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-8 py-4 rounded-md font-bold transition-all flex items-center gap-2">
                 <Mail className="w-5 h-5" /> Nhận báo giá
@@ -150,7 +150,7 @@ export default function ContactPage() {
                       <input
                         type="tel"
                         id="phone"
-                        placeholder="090x xxx xxx"
+                        placeholder="0931 xxx xxx"
                         required
                         className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                         value={formData.phone}
@@ -307,10 +307,10 @@ export default function ContactPage() {
               <p className="text-blue-200">Gọi ngay hoặc nhắn tin Zalo để được hỗ trợ tức thì.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <a href="tel:0901234567" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
-                <Phone className="w-5 h-5" /> 0901.234.567
+              <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
+                <Phone className="w-5 h-5" /> 0931.982.568
               </a>
-              <a href="https://zalo.me/0901234567" target="_blank" rel="noopener noreferrer" className="bg-white hover:bg-gray-100 text-gray-900 px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
+              <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-white hover:bg-gray-100 text-gray-900 px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
                 <MessageCircle className="w-5 h-5 text-blue-500" /> Nhắn Zalo Ngay
               </a>
             </div>

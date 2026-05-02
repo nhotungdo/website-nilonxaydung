@@ -296,8 +296,8 @@ export default function CongDungPage() {
             Chúng tôi cung cấp đủ mọi kích cỡ, độ dày với mức giá cạnh tranh nhất thị trường. Hàng luôn có sẵn tại kho.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="tel:0901234567" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg">
-              Gọi ngay: 090 xxx xxxx
+            <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg">
+              Gọi ngay: 0931.982.568
             </a>
             <Link href="/lien-he" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors">
               Nhận báo giá chi tiết

@@ -65,15 +65,24 @@ export default function ProductCard({ product }: ProductCardProps) {
             {formatPrice(product.price)} <span className="text-sm font-normal text-gray-500">/{product.unit}</span>
           </div>
           <motion.div
+            className="flex gap-2"
             variants={{
               hidden: { y: 15, opacity: 0 },
               hover: { y: 0, opacity: 1 }
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
+            <a 
+              href={`https://zalo.me/0931982568?text=Tôi quan tâm đến sản phẩm: ${product.name}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm bg-blue-500 text-white hover:bg-blue-600 px-3 py-1.5 rounded-md font-medium transition-colors inline-flex items-center"
+            >
+              Zalo
+            </a>
             <Link 
               href={`/san-pham/${product.slug}`}
-              className="text-sm bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white px-3 py-1.5 rounded-md font-medium transition-colors inline-block"
+              className="text-sm bg-gray-100 text-gray-700 hover:bg-primary hover:text-white px-3 py-1.5 rounded-md font-medium transition-colors inline-block"
             >
               Chi tiết
             </Link>

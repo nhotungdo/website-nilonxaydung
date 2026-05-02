@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
               <h3 className="text-xl font-bold text-primary mb-3">Thông tin liên hệ</h3>
               <p>Nếu bạn có bất kỳ câu hỏi nào về Chính sách bảo mật này, vui lòng liên hệ với chúng tôi qua:</p>
               <ul className="mt-3 space-y-2 list-none pl-0">
-                <li><strong>Hotline:</strong> 090 xxx xxxx</li>
+                <li><strong>Hotline:</strong> 0931 982 568</li>
                 <li><strong>Email:</strong> contact@nilonlotsan.vn</li>
                 <li><strong>Địa chỉ:</strong> Châu Ninh, Khoái Châu, Hưng Yên, Việt Nam</li>
               </ul>

@@ -268,11 +268,11 @@ export default function DichVuPage() {
             Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="tel:0901234567" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
-              <Phone className="w-5 h-5" /> Gọi: 090 xxx xxxx
+            <a href="tel:0931982568" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
+              <Phone className="w-5 h-5 text-orange-500" /> Gọi: 0931 982 568
             </a>
-            <a href="https://zalo.me/0901234567" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
-              <MessageCircle className="w-5 h-5" /> Chat Zalo
+            <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
+              <MessageCircle className="w-5 h-5" /> Nhắn Zalo
             </a>
             <Link href="/lien-he" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
               <FileText className="w-5 h-5" /> Nhận báo giá ngay
