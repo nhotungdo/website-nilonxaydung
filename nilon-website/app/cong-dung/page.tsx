@@ -19,8 +19,8 @@ export default function CongDungPage() {
   ];
 
   const faqs = [
-    { q: "Nên chọn độ dày nilon bao nhiêu cho sàn nhà dân dụng?", a: "Thông thường và phổ biến nhất, nilon lót độ dày 2 zem (0.02mm) đến 3 zem (0.03mm) là đủ để chống mất nước và ngăn ẩm. Với các công trình chịu lực cao, nên dùng từ 5 zem trở lên." },
-    { q: "Một cuộn nilon lót sàn nặng bao nhiêu và trải được bao nhiêu m2?", a: "Trọng lượng và diện tích trải phụ thuộc vào độ dày của nilon. Ví dụ, một cuộn nilon đen 3zem thường nặng khoảng 50-60kg và có thể trải được diện tích hàng trăm mét vuông. Liên hệ trực tiếp để có thông số chính xác cho từng loại." },
+    { q: "Nên chọn độ dày nilon bao nhiêu cho sàn nhà dân dụng?", a: "Thông thường và phổ biến nhất, nilon lót độ dày 2 zem (0.02mm) đến 4 zem (0.04mm) là đủ để chống mất nước và ngăn ẩm. Với các công trình chịu lực cao, nên dùng từ 6 zem trở lên." },
+    { q: "Một cuộn nilon lót sàn nặng bao nhiêu và trải được bao nhiêu m2?", a: "Trọng lượng và diện tích trải phụ thuộc vào độ dày của nilon. Ví dụ, một cuộn nilon đen 4zem thường nặng khoảng 50-60kg và có thể trải được diện tích hàng trăm mét vuông. Liên hệ trực tiếp để có thông số chính xác cho từng loại." },
     { q: "Có cần dán băng keo ở các mối nối nilon không?", a: "Rất cần thiết. Để đảm bảo hiệu quả chống thấm tuyệt đối, các tấm nilon lót sàn cần được trải chồng lên nhau ít nhất 15-20cm và phải được dán kín bằng băng keo chuyên dụng để nước xi măng không bị rỉ xuống dưới." },
   ];
 
@@ -111,7 +111,7 @@ export default function CongDungPage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <CheckCircle2 className="w-5 h-5 text-[#fc6c29]" />
-                  <span className="font-semibold text-primary">Độ dày đa dạng (2 - 5 zem)</span>
+                  <span className="font-semibold text-primary">Độ dày đa dạng (2 - 6 zem)</span>
                 </div>
               </motion.div>
             </motion.div>

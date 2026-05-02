@@ -19,7 +19,7 @@ export default function FeaturedProducts() {
       image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1927&auto=format&fit=crop'
     },
     {
-      title: 'Nilon Lót Sàn 3zem',
+      title: 'Nilon Lót Sàn 4zem',
       badge: 'BÁN CHẠY NHẤT',
       badgeColor: 'bg-secondary-container text-white',
       featured: true,
@@ -34,7 +34,7 @@ export default function FeaturedProducts() {
       image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop'
     },
     {
-      title: 'Nilon Lót Sàn 5zem',
+      title: 'Nilon Lót Sàn 6zem',
       desc: 'Độ dày vượt trội, chống thấm tuyệt đối và chống rách cực tốt. Dùng cho công trình đặc thù.',
       prices: [
         { label: 'Dưới 10 cuộn', value: '1.650.000đ/c' },
@@ -55,7 +55,7 @@ export default function FeaturedProducts() {
           <div className="w-16 h-1 bg-[#fc6c29] mx-auto rounded"></div>
         </div>
 
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 md:grid-cols-3 gap-8"
           variants={staggerContainer}
           initial="hidden"
@@ -63,8 +63,8 @@ export default function FeaturedProducts() {
           viewport={{ once: true, amount: 0.2 }}
         >
           {products.map((product, index) => (
-            <motion.div 
-              key={index} 
+            <motion.div
+              key={index}
               variants={slideUp}
               className={`bg-white rounded-xl shadow-sm border ${product.featured ? 'border-secondary-container shadow-lg relative lg:scale-105 z-10' : 'border-gray-200'} overflow-hidden flex flex-col group hover:shadow-xl transition-shadow duration-300`}
             >
@@ -76,11 +76,11 @@ export default function FeaturedProducts() {
                   </div>
                 )}
               </div>
-              
+
               <div className="p-6 flex-grow flex flex-col">
                 <h3 className="text-2xl font-bold text-primary mb-3">{product.title}</h3>
                 <p className="text-gray-600 text-sm mb-6 flex-grow">{product.desc}</p>
-                
+
                 <div className="space-y-4 mb-8">
                   {product.prices.map((price, i) => (
                     <div key={i} className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-0 last:pb-0">
@@ -91,8 +91,8 @@ export default function FeaturedProducts() {
                     </div>
                   ))}
                 </div>
-                
-                <motion.button 
+
+                <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.95 }}
                   className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}

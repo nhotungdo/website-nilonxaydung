@@ -28,7 +28,7 @@ export default function Footer() {
       <footer className="bg-primary text-white pt-16 pb-8 border-t border-blue-900">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
-            
+
             {/* Column 1 */}
             <div>
               <h3 className="text-lg font-bold mb-6 tracking-wide">VẬT LIỆU XÂY DỰNG</h3>
@@ -60,10 +60,9 @@ export default function Footer() {
             <div>
               <h3 className="text-sm font-bold text-orange-500 mb-6 uppercase">CHÍNH SÁCH</h3>
               <ul className="space-y-3 text-sm text-gray-300">
-                <li><Link href="#" className="hover:text-white transition-colors">Về chúng tôi</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Chính sách bảo mật</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Hướng dẫn thanh toán</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Chứng chỉ ISO</Link></li>
+                <li><Link href="/ve-chung-toi" className="hover:text-white transition-colors">Về chúng tôi</Link></li>
+                <li><Link href="/chinh-sach-bao-mat" className="hover:text-white transition-colors">Chính sách bảo mật</Link></li>
+                <li><Link href="/chung-chi-iso" className="hover:text-white transition-colors">Chứng chỉ ISO</Link></li>
               </ul>
             </div>
 
@@ -87,9 +86,9 @@ export default function Footer() {
             </div>
 
           </div>
-          
+
           <div className="border-t border-blue-900 pt-8 text-center text-sm text-blue-200">
-            <p>&copy; 2024 Vật Liệu Xây Dựng. Bảo lưu mọi quyền.</p>
+            <p>&copy; 2026 Nilon lót sàn Việt Nam. Bảo lưu mọi quyền.</p>
           </div>
         </div>
       </footer>

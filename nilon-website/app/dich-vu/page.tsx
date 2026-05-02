@@ -3,9 +3,9 @@
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer } from "@/lib/animations";
 import Link from "next/link";
-import { 
-  Layers, Truck, Scissors, Headset, MapPin, 
-  ClipboardList, PhoneCall, Calculator, PackageCheck, 
+import {
+  Layers, Truck, Scissors, Headset, MapPin,
+  ClipboardList, PhoneCall, Calculator, PackageCheck,
   CheckCircle2, Zap, HeartHandshake, Phone, MessageCircle, FileText, DollarSign
 } from "lucide-react";
 
@@ -49,7 +49,7 @@ export default function DichVuPage() {
         </div>
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl">
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
@@ -57,7 +57,7 @@ export default function DichVuPage() {
             >
               DỊCH VỤ CỦA CHÚNG TÔI
             </motion.h1>
-            <motion.p 
+            <motion.p
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
@@ -65,7 +65,7 @@ export default function DichVuPage() {
             >
               Giải pháp cung ứng nilon lót sàn và vật tư xây dựng chuyên nghiệp. Đồng hành cùng các nhà thầu kiến tạo những công trình bền vững với tiêu chuẩn kỹ thuật khắt khe nhất.
             </motion.p>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.4 }}
@@ -92,7 +92,7 @@ export default function DichVuPage() {
 
           <div className="grid lg:grid-cols-12 gap-8">
             {/* Big Card */}
-            <motion.div 
+            <motion.div
               className="lg:col-span-5"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -112,15 +112,15 @@ export default function DichVuPage() {
                   </p>
                   <div className="flex gap-2 flex-wrap">
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 2zem</span>
-                    <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 3zem</span>
-                    <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 5zem</span>
+                    <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 4zem</span>
+                    <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 6zem</span>
                   </div>
                 </div>
               </div>
             </motion.div>
 
             {/* Small Cards */}
-            <motion.div 
+            <motion.div
               className="lg:col-span-7 grid sm:grid-cols-2 gap-6"
               variants={staggerContainer}
               initial="hidden"
@@ -128,7 +128,7 @@ export default function DichVuPage() {
               viewport={{ once: true }}
             >
               {services.map((service, idx) => (
-                <motion.div 
+                <motion.div
                   key={idx}
                   variants={slideUp}
                   className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
@@ -158,7 +158,7 @@ export default function DichVuPage() {
           <div className="hidden md:block relative max-w-5xl mx-auto mb-16">
             {/* Connecting line */}
             <div className="absolute top-8 left-12 right-12 h-0.5 bg-blue-800"></div>
-            
+
             <div className="grid grid-cols-5 gap-4 relative z-10">
               {steps.map((step, idx) => (
                 <div key={idx} className="flex flex-col items-center">
@@ -174,17 +174,17 @@ export default function DichVuPage() {
 
           {/* Mobile steps */}
           <div className="md:hidden space-y-6">
-             {steps.map((step, idx) => (
-                <div key={idx} className="flex items-center text-left bg-blue-900/30 p-4 rounded-xl">
-                  <div className={`w-12 h-12 shrink-0 rounded-lg flex items-center justify-center mr-4 ${idx === 0 ? 'bg-[#fc6c29]' : 'bg-white text-primary'}`}>
-                    {step.icon}
-                  </div>
-                  <div>
-                    <h4 className="font-bold">{step.title}</h4>
-                    <p className="text-blue-100 text-xs">{step.desc}</p>
-                  </div>
+            {steps.map((step, idx) => (
+              <div key={idx} className="flex items-center text-left bg-blue-900/30 p-4 rounded-xl">
+                <div className={`w-12 h-12 shrink-0 rounded-lg flex items-center justify-center mr-4 ${idx === 0 ? 'bg-[#fc6c29]' : 'bg-white text-primary'}`}>
+                  {step.icon}
                 </div>
-              ))}
+                <div>
+                  <h4 className="font-bold">{step.title}</h4>
+                  <p className="text-blue-100 text-xs">{step.desc}</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -194,7 +194,7 @@ export default function DichVuPage() {
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {values.map((val, idx) => (
-              <motion.div 
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -215,7 +215,7 @@ export default function DichVuPage() {
       <section className="py-24 bg-gray-50">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
-            <motion.div 
+            <motion.div
               className="lg:w-1/2"
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -237,7 +237,7 @@ export default function DichVuPage() {
                 ))}
               </div>
             </motion.div>
-            <motion.div 
+            <motion.div
               className="lg:w-1/2 w-full"
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
