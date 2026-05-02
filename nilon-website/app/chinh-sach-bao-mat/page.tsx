@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
               <ul className="mt-3 space-y-2 list-none pl-0">
                 <li><strong>Hotline:</strong> 090 xxx xxxx</li>
                 <li><strong>Email:</strong> contact@nilonlotsan.vn</li>
-                <li><strong>Địa chỉ:</strong> 123 Đường Công Trường, Quận 9, TP. HCM</li>
+                <li><strong>Địa chỉ:</strong> Châu Ninh, Khoái Châu, Hưng Yên, Việt Nam</li>
               </ul>
             </div>
           </div>

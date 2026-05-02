@@ -31,7 +31,7 @@ export default function ContactPage() {
   };
 
   const contactCards = [
-    { icon: <MapPin className="w-6 h-6 text-primary" />, title: "Địa chỉ", desc: "Khu công nghiệp Phố Nối A, Hưng Yên / Văn phòng Hà Nội" },
+    { icon: <MapPin className="w-6 h-6 text-primary" />, title: "Địa chỉ", desc: "Châu Ninh, Khoái Châu, Hưng Yên, Việt Nam" },
     { icon: <Phone className="w-6 h-6 text-primary" />, title: "Hotline", desc: "0901.234.567\n0988.765.432" },
     { icon: <MessageCircle className="w-6 h-6 text-primary" />, title: "Zalo", desc: "Nhắn tin nhận báo giá nhanh chóng qua Zalo OA" },
     { icon: <Mail className="w-6 h-6 text-primary" />, title: "Email", desc: "baogia@nilonlotsan.vn\ninfo@nilonlotsan.vn" },
@@ -258,13 +258,14 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map Section (Placeholder) */}
-      <section className="bg-gray-200 h-[400px] w-full flex items-center justify-center relative">
-        {/* You can replace this with an actual iframe from Google Maps */}
-        <div className="absolute inset-0 bg-gray-300 flex items-center justify-center">
-           <MapPin className="w-16 h-16 text-gray-400 opacity-50" />
-           <span className="text-gray-500 font-medium ml-4 text-xl">Bản đồ Google Maps</span>
-        </div>
+      <section className="h-[450px] w-full relative overflow-hidden">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3728.3242686884355!2d105.93116900000001!3d20.832123999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjDCsDQ5JzU1LjciTiAxMDXCsDU1JzUyLjIiRQ!5e0!3m2!1svi!2svn!4v1714659132145!5m2!1svi!2svn" 
+          className="absolute inset-0 w-full h-full border-0"
+          allowFullScreen 
+          loading="lazy" 
+          referrerPolicy="no-referrer-when-downgrade"
+        ></iframe>
       </section>
 
       {/* Why Choose Us */}
