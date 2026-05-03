@@ -149,7 +149,7 @@ export default function BaoHoLaoDongPage() {
                 whileTap={{ scale: 0.98 }}
                 className="w-full bg-[#C43A1B] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-4 rounded-md mt-6 transition-colors relative z-10 text-[13px] uppercase tracking-wide shadow-md"
               >
-                Nhận Catalogue & Báo Giá
+                Nhận Báo Giá
               </motion.button>
             </motion.div>
           </div>
@@ -177,7 +177,7 @@ export default function BaoHoLaoDongPage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
             {/* Bao ho cards */}
             {[
-              { img: "https://images.unsplash.com/photo-1584501254394-814e59c25381?q=80&w=400", title: "Găng tay da thợ hàn" },
+              { img: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=400", title: "Găng tay da thợ hàn" },
               { img: "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=400", title: "Mũ bảo hộ Thùy Dương" },
               { img: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=400", title: "Giày bảo hộ mũi thép" },
               { img: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=400", title: "Áo phản quang kỹ sư" }

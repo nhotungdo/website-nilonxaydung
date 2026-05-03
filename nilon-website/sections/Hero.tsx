@@ -1,4 +1,44 @@
+"use client";
+
+import { useState } from 'react';
+
 export default function Hero() {
+  const [formData, setFormData] = useState({
+    name: '',
+    phone: '',
+    email: '',
+    content: ''
+  });
+  const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setStatus('loading');
+    
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...formData,
+          need: 'Báo giá nhanh tại trang chủ'
+        }),
+      });
+
+      if (response.ok) {
+        setStatus('success');
+        setFormData({ name: '', phone: '', email: '', content: '' });
+      } else {
+        setStatus('error');
+      }
+    } catch (error) {
+      console.error('Error submitting form:', error);
+      setStatus('error');
+    }
+  };
+
   return (
     <section className="relative bg-[#001838] overflow-hidden py-20 lg:py-28">
       {/* Background Image / Overlay */}
@@ -41,24 +81,69 @@ export default function Hero() {
           <div className="w-full lg:w-[45%]">
             <div className="bg-white rounded-xl shadow-2xl p-8 lg:p-10">
               <h3 className="text-2xl font-bold text-primary mb-6 text-center">Yêu cầu báo giá nhanh</h3>
-              <form className="space-y-5">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Họ và tên *</label>
-                  <input type="text" placeholder="Nhập họ và tên của bạn" className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" />
+              {status === 'success' ? (
+                <div className="bg-green-50 text-green-700 p-6 rounded-lg border border-green-200 text-center">
+                  <h3 className="text-xl font-bold mb-2">Gửi thành công!</h3>
+                  <p className="text-sm">Chúng tôi đã nhận được yêu cầu và sẽ liên hệ lại trong vòng 15 phút.</p>
+                  <button onClick={() => setStatus('idle')} className="mt-4 text-sm text-green-600 font-semibold underline hover:text-green-800">Gửi yêu cầu khác</button>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại *</label>
-                  <input type="tel" placeholder="Ví dụ: 0912345678" className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Loại Nilon & Số lượng</label>
-                  <textarea rows={3} placeholder="Ví dụ: Nilon 4zem, số lượng 50 cuộn cho công trình Quận 2" className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"></textarea>
-                </div>
-                <button type="button" className="w-full bg-secondary-container hover:bg-[#e65a1f] text-white font-bold text-lg py-4 rounded-md transition-colors shadow-lg shadow-orange-500/30">
-                  NHẬN BÁO GIÁ NGAY
-                </button>
-                <p className="text-center text-xs text-gray-500 mt-4">Cam kết phản hồi trong vòng 15 phút làm việc</p>
-              </form>
+              ) : (
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Họ và tên *</label>
+                    <input 
+                      type="text" 
+                      placeholder="Nhập họ và tên của bạn" 
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại *</label>
+                    <input 
+                      type="tel" 
+                      placeholder="Ví dụ: 0912345678" 
+                      required
+                      value={formData.phone}
+                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                    <input 
+                      type="email" 
+                      placeholder="Ví dụ: email@example.com" 
+                      value={formData.email}
+                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Loại Nilon & Số lượng</label>
+                    <textarea 
+                      rows={3} 
+                      placeholder="Ví dụ: Nilon 4zem, số lượng 50 cuộn cho công trình Quận 2" 
+                      value={formData.content}
+                      onChange={(e) => setFormData({...formData, content: e.target.value})}
+                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+                    ></textarea>
+                  </div>
+                  <button 
+                    type="submit" 
+                    disabled={status === 'loading'}
+                    className="w-full bg-secondary-container hover:bg-[#e65a1f] text-white font-bold text-lg py-4 rounded-md transition-colors shadow-lg shadow-orange-500/30 disabled:opacity-70 flex items-center justify-center"
+                  >
+                    {status === 'loading' ? 'ĐANG GỬI...' : 'NHẬN BÁO GIÁ NGAY'}
+                  </button>
+                  {status === 'error' && (
+                    <p className="text-red-500 text-sm text-center">Đã có lỗi xảy ra, vui lòng thử lại.</p>
+                  )}
+                  <p className="text-center text-xs text-gray-500 mt-4">Cam kết phản hồi trong vòng 15 phút làm việc</p>
+                </form>
+              )}
             </div>
           </div>
 

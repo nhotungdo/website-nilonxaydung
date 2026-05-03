@@ -8,8 +8,8 @@ import { CheckCircle2, Shield, TrendingUp, Users, Target } from "lucide-react";
 
 export default function AboutPage() {
   const stats = [
-    { number: "10+", label: "Năm kinh nghiệm" },
-    { number: "500+", label: "Đối tác tin cậy" },
+    { number: "5+", label: "Năm kinh nghiệm" },
+    { number: "50+", label: "Đối tác tin cậy" },
     { number: "1000+", label: "Dự án hoàn thành" },
     { number: "50+", label: "Tỉnh thành phân phối" },
   ];
@@ -27,7 +27,7 @@ export default function AboutPage() {
       <section className="relative pt-20 pb-24 overflow-hidden bg-primary">
         <div className="absolute inset-0 z-0 opacity-20">
           <div className="absolute inset-0 bg-primary mix-blend-multiply" />
-          <div 
+          <div
             className="w-full h-full bg-cover bg-center"
             style={{ backgroundImage: "url('https://images.unsplash.com/photo-1504307651254-35680f356f58?q=80&w=2070&auto=format&fit=crop')" }}
           />
@@ -48,7 +48,7 @@ export default function AboutPage() {
       <section className="py-24 bg-white">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center gap-16">
-            <motion.div 
+            <motion.div
               className="lg:w-1/2"
               initial="hidden"
               whileInView="visible"
@@ -74,8 +74,8 @@ export default function AboutPage() {
                 </div>
               </motion.div>
             </motion.div>
-            
-            <motion.div 
+
+            <motion.div
               className="lg:w-1/2 w-full"
               initial="hidden"
               whileInView="visible"
@@ -84,12 +84,12 @@ export default function AboutPage() {
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
                 <div className="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                <Image 
-                  src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2071&auto=format&fit=crop" 
-                  alt="Nhà máy sản xuất" 
+                <Image
+                  src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2071&auto=format&fit=crop"
+                  alt="Nhà máy sản xuất"
                   width={800}
                   height={600}
-                  className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" 
+                  className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700"
                 />
               </div>
             </motion.div>
@@ -102,7 +102,7 @@ export default function AboutPage() {
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, idx) => (
-              <motion.div 
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -125,10 +125,10 @@ export default function AboutPage() {
             <h2 className="text-3xl md:text-[32px] font-extrabold text-primary mb-4">Giá trị cốt lõi</h2>
             <div className="w-16 h-1 bg-[#fc6c29] mx-auto rounded"></div>
           </div>
-          
+
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {values.map((val, idx) => (
-              <motion.div 
+              <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}

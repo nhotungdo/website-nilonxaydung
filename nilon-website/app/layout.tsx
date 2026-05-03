@@ -17,8 +17,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="vi">
-      <body className={`${manrope.className} min-h-screen flex flex-col bg-[#f9f9ff] text-[#111c2d]`}>
+    <html lang="vi" suppressHydrationWarning>
+      <body className={`${manrope.className} min-h-screen flex flex-col bg-[#f9f9ff] text-[#111c2d]`} suppressHydrationWarning>
         <Header />
         <main className="flex-grow">
           {children}

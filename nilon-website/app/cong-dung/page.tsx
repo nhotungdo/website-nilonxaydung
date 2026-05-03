@@ -47,7 +47,7 @@ export default function CongDungPage() {
                 <Link href="#contact" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg shadow-orange-500/30 flex items-center">
                   Nhận báo giá ngay
                 </Link>
-                <Link href="/san-pham" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary px-8 py-4 rounded-md font-bold transition-all">
+                <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary px-8 py-4 rounded-md font-bold transition-all">
                   Xem sản phẩm
                 </Link>
               </motion.div>
