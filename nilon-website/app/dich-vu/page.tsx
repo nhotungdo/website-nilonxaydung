@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer } from "@/lib/animations";
 import Link from "next/link";
+import Image from "next/image";
 import {
   Layers, Truck, Scissors, Headset, MapPin,
   ClipboardList, PhoneCall, Calculator, PackageCheck,
@@ -44,7 +45,12 @@ export default function DichVuPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-40 overflow-hidden bg-primary flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1504307651254-35680f356f12?q=80&w=2076&auto=format&fit=crop" alt="Construction services" className="w-full h-full object-cover opacity-20 mix-blend-overlay" />
+          <Image 
+            src="https://images.unsplash.com/photo-1504307651254-35680f356f12?q=80&w=2076&auto=format&fit=crop" 
+            alt="Construction services" 
+            fill
+            className="w-full h-full object-cover opacity-20 mix-blend-overlay" 
+          />
           <div className="absolute inset-0 bg-primary/80"></div>
         </div>
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -100,7 +106,12 @@ export default function DichVuPage() {
             >
               <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden h-full group hover:shadow-lg transition-all">
                 <div className="h-64 bg-gray-100 relative overflow-hidden">
-                  <img src="https://images.unsplash.com/photo-1587393845576-2e86749bd00c?q=80&w=1964&auto=format&fit=crop" alt="Cuộn nilon" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <Image 
+                    src="https://images.unsplash.com/photo-1587393845576-2e86749bd00c?q=80&w=1964&auto=format&fit=crop" 
+                    alt="Cuộn nilon" 
+                    fill
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  />
                 </div>
                 <div className="p-8">
                   <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
@@ -245,7 +256,12 @@ export default function DichVuPage() {
             >
               <div className="bg-white p-4 rounded-2xl shadow-lg border border-gray-100">
                 <div className="aspect-[4/3] bg-gray-100 rounded-xl relative overflow-hidden flex items-center justify-center">
-                  <img src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop" alt="Map" className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale" />
+                  <Image 
+                    src="https://images.unsplash.com/photo-1524661135-423995f22d0b?q=80&w=2074&auto=format&fit=crop" 
+                    alt="Map" 
+                    fill
+                    className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale" 
+                  />
                   <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg relative z-10 text-center border border-gray-100">
                     <div className="w-12 h-12 bg-orange-100 text-[#fc6c29] rounded-full flex items-center justify-center mx-auto mb-3">
                       <MapPin />

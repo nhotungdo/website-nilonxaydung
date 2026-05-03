@@ -1,5 +1,6 @@
 "use client";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { staggerContainer, slideUp } from "@/lib/animations";
 
 export default function FeaturedProducts() {
@@ -69,7 +70,12 @@ export default function FeaturedProducts() {
               className={`bg-white rounded-xl shadow-sm border ${product.featured ? 'border-secondary-container shadow-lg relative lg:scale-105 z-10' : 'border-gray-200'} overflow-hidden flex flex-col group hover:shadow-xl transition-shadow duration-300`}
             >
               <div className="relative h-48 bg-gray-100">
-                <img src={product.image} alt={product.title} className="w-full h-full object-cover" />
+                <Image 
+                  src={product.image} 
+                  alt={product.title} 
+                  fill
+                  className="w-full h-full object-cover" 
+                />
                 {product.badge && (
                   <div className={`absolute top-4 ${product.featured ? 'right-0 rounded-l-md' : 'left-4 rounded-md'} px-3 py-1 text-xs font-bold ${product.badgeColor}`}>
                     {product.badge}

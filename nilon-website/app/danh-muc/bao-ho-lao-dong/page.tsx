@@ -1,5 +1,6 @@
 "use client";
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeIn, slideUp, staggerContainer } from '@/lib/animations';
 
@@ -46,7 +47,12 @@ export default function BaoHoLaoDongPage() {
             {/* Card 1 */}
             <motion.div variants={slideUp} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
               <div className="relative h-[240px] w-full bg-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800" alt="Nilon Trắng Trong" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800" 
+                  alt="Nilon Trắng Trong" 
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
                 <div className="absolute top-3 left-3 flex gap-2">
                   <span className="bg-[#0B2147] text-white text-[10px] font-bold px-2.5 py-1 rounded-sm tracking-wider shadow-sm">BÁN CHẠY</span>
                   <span className="bg-[#C43A1B] text-white text-[10px] font-bold px-2.5 py-1 rounded-sm tracking-wider shadow-sm">LOẠI DÀY</span>
@@ -76,7 +82,12 @@ export default function BaoHoLaoDongPage() {
             {/* Card 2 */}
             <motion.div variants={slideUp} className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group cursor-pointer hover:shadow-md transition-shadow">
               <div className="relative h-[240px] w-full bg-gray-100 overflow-hidden">
-                <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800" alt="Nilon Đen Lót Nền" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800" 
+                  alt="Nilon Đen Lót Nền" 
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
                 <div className="absolute top-3 left-3">
                   <span className="bg-[#333] text-white text-[10px] font-bold px-2.5 py-1 rounded-sm tracking-wider shadow-sm">SIÊU BỀN</span>
                 </div>
@@ -173,7 +184,12 @@ export default function BaoHoLaoDongPage() {
             ].map((item, index) => (
               <motion.div key={index} variants={slideUp} className="group cursor-pointer bg-white p-3 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                 <div className="bg-gray-50 rounded-lg overflow-hidden aspect-[4/3] relative mb-4">
-                  <img src={item.img} alt={item.title} className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                  <Image 
+                    src={item.img} 
+                    alt={item.title} 
+                    fill
+                    className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
+                  />
                 </div>
                 <h3 className="text-center font-medium text-gray-800 text-sm group-hover:text-[#C43A1B] transition-colors pb-1">{item.title}</h3>
               </motion.div>

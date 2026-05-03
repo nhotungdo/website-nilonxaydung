@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export default function WhyChooseUs() {
   const specs = [
     { label: 'Chất liệu', value: 'Nilon PE nguyên sinh / tái sinh', status: 'Sẵn hàng' },
@@ -39,7 +41,12 @@ export default function WhyChooseUs() {
           {/* Right: Images */}
           <div className="w-full lg:w-1/2 flex flex-col sm:flex-row gap-6">
             <div className="relative w-full sm:w-1/2 rounded-xl overflow-hidden shadow-md h-64">
-              <img src="https://images.unsplash.com/photo-1504307651254-35680f356db4?q=80&w=2070&auto=format&fit=crop" alt="Safe work" className="w-full h-full object-cover" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1504307651254-35680f356db4?q=80&w=2070&auto=format&fit=crop" 
+                  alt="Safe work" 
+                  fill
+                  className="w-full h-full object-cover" 
+                />
               <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                 <div className="bg-[#fc6c29] text-white font-extrabold px-6 py-3 rounded-md border-2 border-white transform -rotate-6 text-xl tracking-wider">
                   SAFE FOR WORK

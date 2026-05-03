@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer, fadeIn } from "@/lib/animations";
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle2, Shield, TrendingUp, Users, Target } from "lucide-react";
 
 export default function AboutPage() {
@@ -57,7 +58,7 @@ export default function AboutPage() {
               <motion.div variants={slideUp} className="text-sm font-bold text-[#fc6c29] tracking-wider uppercase mb-2">Câu chuyện của chúng tôi</motion.div>
               <motion.h2 variants={slideUp} className="text-3xl md:text-4xl font-extrabold text-primary mb-6">Hành trình xây dựng niềm tin</motion.h2>
               <motion.p variants={slideUp} className="text-gray-600 mb-6 leading-relaxed">
-                Được thành lập với tầm nhìn trở thành đối tác chiến lược của các nhà thầu xây dựng trên toàn quốc, chúng tôi hiểu rằng "nền móng vững chắc là khởi đầu cho mọi công trình vĩ đại". Lớp nilon lót sàn tuy mỏng manh nhưng lại đóng vai trò tối quan trọng trong việc bảo vệ chất lượng bê tông.
+                Được thành lập với tầm nhìn trở thành đối tác chiến lược của các nhà thầu xây dựng trên toàn quốc, chúng tôi hiểu rằng &quot;nền móng vững chắc là khởi đầu cho mọi công trình vĩ đại&quot;. Lớp nilon lót sàn tuy mỏng manh nhưng lại đóng vai trò tối quan trọng trong việc bảo vệ chất lượng bê tông.
               </motion.p>
               <motion.p variants={slideUp} className="text-gray-600 mb-8 leading-relaxed">
                 Với hơn 10 năm kinh nghiệm, chúng tôi đã không ngừng cải tiến dây chuyền sản xuất, tối ưu hóa chi phí để mang đến cho khách hàng những sản phẩm đạt tiêu chuẩn kỹ thuật cao nhất với mức giá vô cùng hợp lý. Sự tin tưởng của quý khách hàng chính là động lực để chúng tôi phát triển không ngừng.
@@ -83,7 +84,13 @@ export default function AboutPage() {
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl group">
                 <div className="absolute inset-0 bg-primary/20 group-hover:bg-transparent transition-colors duration-500 z-10"></div>
-                <img src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2071&auto=format&fit=crop" alt="Nhà máy sản xuất" className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=2071&auto=format&fit=crop" 
+                  alt="Nhà máy sản xuất" 
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-cover transform group-hover:scale-105 transition-transform duration-700" 
+                />
               </div>
             </motion.div>
           </div>

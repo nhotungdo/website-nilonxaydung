@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer, fadeIn } from "@/lib/animations";
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle2, Droplets, Shield, Hammer, XOctagon, PaintBucket, DollarSign, ChevronDown, Check, X } from "lucide-react";
 import { useState } from "react";
 
@@ -58,7 +59,13 @@ export default function CongDungPage() {
               transition={{ duration: 0.8, ease: "easeOut" }}
             >
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
-                <img src="https://images.unsplash.com/photo-1541888086425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop" alt="Thi công lót nilon sàn" className="w-full h-auto object-cover" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1541888086425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop" 
+                  alt="Thi công lót nilon sàn" 
+                  width={800}
+                  height={600}
+                  className="w-full h-auto object-cover" 
+                />
                 <div className="absolute bottom-6 left-6 bg-primary text-white p-4 rounded-lg shadow-lg flex items-center gap-3">
                   <CheckCircle2 className="w-8 h-8 text-[#fc6c29]" />
                   <div>
@@ -86,7 +93,12 @@ export default function CongDungPage() {
               <div className="rounded-2xl overflow-hidden shadow-xl bg-gray-100 aspect-[4/3] flex items-center justify-center relative">
                 {/* Placeholder graphic for 3D slab */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-gray-200 to-gray-50"></div>
-                <img src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=2070&auto=format&fit=crop" alt="Cấu trúc sàn bê tông" className="relative z-10 w-full h-full object-cover mix-blend-multiply opacity-80" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1589939705384-5185137a7f0f?q=80&w=2070&auto=format&fit=crop" 
+                  alt="Cấu trúc sàn bê tông" 
+                  fill
+                  className="relative z-10 w-full h-full object-cover mix-blend-multiply opacity-80" 
+                />
               </div>
             </motion.div>
             <motion.div 
@@ -249,7 +261,12 @@ export default function CongDungPage() {
                 transition={{ delay: idx * 0.1 }}
                 className="group relative rounded-xl overflow-hidden aspect-[4/3] bg-gray-200"
               >
-                <img src={item.img} alt={item.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                <Image 
+                  src={item.img} 
+                  alt={item.title} 
+                  fill
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
+                />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
                 <div className="absolute bottom-4 left-4 right-4 text-white font-bold text-lg">{item.title}</div>
               </motion.div>

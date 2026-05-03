@@ -2,7 +2,8 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { slideUp, staggerContainer, fadeIn } from '@/lib/animations';
+import Image from 'next/image';
+import { slideUp, staggerContainer } from '@/lib/animations';
 import { 
   MapPin, Phone, MessageCircle, Mail, 
   Clock, Headset, Package, ShieldCheck, Truck,
@@ -48,7 +49,12 @@ export default function ContactPage() {
       {/* Hero Section */}
       <section className="relative pt-32 pb-40 overflow-hidden bg-gray-900 flex items-center">
         <div className="absolute inset-0 z-0">
-          <img src="https://images.unsplash.com/photo-1586528116311-ad8ed7c83a7f?q=80&w=2070&auto=format&fit=crop" alt="Warehouse" className="w-full h-full object-cover opacity-30 mix-blend-overlay" />
+          <Image 
+            src="https://images.unsplash.com/photo-1586528116311-ad8ed7c83a7f?q=80&w=2070&auto=format&fit=crop" 
+            alt="Warehouse" 
+            fill
+            className="w-full h-full object-cover opacity-30 mix-blend-overlay" 
+          />
           <div className="absolute inset-0 bg-gradient-to-r from-gray-900/90 to-gray-900/40"></div>
         </div>
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -229,7 +235,13 @@ export default function ContactPage() {
               viewport={{ once: true }}
             >
               <div className="rounded-2xl overflow-hidden mb-8 shadow-md">
-                <img src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2064&auto=format&fit=crop" alt="Đội ngũ hỗ trợ" className="w-full h-[300px] object-cover object-center" />
+                <Image 
+                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2064&auto=format&fit=crop" 
+                  alt="Đội ngũ hỗ trợ" 
+                  width={800}
+                  height={300}
+                  className="w-full h-[300px] object-cover object-center" 
+                />
               </div>
 
               <div className="bg-orange-50 border-l-4 border-[#fc6c29] p-6 rounded-r-lg mb-8">
