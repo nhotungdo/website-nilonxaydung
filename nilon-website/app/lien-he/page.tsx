@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
+import Link from 'next/link';
 import { slideUp, staggerContainer } from '@/lib/animations';
 import { 
   MapPin, Phone, MessageCircle, Mail, 
@@ -98,9 +99,9 @@ export default function ContactPage() {
               <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg flex items-center gap-2">
                 <Phone className="w-5 h-5" /> Gọi ngay: 0931 982 568
               </a>
-              <a href="#form" className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-8 py-4 rounded-md font-bold transition-all flex items-center gap-2">
+              <Link href="/" className="bg-gray-800 hover:bg-gray-700 border border-gray-600 text-white px-8 py-4 rounded-md font-bold transition-all flex items-center gap-2">
                 <Mail className="w-5 h-5" /> Nhận báo giá
-              </a>
+              </Link>
             </motion.div>
           </div>
         </div>

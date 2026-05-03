@@ -3,8 +3,23 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { fadeIn, slideUp, staggerContainer } from '@/lib/animations';
+import { useState } from 'react';
+import { ShoppingCart } from 'lucide-react';
+import AddToCartModal from '@/components/AddToCartModal';
 
 export default function BaoHoLaoDongPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+
+  const handleOpenModal = (p: { id?: string; title?: string; name?: string; img?: string; image?: string }) => {
+    setSelectedProduct({
+      id: p.id || (p.title || p.name || "").toLowerCase().replace(/ /g, '-'),
+      name: p.title || p.name || "",
+      image: p.img || p.image || ""
+    });
+    setIsModalOpen(true);
+  };
+
   return (
     <motion.div 
       className="bg-[#f8f9fa] min-h-screen py-10 font-sans"
@@ -72,8 +87,11 @@ export default function BaoHoLaoDongPage() {
                 </div>
                 <div className="mt-auto flex justify-between items-center pt-2">
                   <span className="text-[#C43A1B] font-semibold text-sm">Liên hệ báo giá</span>
-                  <button className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#C43A1B] text-white rounded flex items-center justify-center transition-colors shadow-sm">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                  <button 
+                    onClick={() => handleOpenModal({ title: "Nilon Trắng Trong Loại 1", img: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800" })}
+                    className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#fc6c29] text-white rounded flex items-center justify-center transition-colors shadow-sm"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -106,8 +124,11 @@ export default function BaoHoLaoDongPage() {
                 </div>
                 <div className="mt-auto flex justify-between items-center pt-2">
                   <span className="text-[#C43A1B] font-semibold text-sm">Liên hệ báo giá</span>
-                  <button className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#C43A1B] text-white rounded flex items-center justify-center transition-colors shadow-sm">
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
+                  <button 
+                    onClick={() => handleOpenModal({ title: "Nilon Đen Lót Nền Kỹ Thuật", img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800" })}
+                    className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#fc6c29] text-white rounded flex items-center justify-center transition-colors shadow-sm"
+                  >
+                    <ShoppingCart className="w-4 h-4" />
                   </button>
                 </div>
               </div>
@@ -144,13 +165,15 @@ export default function BaoHoLaoDongPage() {
                 </p>
               </div>
               
-              <motion.button 
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className="w-full bg-[#C43A1B] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-4 rounded-md mt-6 transition-colors relative z-10 text-[13px] uppercase tracking-wide shadow-md"
-              >
-                Nhận Báo Giá
-              </motion.button>
+              <Link href="/">
+                <motion.div 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full bg-[#C43A1B] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-4 rounded-md mt-6 transition-colors relative z-10 text-[13px] uppercase tracking-wide shadow-md text-center cursor-pointer"
+                >
+                  Nhận Báo Giá
+                </motion.div>
+              </Link>
             </motion.div>
           </div>
         </motion.div>
@@ -191,7 +214,18 @@ export default function BaoHoLaoDongPage() {
                     className="w-full h-full object-cover mix-blend-multiply group-hover:scale-110 transition-transform duration-500" 
                   />
                 </div>
-                <h3 className="text-center font-medium text-gray-800 text-sm group-hover:text-[#C43A1B] transition-colors pb-1">{item.title}</h3>
+                <div className="flex justify-between items-center px-1">
+                  <h3 className="font-medium text-gray-800 text-sm group-hover:text-[#C43A1B] transition-colors">{item.title}</h3>
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpenModal(item);
+                    }}
+                    className="w-8 h-8 rounded-full bg-gray-100 hover:bg-[#fc6c29] hover:text-white flex items-center justify-center transition-all"
+                  >
+                    <ShoppingCart className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -215,9 +249,11 @@ export default function BaoHoLaoDongPage() {
             </p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-[#FE6230] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] shadow-md w-full md:w-auto text-center">
-              Nhận báo giá ngay
-            </motion.button>
+            <Link href="/">
+              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-[#FE6230] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] shadow-md w-full md:w-auto text-center cursor-pointer">
+                Nhận báo giá ngay
+              </motion.div>
+            </Link>
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="border border-white/20 hover:bg-white/5 text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] w-full md:w-auto text-center">
               Tư vấn kỹ thuật
             </motion.button>
@@ -246,6 +282,13 @@ export default function BaoHoLaoDongPage() {
         </motion.div>
 
       </div>
+      {selectedProduct && (
+        <AddToCartModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          product={selectedProduct}
+        />
+      )}
     </motion.div>
   );
 }

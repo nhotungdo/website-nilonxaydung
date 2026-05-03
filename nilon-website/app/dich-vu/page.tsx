@@ -7,10 +7,23 @@ import Image from "next/image";
 import {
   Layers, Truck, Scissors, Headset, MapPin,
   ClipboardList, PhoneCall, Calculator, PackageCheck,
-  CheckCircle2, Zap, HeartHandshake, Phone, MessageCircle, FileText, DollarSign
+  CheckCircle2, Zap, HeartHandshake, Phone, MessageCircle, FileText, DollarSign, ShoppingCart
 } from "lucide-react";
+import { useState } from "react";
+import AddToCartModal from "@/components/AddToCartModal";
 
 export default function DichVuPage() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+
+  const handleOpenModal = (p: { title: string; image: string }) => {
+    setSelectedProduct({
+      id: 'nilon-tong-hop',
+      name: p.title,
+      image: p.image
+    });
+    setIsModalOpen(true);
+  };
   const services = [
     { icon: <ClipboardList className="text-[#fc6c29] w-6 h-6" />, title: "Tư vấn chọn loại nilon", desc: "Đội ngũ kỹ sư hỗ trợ phân tích bản vẽ và lựa chọn vật liệu lót sàn tối ưu chi phí cho từng hạng mục công trình." },
     { icon: <Truck className="text-[#fc6c29] w-6 h-6" />, title: "Giao hàng tận nơi", desc: "Hệ thống xe vận tải 24/7, cam kết có mặt tại công trường trong vòng 2-4 tiếng nội thành." },
@@ -121,11 +134,18 @@ export default function DichVuPage() {
                   <p className="text-gray-600 mb-6 leading-relaxed">
                     Chúng tôi sản xuất và cung ứng đa dạng từ nilon lót sàn bê tông PE, nilon đen công trình đến các loại màng chống thấm chuyên dụng với độ dày từ 0.01mm đến 0.5mm.
                   </p>
-                  <div className="flex gap-2 flex-wrap">
+                  <div className="flex gap-2 flex-wrap mb-8">
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 2zem</span>
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 4zem</span>
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 6zem</span>
                   </div>
+                  <button 
+                    onClick={() => handleOpenModal({ title: "Nilon Lót Sàn Tổng Hợp", image: "https://images.unsplash.com/photo-1587393845576-2e86749bd00c?q=80&w=1964&auto=format&fit=crop" })}
+                    className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-6 py-3 rounded-lg font-bold transition-all shadow-md flex items-center justify-center gap-2 group"
+                  >
+                    <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                    Thêm vào báo giá ngay
+                  </button>
                 </div>
               </div>
             </motion.div>
@@ -290,12 +310,20 @@ export default function DichVuPage() {
             <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
               <MessageCircle className="w-5 h-5" /> Nhắn Zalo
             </a>
-            <Link href="/lien-he" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
+            <Link href="/" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
               <FileText className="w-5 h-5" /> Nhận báo giá ngay
             </Link>
           </div>
         </div>
       </section>
+
+      {selectedProduct && (
+        <AddToCartModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 }

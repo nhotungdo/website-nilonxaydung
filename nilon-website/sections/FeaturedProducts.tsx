@@ -1,7 +1,11 @@
 "use client";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import Link from "next/link";
 import { staggerContainer, slideUp } from "@/lib/animations";
+import { useState } from "react";
+import AddToCartModal from "@/components/AddToCartModal";
+import { ShoppingCart } from "lucide-react";
 
 export default function FeaturedProducts() {
   const products = [
@@ -47,6 +51,18 @@ export default function FeaturedProducts() {
       image: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop'
     }
   ];
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+
+  const handleOpenModal = (p: { title: string; image: string }) => {
+    setSelectedProduct({
+      id: p.title.toLowerCase().replace(/ /g, '-'),
+      name: p.title,
+      image: p.image
+    });
+    setIsModalOpen(true);
+  };
 
   return (
     <section className="py-20 bg-surface">
@@ -98,18 +114,38 @@ export default function FeaturedProducts() {
                   ))}
                 </div>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.95 }}
-                  className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}
-                >
-                  {product.btnText}
-                </motion.button>
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleOpenModal(product)}
+                    className="flex-1 py-3 bg-[#fc6c29] text-white rounded-md font-bold text-sm transition-colors hover:bg-[#e65a1f] flex items-center justify-center gap-2"
+                  >
+                    <ShoppingCart className="w-4 h-4" /> Báo giá
+                  </motion.button>
+                  <Link href="/san-pham" className="flex-1">
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.95 }}
+                      className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}
+                    >
+                      {product.btnText}
+                    </motion.button>
+                  </Link>
+                </div>
               </div>
             </motion.div>
           ))}
         </motion.div>
       </div>
+
+      {selectedProduct && (
+        <AddToCartModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          product={selectedProduct}
+        />
+      )}
     </section>
   );
 }

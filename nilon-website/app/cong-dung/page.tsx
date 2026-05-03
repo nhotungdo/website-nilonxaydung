@@ -4,11 +4,23 @@ import { motion } from "framer-motion";
 import { slideUp, staggerContainer, fadeIn } from "@/lib/animations";
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, Droplets, Shield, Hammer, XOctagon, PaintBucket, DollarSign, ChevronDown, Check, X } from "lucide-react";
+import { CheckCircle2, Droplets, Shield, Hammer, XOctagon, PaintBucket, DollarSign, ChevronDown, Check, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
+import AddToCartModal from "@/components/AddToCartModal";
 
 export default function CongDungPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+
+  const handleOpenModal = (p: { title: string; img: string }) => {
+    setSelectedProduct({
+      id: p.title.toLowerCase().replace(/ /g, '-'),
+      name: p.title,
+      image: p.img
+    });
+    setIsModalOpen(true);
+  };
 
   const features = [
     { icon: <Droplets className="w-8 h-8 text-primary" />, title: "Chống mất nước bê tông", desc: "Ngăn chặn nước trong hỗn hợp bê tông bị thấm xuống nền đất, đảm bảo quá trình thủy hóa xi măng ổn định." },
@@ -44,7 +56,7 @@ export default function CongDungPage() {
                 Giải pháp tối ưu để bảo vệ kết cấu sàn, chống mất nước xi măng và ngăn chặn thấm ngược hiệu quả cho mọi công trình từ nhà dân dụng đến nhà xưởng công nghiệp.
               </motion.p>
               <motion.div variants={slideUp} className="flex flex-wrap gap-4">
-                <Link href="#contact" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg shadow-orange-500/30 flex items-center">
+                <Link href="/" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg shadow-orange-500/30 flex items-center">
                   Nhận báo giá ngay
                 </Link>
                 <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary px-8 py-4 rounded-md font-bold transition-all">
@@ -268,7 +280,15 @@ export default function CongDungPage() {
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" 
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent"></div>
-                <div className="absolute bottom-4 left-4 right-4 text-white font-bold text-lg">{item.title}</div>
+                <div className="absolute bottom-4 left-4 right-4 flex justify-between items-end text-white">
+                  <div className="font-bold text-lg">{item.title}</div>
+                  <button 
+                    onClick={() => handleOpenModal(item)}
+                    className="w-10 h-10 rounded-full bg-[#fc6c29] text-white flex items-center justify-center shadow-lg hover:bg-[#e65a1f] transition-colors"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                  </button>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -316,12 +336,20 @@ export default function CongDungPage() {
             <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg">
               Gọi ngay: 0931.982.568
             </a>
-            <Link href="/lien-he" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors">
+            <Link href="/" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors">
               Nhận báo giá chi tiết
             </Link>
           </div>
         </div>
       </section>
+
+      {selectedProduct && (
+        <AddToCartModal 
+          isOpen={isModalOpen} 
+          onClose={() => setIsModalOpen(false)} 
+          product={selectedProduct}
+        />
+      )}
     </div>
   );
 }

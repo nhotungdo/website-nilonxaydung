@@ -2,6 +2,9 @@
 import Link from 'next/link';
 import { formatPrice } from '@/lib/formatPrice';
 import { motion } from 'framer-motion';
+import { ShoppingCart } from 'lucide-react';
+import { useState } from 'react';
+import AddToCartModal from './AddToCartModal';
 
 interface ProductCardProps {
   product: {
@@ -16,7 +19,10 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
+    <>
     <motion.div 
       className="group bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow relative flex flex-col"
       whileHover="hover"
@@ -72,14 +78,15 @@ export default function ProductCard({ product }: ProductCardProps) {
             }}
             transition={{ duration: 0.3, ease: "easeOut" }}
           >
-            <a 
-              href={`https://zalo.me/0931982568?text=Tôi quan tâm đến sản phẩm: ${product.name}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-sm bg-blue-500 text-white hover:bg-blue-600 px-3 py-1.5 rounded-md font-medium transition-colors inline-flex items-center"
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                setIsModalOpen(true);
+              }}
+              className="text-sm bg-orange-100 text-[#fc6c29] hover:bg-[#fc6c29] hover:text-white px-3 py-1.5 rounded-md font-medium transition-colors inline-flex items-center gap-1 border border-orange-200"
             >
-              Zalo
-            </a>
+              <ShoppingCart className="w-4 h-4" /> Báo giá
+            </button>
             <Link 
               href={`/san-pham/${product.slug}`}
               className="text-sm bg-gray-100 text-gray-700 hover:bg-primary hover:text-white px-3 py-1.5 rounded-md font-medium transition-colors inline-block"
@@ -90,5 +97,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
     </motion.div>
+    <AddToCartModal 
+      isOpen={isModalOpen} 
+      onClose={() => setIsModalOpen(false)} 
+      product={{ id: product.id, name: product.name, image: product.image }}
+    />
+    </>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import CartWidget from './CartWidget';
 
 export default function Header() {
   const pathname = usePathname();
@@ -55,10 +56,14 @@ export default function Header() {
               </svg>
               Zalo
             </a>
+            <div className="pl-2 border-l border-gray-200">
+              <CartWidget />
+            </div>
           </div>
 
-          {/* Mobile menu button */}
-          <div className="flex items-center md:hidden">
+          {/* Mobile menu button & Cart */}
+          <div className="flex items-center gap-4 md:hidden">
+            <CartWidget />
             <button type="button" className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none">
               <span className="sr-only">Mở menu</span>
               {/* Icon */}
