@@ -1,0 +1,17 @@
+services:
+  nilon-website:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: nilon-website
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - nilon-network
+
+networks:
+  nilon-network:
+    driver: bridge
