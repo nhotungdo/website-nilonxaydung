@@ -253,7 +253,7 @@ export default function CongDungPage() {
               <h2 className="text-3xl md:text-[32px] font-extrabold text-primary mb-4">Ứng dụng thực tế</h2>
               <p className="text-gray-600">Đa dạng kích thước cho mọi loại hình kiến trúc</p>
             </div>
-            <Link href="/san-pham" className="text-primary font-bold hover:text-[#fc6c29] transition-colors flex items-center gap-1">
+            <Link href="/danh-muc/bao-ho-lao-dong" className="text-primary font-bold hover:text-[#fc6c29] transition-colors flex items-center gap-1">
               Xem tất cả dự án <ChevronDown className="w-4 h-4 -rotate-90" />
             </Link>
           </div>

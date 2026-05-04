@@ -123,7 +123,7 @@ export default function FeaturedProducts() {
                   >
                     <ShoppingCart className="w-4 h-4" /> Báo giá
                   </motion.button>
-                  <Link href="/san-pham" className="flex-1">
+                  <Link href="/danh-muc/nilon-lot-san-be-tong" className="flex-1">
                     <motion.button
                       whileHover={{ scale: 1.03 }}
                       whileTap={{ scale: 0.95 }}

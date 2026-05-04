@@ -6,7 +6,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const routes = [
     '',
     '/ve-chung-toi',
-    '/san-pham',
     '/dich-vu',
     '/cong-dung',
     '/lien-he',
