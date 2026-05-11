@@ -1,6 +1,11 @@
+"use client";
 import Link from 'next/link';
+import { useState } from 'react';
+import QuickQuoteModal from './QuickQuoteModal';
 
 export default function Footer() {
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+
   return (
     <>
       {/* Action Banner */}
@@ -12,17 +17,26 @@ export default function Footer() {
               <p className="text-blue-200">Đội ngũ kỹ sư của chúng tôi sẵn sàng hỗ trợ bạn lựa chọn độ dày phù hợp nhất.</p>
             </div>
             <div className="flex gap-4">
-              <Link href="/" className="bg-[#a63b00] hover:bg-[#fc6c29] text-white font-bold py-3 px-6 rounded-md transition-colors flex items-center">
+              <button 
+                onClick={() => setIsQuoteModalOpen(true)}
+                className="bg-[#a63b00] hover:bg-[#fc6c29] text-white font-bold py-3 px-6 rounded-md transition-colors flex items-center shadow-lg"
+              >
                 <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
                 Nhận báo giá ngay
-              </Link>
-              <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white text-primary font-bold py-3 px-6 rounded-md hover:bg-gray-100 transition-colors inline-block text-center">
+              </button>
+              <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white text-primary font-bold py-3 px-6 rounded-md hover:bg-gray-100 transition-colors inline-block text-center shadow-sm">
                 Xem sản phẩm
               </Link>
             </div>
           </div>
         </div>
       </div>
+
+      <QuickQuoteModal 
+        isOpen={isQuoteModalOpen} 
+        onClose={() => setIsQuoteModalOpen(false)} 
+        key={isQuoteModalOpen ? 'open' : 'closed'}
+      />
 
       {/* Main Footer */}
       <footer className="bg-primary text-white pt-16 pb-8 border-t border-blue-900">

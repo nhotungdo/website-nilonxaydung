@@ -1,13 +1,14 @@
 "use client";
 
 import { useState } from 'react';
+import toast from 'react-hot-toast';
 
 export default function Hero() {
   const [formData, setFormData] = useState({
     name: '',
     phone: '',
     email: '',
-    content: ''
+    message: ''
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
@@ -29,15 +30,24 @@ export default function Hero() {
 
       if (response.ok) {
         setStatus('success');
-        setFormData({ name: '', phone: '', email: '', content: '' });
+        toast.success('Yêu cầu báo giá đã được gửi!');
+        setFormData({ name: '', phone: '', email: '', message: '' });
       } else {
+        const errorData = await response.json();
+        console.error('Submission error:', errorData);
         setStatus('error');
+        toast.error('Gửi thất bại, vui lòng kiểm tra lại thông tin.');
       }
     } catch (error) {
       console.error('Error submitting form:', error);
       setStatus('error');
+      toast.error('Có lỗi xảy ra, vui lòng thử lại sau.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
+
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   return (
     <section className="relative bg-[#001838] overflow-hidden py-20 lg:py-28">
@@ -126,17 +136,25 @@ export default function Hero() {
                     <textarea 
                       rows={3} 
                       placeholder="Ví dụ: Nilon 4zem, số lượng 50 cuộn cho công trình Quận 2" 
-                      value={formData.content}
-                      onChange={(e) => setFormData({...formData, content: e.target.value})}
+                      value={formData.message}
+                      onChange={(e) => setFormData({...formData, message: e.target.value})}
                       className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
                     ></textarea>
                   </div>
                   <button 
                     type="submit" 
-                    disabled={status === 'loading'}
+                    disabled={isSubmitting}
                     className="w-full bg-secondary-container hover:bg-[#e65a1f] text-white font-bold text-lg py-4 rounded-md transition-colors shadow-lg shadow-orange-500/30 disabled:opacity-70 flex items-center justify-center"
                   >
-                    {status === 'loading' ? 'ĐANG GỬI...' : 'NHẬN BÁO GIÁ NGAY'}
+                    {isSubmitting ? (
+                      <>
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        ĐANG GỬI...
+                      </>
+                    ) : 'NHẬN BÁO GIÁ NGAY'}
                   </button>
                   {status === 'error' && (
                     <p className="text-red-500 text-sm text-center">Đã có lỗi xảy ra, vui lòng thử lại.</p>

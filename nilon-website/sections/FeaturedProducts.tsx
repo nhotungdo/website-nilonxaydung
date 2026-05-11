@@ -21,7 +21,8 @@ export default function FeaturedProducts() {
       ],
       btnText: 'Xem chi tiết',
       btnClass: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
-      image: 'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?q=80&w=1927&auto=format&fit=crop'
+      image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop',
+      price: 850000
     },
     {
       title: 'Nilon Lót Sàn 4zem',
@@ -36,7 +37,8 @@ export default function FeaturedProducts() {
       ],
       btnText: 'Đặt hàng ngay',
       btnClass: 'bg-primary text-white hover:bg-primary-container',
-      image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop'
+      image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop',
+      price: 1150000
     },
     {
       title: 'Nilon Lót Sàn 6zem',
@@ -48,18 +50,20 @@ export default function FeaturedProducts() {
       ],
       btnText: 'Xem chi tiết',
       btnClass: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
-      image: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop'
+      image: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop',
+      price: 1650000
     }
   ];
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string; price?: number } | null>(null);
 
-  const handleOpenModal = (p: { title: string; image: string }) => {
+  const handleOpenModal = (p: { title: string; image: string; price?: number }) => {
     setSelectedProduct({
       id: p.title.toLowerCase().replace(/ /g, '-'),
       name: p.title,
-      image: p.image
+      image: p.image,
+      price: p.price
     });
     setIsModalOpen(true);
   };

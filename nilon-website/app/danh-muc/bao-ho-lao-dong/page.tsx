@@ -6,16 +6,19 @@ import { fadeIn, slideUp, staggerContainer } from '@/lib/animations';
 import { useState } from 'react';
 import { ShoppingCart } from 'lucide-react';
 import AddToCartModal from '@/components/AddToCartModal';
+import QuickQuoteModal from '@/components/QuickQuoteModal';
 
 export default function BaoHoLaoDongPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string; price?: number } | null>(null);
 
-  const handleOpenModal = (p: { id?: string; title?: string; name?: string; img?: string; image?: string }) => {
+  const handleOpenModal = (p: { id?: string; title?: string; name?: string; img?: string; image?: string; price?: number }) => {
     setSelectedProduct({
       id: p.id || (p.title || p.name || "").toLowerCase().replace(/ /g, '-'),
       name: p.title || p.name || "",
-      image: p.img || p.image || ""
+      image: p.img || p.image || "",
+      price: p.price
     });
     setIsModalOpen(true);
   };
@@ -88,7 +91,7 @@ export default function BaoHoLaoDongPage() {
                 <div className="mt-auto flex justify-between items-center pt-2">
                   <span className="text-[#C43A1B] font-semibold text-sm">Liên hệ báo giá</span>
                   <button 
-                    onClick={() => handleOpenModal({ title: "Nilon Trắng Trong Loại 1", img: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800" })}
+                    onClick={() => handleOpenModal({ title: "Nilon Trắng Trong Loại 1", img: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800", price: 30000 })}
                     className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#fc6c29] text-white rounded flex items-center justify-center transition-colors shadow-sm"
                   >
                     <ShoppingCart className="w-4 h-4" />
@@ -125,7 +128,7 @@ export default function BaoHoLaoDongPage() {
                 <div className="mt-auto flex justify-between items-center pt-2">
                   <span className="text-[#C43A1B] font-semibold text-sm">Liên hệ báo giá</span>
                   <button 
-                    onClick={() => handleOpenModal({ title: "Nilon Đen Lót Nền Kỹ Thuật", img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800" })}
+                    onClick={() => handleOpenModal({ title: "Nilon Đen Lót Nền Kỹ Thuật", img: "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?q=80&w=800", price: 20000 })}
                     className="w-9 h-9 bg-[#0B2147] group-hover:bg-[#fc6c29] text-white rounded flex items-center justify-center transition-colors shadow-sm"
                   >
                     <ShoppingCart className="w-4 h-4" />
@@ -165,15 +168,12 @@ export default function BaoHoLaoDongPage() {
                 </p>
               </div>
               
-              <Link href="/">
-                <motion.div 
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-[#C43A1B] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-4 rounded-md mt-6 transition-colors relative z-10 text-[13px] uppercase tracking-wide shadow-md text-center cursor-pointer"
-                >
-                  Nhận Báo Giá
-                </motion.div>
-              </Link>
+              <button 
+                onClick={() => setIsQuoteModalOpen(true)}
+                className="w-full bg-[#C43A1B] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-4 rounded-md mt-6 transition-colors relative z-10 text-[13px] uppercase tracking-wide shadow-md text-center cursor-pointer"
+              >
+                Nhận Báo Giá
+              </button>
             </motion.div>
           </div>
         </motion.div>
@@ -249,11 +249,12 @@ export default function BaoHoLaoDongPage() {
             </p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-4 shrink-0 w-full md:w-auto">
-            <Link href="/">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="bg-[#FE6230] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] shadow-md w-full md:w-auto text-center cursor-pointer">
-                Nhận báo giá ngay
-              </motion.div>
-            </Link>
+            <button 
+              onClick={() => setIsQuoteModalOpen(true)}
+              className="bg-[#FE6230] hover:bg-[#db4b2a] text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] shadow-md w-full md:w-auto text-center cursor-pointer"
+            >
+              Nhận báo giá ngay
+            </button>
             <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="border border-white/20 hover:bg-white/5 text-white font-bold py-3.5 px-8 rounded-md transition-colors text-[14px] w-full md:w-auto text-center">
               Tư vấn kỹ thuật
             </motion.button>
@@ -289,6 +290,11 @@ export default function BaoHoLaoDongPage() {
           product={selectedProduct}
         />
       )}
+      <QuickQuoteModal 
+        isOpen={isQuoteModalOpen} 
+        onClose={() => setIsQuoteModalOpen(false)} 
+        key={isQuoteModalOpen ? 'open' : 'closed'}
+      />
     </motion.div>
   );
 }

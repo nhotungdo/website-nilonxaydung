@@ -12,6 +12,7 @@ interface AddToCartModalProps {
     id: string;
     name: string;
     image: string;
+    price?: number;
   };
 }
 
@@ -43,6 +44,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
       size,
       quantity,
       note,
+      price: product.price,
     });
     toast.success("Đã thêm vào yêu cầu báo giá!", {
       icon: '🛒',

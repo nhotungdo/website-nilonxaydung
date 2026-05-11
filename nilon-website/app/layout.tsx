@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ButtonCall from "@/components/ButtonCall";
 import ZaloButton from "@/components/ZaloButton";
+import { Toaster } from "react-hot-toast";
 import { generateSEO } from "@/lib/seo";
 
 const manrope = Manrope({ subsets: ["latin", "vietnamese"] });
@@ -26,6 +27,7 @@ export default function RootLayout({
         <Footer />
         <ButtonCall />
         <ZaloButton />
+        <Toaster position="top-right" />
       </body>
     </html>
   );

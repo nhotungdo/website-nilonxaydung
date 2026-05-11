@@ -14,13 +14,15 @@ import AddToCartModal from "@/components/AddToCartModal";
 
 export default function DichVuPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string; price?: number } | null>(null);
 
-  const handleOpenModal = (p: { title: string; image: string }) => {
+  const handleOpenModal = (p: { title: string; image: string; price?: number }) => {
     setSelectedProduct({
       id: 'nilon-tong-hop',
       name: p.title,
-      image: p.image
+      image: p.image,
+      price: p.price
     });
     setIsModalOpen(true);
   };
@@ -139,8 +141,8 @@ export default function DichVuPage() {
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 4zem</span>
                     <span className="bg-gray-100 text-gray-700 px-3 py-1 text-sm font-semibold rounded-md">Dòng 6zem</span>
                   </div>
-                  <button 
-                    onClick={() => handleOpenModal({ title: "Nilon Lót Sàn Tổng Hợp", image: "https://images.unsplash.com/photo-1587393845576-2e86749bd00c?q=80&w=1964&auto=format&fit=crop" })}
+                  <button
+                    onClick={() => handleOpenModal({ title: "Nilon Lót Sàn Tổng Hợp", image: "https://images.unsplash.com/photo-1587393845576-2e86749bd00c?q=80&w=1964&auto=format&fit=crop", price: 1000000 })}
                     className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-6 py-3 rounded-lg font-bold transition-all shadow-md flex items-center justify-center gap-2 group"
                   >
                     <ShoppingCart className="w-5 h-5 group-hover:scale-110 transition-transform" />
@@ -310,20 +312,24 @@ export default function DichVuPage() {
             <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
               <MessageCircle className="w-5 h-5" /> Nhắn Zalo
             </a>
-            <Link href="/" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
+            <button
+              onClick={() => setIsQuoteModalOpen(true)}
+              className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2"
+            >
               <FileText className="w-5 h-5" /> Nhận báo giá ngay
-            </Link>
+            </button>
           </div>
         </div>
       </section>
 
       {selectedProduct && (
-        <AddToCartModal 
-          isOpen={isModalOpen} 
-          onClose={() => setIsModalOpen(false)} 
+        <AddToCartModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
           product={selectedProduct}
         />
       )}
+
     </div>
   );
 }

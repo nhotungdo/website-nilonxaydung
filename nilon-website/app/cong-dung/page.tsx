@@ -7,17 +7,20 @@ import Image from "next/image";
 import { CheckCircle2, Droplets, Shield, Hammer, XOctagon, PaintBucket, DollarSign, ChevronDown, Check, X, ShoppingCart } from "lucide-react";
 import { useState } from "react";
 import AddToCartModal from "@/components/AddToCartModal";
+import QuickQuoteModal from "@/components/QuickQuoteModal";
 
 export default function CongDungPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string } | null>(null);
+  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string; price?: number } | null>(null);
 
-  const handleOpenModal = (p: { title: string; img: string }) => {
+  const handleOpenModal = (p: { title: string; img: string; price?: number }) => {
     setSelectedProduct({
       id: p.title.toLowerCase().replace(/ /g, '-'),
       name: p.title,
-      image: p.img
+      image: p.img,
+      price: p.price
     });
     setIsModalOpen(true);
   };
@@ -56,9 +59,12 @@ export default function CongDungPage() {
                 Giải pháp tối ưu để bảo vệ kết cấu sàn, chống mất nước xi măng và ngăn chặn thấm ngược hiệu quả cho mọi công trình từ nhà dân dụng đến nhà xưởng công nghiệp.
               </motion.p>
               <motion.div variants={slideUp} className="flex flex-wrap gap-4">
-                <Link href="/" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg shadow-orange-500/30 flex items-center">
+                <button 
+                  onClick={() => setIsQuoteModalOpen(true)}
+                  className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg shadow-orange-500/30 flex items-center"
+                >
                   Nhận báo giá ngay
-                </Link>
+                </button>
                 <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white border-2 border-gray-200 text-gray-700 hover:border-primary hover:text-primary px-8 py-4 rounded-md font-bold transition-all">
                   Xem sản phẩm
                 </Link>
@@ -260,10 +266,10 @@ export default function CongDungPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { title: "Nhà xưởng công nghiệp", img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop" },
-              { title: "Nhà dân dụng", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop" },
-              { title: "Tổ hợp thương mại", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop" },
-              { title: "Đổ đường giao thông", img: "https://images.unsplash.com/photo-1545641203-7d072a14e3b2?q=80&w=1933&auto=format&fit=crop" },
+              { title: "Nhà xưởng công nghiệp", img: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop", price: 1200000 },
+              { title: "Nhà dân dụng", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop", price: 850000 },
+              { title: "Tổ hợp thương mại", img: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=2070&auto=format&fit=crop", price: 2500000 },
+              { title: "Đổ đường giao thông", img: "https://images.unsplash.com/photo-1545641203-7d072a14e3b2?q=80&w=1933&auto=format&fit=crop", price: 1800000 },
             ].map((item, idx) => (
               <motion.div 
                 key={idx}
@@ -336,9 +342,12 @@ export default function CongDungPage() {
             <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors shadow-lg">
               Gọi ngay: 0931.982.568
             </a>
-            <Link href="/" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors">
+            <button 
+              onClick={() => setIsQuoteModalOpen(true)}
+              className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors"
+            >
               Nhận báo giá chi tiết
-            </Link>
+            </button>
           </div>
         </div>
       </section>
@@ -350,6 +359,11 @@ export default function CongDungPage() {
           product={selectedProduct}
         />
       )}
+      <QuickQuoteModal 
+        isOpen={isQuoteModalOpen} 
+        onClose={() => setIsQuoteModalOpen(false)} 
+        key={isQuoteModalOpen ? 'open' : 'closed'}
+      />
     </div>
   );
 }
