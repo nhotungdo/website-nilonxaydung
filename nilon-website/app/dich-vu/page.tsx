@@ -13,8 +13,7 @@ import { useState } from "react";
 import AddToCartModal from "@/components/AddToCartModal";
 
 export default function DichVuPage() {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<{ id: string; name: string; image: string; price?: number } | null>(null);
 
   const handleOpenModal = (p: { title: string; image: string; price?: number }) => {
@@ -312,12 +311,12 @@ export default function DichVuPage() {
             <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
               <MessageCircle className="w-5 h-5" /> Nhắn Zalo
             </a>
-            <button
-              onClick={() => setIsQuoteModalOpen(true)}
+            <Link
+              href="/bao-gia"
               className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2"
             >
               <FileText className="w-5 h-5" /> Nhận báo giá ngay
-            </button>
+            </Link>
           </div>
         </div>
       </section>

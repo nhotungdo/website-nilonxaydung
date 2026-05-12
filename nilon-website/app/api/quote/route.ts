@@ -1,37 +1,39 @@
 import { NextResponse } from 'next/server';
-import { CartItem } from '@/store/cartStore';
-import { sendTelegramMessage } from '@/lib/telegram';
+import { sendTelegramMessage, escapeHTML } from "@/lib/telegram";
 
 export async function POST(req: Request) {
   try {
     const data = await req.json();
     const { customer, items } = data;
 
-    const orderId = `DH${Math.floor(Math.random() * 9000) + 1000}`;
-    const totalPrice = items.reduce((sum: number, item: CartItem) => sum + (item.price || 0) * (item.quantity || 1), 0);
-    const formattedTotal = totalPrice > 0 ? new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(totalPrice) : 'Liên hệ';
-    
-    const message = `
-<b>🛒 ĐƠN HÀNG MỚI</b>
-
-<b>📦 Mã đơn:</b> ${orderId}
-<b>👤 Khách hàng:</b> ${customer.name}
-<b>📞 SĐT:</b> ${customer.phone}
-
-<b>🧾 Sản phẩm:</b>
-${items.map((item: CartItem) => `- ${item.name}\n- Số lượng: ${item.quantity} ${item.thickness ? `(${item.thickness})` : ''}`).join('\n')}
-
-<b>💰 Tổng tiền:</b> ${formattedTotal}
-<b>🚚 Trạng thái:</b> Chờ xác nhận
-    `.trim();
-
-    // Gửi đến Telegram qua service trung tâm
-    const telegramResult = await sendTelegramMessage(message);
-
-    if (!telegramResult.success) {
-      console.error('Lỗi gửi báo giá Telegram:', telegramResult.error);
+    interface QuoteItem {
+      name: string;
+      thickness: string;
+      size: string;
+      quantity: number;
     }
 
+    // 1. Prepare items list string
+    const itemsList = items.map((item: QuoteItem) => 
+      `- ${item.name} (${item.thickness}, ${item.size}) x${item.quantity}`
+    ).join('\n');
+
+    // 2. Send Telegram Notification
+    const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    const telegramMsg = `🛒 <b>ĐƠN YÊU CẦU BÁO GIÁ MỚI</b>
+👤 <b>Khách hàng:</b> ${escapeHTML(customer.name)}
+📱 <b>Số điện thoại:</b> ${escapeHTML(customer.phone)}
+📧 <b>Email:</b> ${escapeHTML(customer.email || 'N/A')}
+📍 <b>Địa chỉ:</b> ${escapeHTML(customer.address || 'N/A')}
+
+📦 <b>Sản phẩm:</b>
+${escapeHTML(itemsList)}
+
+📝 <b>Ghi chú:</b> ${escapeHTML(customer.note || 'Không có')}
+⏰ <b>Thời gian:</b> ${now}`;
+
+    await sendTelegramMessage(telegramMsg);
+    
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Lỗi API Quote:', error);
