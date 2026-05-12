@@ -1,0 +1,122 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  STAFF
+  CUSTOMER
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPING
+  COMPLETED
+  CANCELLED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  ISSUED
+  PAID
+  VOID
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  fullName      String?
+  role          Role      @default(STAFF)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@map("users")
+}
+
+model Customer {
+  id            String    @id @default(uuid())
+  name          String
+  email         String?   @unique
+  phone         String?
+  address       String?
+  taxCode       String?
+  orders        Order[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  @@map("customers")
+}
+
+model Product {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?
+  price         Decimal     @db.Decimal(10, 2)
+  sku           String?     @unique
+  stock         Int         @default(0)
+  orderItems    OrderItem[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  @@map("products")
+}
+
+model Order {
+  id            String      @id @default(uuid())
+  orderNumber   String      @unique @default(cuid())
+  customer      Customer    @relation(fields: [customerId], references: [id])
+  customerId    String
+  status        OrderStatus @default(PENDING)
+  totalAmount   Decimal     @db.Decimal(10, 2)
+  items         OrderItem[]
+  invoice       Invoice?
+  notes         String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id            String    @id @default(uuid())
+  order         Order     @relation(fields: [orderId], references: [id])
+  orderId       String
+  product       Product   @relation(fields: [productId], references: [id])
+  productId     String
+  quantity      Int
+  unitPrice     Decimal   @db.Decimal(10, 2)
+  totalPrice    Decimal   @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("order_items")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  invoiceNo     String        @unique
+  order         Order         @relation(fields: [orderId], references: [id])
+  orderId       String        @unique
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime?
+  status        InvoiceStatus @default(DRAFT)
+  pdfUrl        String?
+  totalAmount   Decimal       @db.Decimal(10, 2)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  deletedAt     DateTime?
+
+  @@map("invoices")
+}
