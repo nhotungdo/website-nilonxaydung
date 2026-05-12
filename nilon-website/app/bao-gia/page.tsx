@@ -7,6 +7,8 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 
+import { formatPrice } from "@/lib/formatPrice";
+
 export default function QuotePage() {
   const { items, removeItem, updateQuantity, clearCart } = useCartStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -26,6 +28,8 @@ export default function QuotePage() {
     note: "",
   });
 
+  const totalAmount = items.reduce((sum, item) => sum + (item.price || 0) * item.quantity, 0);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) {
@@ -41,6 +45,7 @@ export default function QuotePage() {
         body: JSON.stringify({
           customer: formData,
           items,
+          totalAmount,
         }),
       });
 
@@ -132,28 +137,37 @@ export default function QuotePage() {
                         {item.note && <div className="col-span-2 text-orange-600"><span className="font-medium text-gray-800">Ghi chú:</span> {item.note}</div>}
                       </div>
 
-                      <div className="flex items-center gap-4">
-                        <span className="font-bold text-gray-700 text-sm">Số lượng:</span>
-                        <div className="flex border border-gray-300 rounded-lg overflow-hidden h-9 w-32">
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                            className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                          >
-                            -
-                          </button>
-                          <input 
-                            type="number" 
-                            value={item.quantity}
-                            onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
-                            className="w-full text-center font-bold text-gray-800 outline-none border-x border-gray-200"
-                            min="1"
-                          />
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                            className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
-                          >
-                            +
-                          </button>
+                      <div className="flex items-center justify-between mt-4">
+                        <div className="flex items-center gap-4">
+                          <span className="font-bold text-gray-700 text-sm">Số lượng:</span>
+                          <div className="flex border border-gray-300 rounded-lg overflow-hidden h-9 w-32">
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                              className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+                            >
+                              -
+                            </button>
+                            <input 
+                              type="number" 
+                              value={item.quantity}
+                              onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                              className="w-full text-center font-bold text-gray-800 outline-none border-x border-gray-200"
+                              min="1"
+                            />
+                            <button 
+                              onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                              className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+                            >
+                              +
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="text-right">
+                          <div className="text-xs text-gray-400 mb-1">Thành tiền</div>
+                          <div className="font-bold text-orange-600 text-lg">
+                            {item.price ? formatPrice(item.price * item.quantity) : "Liên hệ"}
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -163,95 +177,122 @@ export default function QuotePage() {
             </div>
           </div>
 
-          {/* Right: Form */}
+          {/* Right: Summary & Form */}
           <div className="w-full lg:w-2/5">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8 sticky top-28">
-              <h2 className="text-xl font-bold text-[#0B2147] mb-6 flex items-center gap-2">
-                Thông tin liên hệ
-              </h2>
-              
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Họ và tên *</label>
-                  <input 
-                    required
-                    type="text" 
-                    value={formData.name}
-                    onChange={(e) => setFormData({...formData, name: e.target.value})}
-                    placeholder="Nhập họ tên của bạn"
-                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
-                  />
+            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8 sticky top-28 space-y-8">
+              {/* Price Summary */}
+              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
+                <h2 className="text-lg font-bold text-[#0B2147] mb-4">Tổng cộng đơn hàng</h2>
+                <div className="space-y-3">
+                  <div className="flex justify-between text-gray-600">
+                    <span>Tạm tính ({items.length} sản phẩm)</span>
+                    <span>{formatPrice(totalAmount)}</span>
+                  </div>
+                  <div className="flex justify-between text-gray-600">
+                    <span>Phí vận chuyển</span>
+                    <span className="text-sm italic">Liên hệ sau</span>
+                  </div>
+                  <div className="pt-3 border-t border-gray-200 flex justify-between items-end">
+                    <span className="font-bold text-[#0B2147]">Tổng thanh toán</span>
+                    <div className="text-right">
+                      <div className="text-2xl font-extrabold text-orange-600 leading-none">
+                        {formatPrice(totalAmount)}
+                      </div>
+                      <div className="text-[10px] text-gray-400 mt-1 italic">(Giá đã bao gồm VAT nếu có)</div>
+                    </div>
+                  </div>
                 </div>
+              </div>
+
+              {/* Form Section */}
+              <div>
+                <h2 className="text-xl font-bold text-[#0B2147] mb-6 flex items-center gap-2">
+                  Thông tin liên hệ
+                </h2>
                 
-                <div className="grid grid-cols-2 gap-4">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại *</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Họ và tên *</label>
                     <input 
                       required
-                      type="tel" 
-                      value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      placeholder="09xx..."
+                      type="text" 
+                      value={formData.name}
+                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      placeholder="Nhập họ tên của bạn"
                       className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
                     />
                   </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Số điện thoại *</label>
+                      <input 
+                        required
+                        type="tel" 
+                        value={formData.phone}
+                        onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                        placeholder="09xx..."
+                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                      <input 
+                        type="email" 
+                        value={formData.email}
+                        onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        placeholder="email@..."
+                        className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
+                      />
+                    </div>
+                  </div>
+
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">Email</label>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Địa chỉ giao hàng / Công trình</label>
                     <input 
-                      type="email" 
-                      value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      placeholder="email@..."
+                      type="text" 
+                      value={formData.address}
+                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      placeholder="Nhập địa chỉ..."
                       className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
                     />
                   </div>
-                </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Địa chỉ giao hàng / Công trình</label>
-                  <input 
-                    type="text" 
-                    value={formData.address}
-                    onChange={(e) => setFormData({...formData, address: e.target.value})}
-                    placeholder="Nhập địa chỉ..."
-                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white"
-                  />
-                </div>
+                  <div>
+                    <label className="block text-sm font-bold text-gray-700 mb-2">Yêu cầu khác (nếu có)</label>
+                    <textarea 
+                      value={formData.note}
+                      onChange={(e) => setFormData({...formData, note: e.target.value})}
+                      placeholder="Ghi chú về thời gian giao hàng, VAT..."
+                      className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white resize-none h-24"
+                    />
+                  </div>
 
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">Yêu cầu khác (nếu có)</label>
-                  <textarea 
-                    value={formData.note}
-                    onChange={(e) => setFormData({...formData, note: e.target.value})}
-                    placeholder="Ghi chú về thời gian giao hàng, VAT..."
-                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all bg-gray-50 focus:bg-white resize-none h-24"
-                  />
-                </div>
-
-                <button 
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="w-full mt-6 bg-[#fc6c29] hover:bg-[#e65a1f] disabled:bg-gray-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
-                >
-                  {isSubmitting ? (
-                    <span className="flex items-center gap-2">
-                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Đang gửi...
-                    </span>
-                  ) : (
-                    <>
-                      <Send className="w-5 h-5" />
-                      Gửi yêu cầu báo giá
-                    </>
-                  )}
-                </button>
-                <p className="text-xs text-center text-gray-500 mt-4">
-                  Chúng tôi sẽ liên hệ lại với bạn trong vòng 15 phút.
-                </p>
-              </form>
+                  <button 
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full mt-6 bg-[#fc6c29] hover:bg-[#e65a1f] disabled:bg-gray-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2"
+                  >
+                    {isSubmitting ? (
+                      <span className="flex items-center gap-2">
+                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Đang gửi...
+                      </span>
+                    ) : (
+                      <>
+                        <Send className="w-5 h-5" />
+                        Gửi yêu cầu báo giá
+                      </>
+                    )}
+                  </button>
+                  <p className="text-xs text-center text-gray-500 mt-4">
+                    Chúng tôi sẽ liên hệ lại với bạn trong vòng 15 phút.
+                  </p>
+                </form>
+              </div>
             </div>
           </div>
         </div>

@@ -1,50 +1,695 @@
-export const products = [
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image: string;
+  price: number;
+  unit: string;
+  category: string;
+  categorySlug: string;
+  subCategory: string;
+  isBestSeller?: boolean;
+  isNew?: boolean;
+  specs?: { label: string; value: string }[];
+}
+
+export interface Category {
+  id: string;
+  title: string;
+  description: string;
+  icon?: string;
+  priority?: boolean;
+}
+
+export const CATEGORIES: Category[] = [
   {
-    id: '1',
-    name: 'Nilon Lót Sàn Bê Tông Màu Đen 0.15mm',
-    slug: 'nilon-lot-san-be-tong-den-015mm',
-    price: 15000,
-    unit: 'kg',
-    categoryId: '1',
-    categorySlug: 'nilon-lot-san-be-tong',
-    description: 'Nilon lót sàn bê tông màu đen, độ dày 0.15mm, chuyên dùng lót móng, chống thấm hiệu quả.',
-    image: '/images/nilon/nilon-den-1.jpg',
-    featured: true,
+    id: "vat-tu-che-chan",
+    title: "Vật tư che chắn & bảo vệ công trình",
+    description: "Nhóm sản phẩm liên quan trực tiếp đến thi công và bảo vệ sàn, rất phù hợp bán cùng nilon lót sàn.",
+    priority: true,
   },
   {
-    id: '2',
-    name: 'Nilon Lót Sàn Trắng Trong 0.2mm',
-    slug: 'nilon-lot-san-trang-trong-02mm',
-    price: 25000,
-    unit: 'kg',
-    categoryId: '1',
-    categorySlug: 'nilon-lot-san-be-tong',
-    description: 'Nilon lót sàn màu trắng trong suốt, dày 0.2mm, độ bền cao, thích hợp cho công trình yêu cầu khắt khe.',
-    image: '/images/nilon/nilon-trang-1.jpg',
-    featured: true,
+    id: "bao-ho-dau",
+    title: "Bảo hộ đầu",
+    description: "Dùng để bảo vệ vùng đầu khỏi va đập, vật rơi trong công trình và nhà xưởng.",
   },
   {
-    id: '3',
-    name: 'Mũ Bảo Hộ Công Trình',
-    slug: 'mu-bao-ho-cong-trinh',
-    price: 35000,
-    unit: 'cái',
-    categoryId: '2',
-    categorySlug: 'bao-ho-lao-dong',
-    description: 'Mũ bảo hộ lao động cho kỹ sư, công nhân, chịu lực tốt, chống va đập an toàn.',
-    image: '/images/bao-ho/mu-bao-ho-1.jpg',
-    featured: true,
+    id: "bao-ho-tay",
+    title: "Bảo hộ tay",
+    description: "Giúp chống cắt, chống nóng, chống hóa chất và chống điện.",
   },
   {
-    id: '4',
-    name: 'Giày Bảo Hộ Mũi Thép',
-    slug: 'giay-bao-ho-mui-thep',
-    price: 250000,
-    unit: 'đôi',
-    categoryId: '2',
-    categorySlug: 'bao-ho-lao-dong',
-    description: 'Giày bảo hộ chống đinh, mũi bọc thép chống dập ngón, đế cao su chống trượt.',
-    image: '/images/bao-ho/giay-bao-ho-1.jpg',
-    featured: false,
-  }
+    id: "bao-ho-chan",
+    title: "Bảo hộ chân",
+    description: "Dùng trong môi trường công trường, nhà xưởng, chống đinh và chống trơn trượt.",
+  },
+  {
+    id: "quan-ao-bao-ho",
+    title: "Quần áo bảo hộ",
+    description: "Giúp bảo vệ cơ thể khỏi bụi bẩn, nhiệt và hóa chất.",
+  },
+  {
+    id: "thiet-bi-chong-roi",
+    title: "Thiết bị chống rơi & làm việc trên cao",
+    description: "Dành cho công trình xây dựng, điện lực và vệ sinh kính.",
+  },
+  {
+    id: "thiet-bi-an-toan-khac",
+    title: "Thiết bị an toàn khác",
+    description: "Các thiết bị hỗ trợ an toàn và cảnh báo trong công trình.",
+  },
+  {
+    id: "dung-cu-cam-tay",
+    title: "Dụng cụ thi công cầm tay",
+    description: "Các dụng cụ được sử dụng hằng ngày bởi đội thi công.",
+  },
+  {
+    id: "ho-tro-son-noi-that",
+    title: "Hỗ trợ sơn & hoàn thiện nội thất",
+    description: "Các thiết bị hỗ trợ thi công sơn và bảo vệ nội thất khi làm việc.",
+  },
 ];
+
+export const PRODUCTS: Product[] = [
+  // 1. Bảo hộ đầu
+  {
+    id: "mu-bao-ho-cong-trinh",
+    name: "Mũ bảo hộ công trình",
+    slug: "mu-bao-ho-cong-trinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-dau",
+    image: "https://images.unsplash.com/photo-1513467535987-fd81bc7d62f8?q=80&w=800",
+    description: "Mũ bảo hộ chất lượng cao, chịu lực tốt.",
+    price: 45000,
+    unit: "Cái"
+  },
+  {
+    id: "non-bao-ho-cach-dien",
+    name: "Nón bảo hộ cách điện",
+    slug: "non-bao-ho-cach-dien",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-dau",
+    image: "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800",
+    description: "Chống phóng điện, an toàn cho thợ điện.",
+    price: 120000,
+    unit: "Cái"
+  },
+  {
+    id: "mu-chong-va-dap",
+    name: "Mũ chống va đập",
+    slug: "mu-chong-va-dap",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-dau",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    description: "Nhẹ nhàng, bảo vệ tối ưu.",
+    price: 35000,
+    unit: "Cái"
+  },
+  {
+    id: "kinh-gan-mu-bao-ho",
+    name: "Kính gắn mũ bảo hộ",
+    slug: "kinh-gan-mu-bao-ho",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-dau",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    description: "Chống bụi, chống tia UV.",
+    price: 25000,
+    unit: "Cái"
+  },
+
+  // 2. Bảo hộ tay
+  {
+    id: "gang-tay-soi",
+    name: "Găng tay sợi",
+    slug: "gang-tay-soi",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-tay",
+    image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=800",
+    price: 5000,
+    unit: "Đôi"
+  },
+  {
+    id: "gang-tay-phu-cao-su",
+    name: "Găng tay phủ cao su",
+    slug: "gang-tay-phu-cao-su",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 15000,
+    unit: "Đôi"
+  },
+  {
+    id: "gang-tay-chong-cat",
+    name: "Găng tay chống cắt",
+    slug: "gang-tay-chong-cat",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 85000,
+    unit: "Đôi"
+  },
+  {
+    id: "gang-tay-han",
+    name: "Găng tay hàn",
+    slug: "gang-tay-han",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 75000,
+    unit: "Đôi"
+  },
+  {
+    id: "gang-tay-cach-dien",
+    name: "Găng tay cách điện",
+    slug: "gang-tay-cach-dien",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 250000,
+    unit: "Đôi"
+  },
+
+  // 3. Bảo hộ chân
+  {
+    id: "giay-bao-ho",
+    name: "Giày bảo hộ",
+    slug: "giay-bao-ho",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-chan",
+    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    price: 350000,
+    unit: "Đôi"
+  },
+  {
+    id: "ung-bao-ho",
+    name: "Ủng bảo hộ",
+    slug: "ung-bao-ho",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-chan",
+    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    price: 85000,
+    unit: "Đôi"
+  },
+  {
+    id: "giay-chong-tinh-dien",
+    name: "Giày chống tĩnh điện",
+    slug: "giay-chong-tinh-dien",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-chan",
+    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    price: 450000,
+    unit: "Đôi"
+  },
+  {
+    id: "giay-chong-dinh",
+    name: "Giày chống đinh",
+    slug: "giay-chong-dinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "bao-ho-chan",
+    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    price: 550000,
+    unit: "Đôi"
+  },
+
+  // 4. Quần áo bảo hộ
+  {
+    id: "dong-phuc-cong-nhan",
+    name: "Đồng phục công nhân",
+    slug: "dong-phuc-cong-nhan",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "quan-ao-bao-ho",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    price: 180000,
+    unit: "Bộ"
+  },
+  {
+    id: "quan-ao-phan-quang",
+    name: "Quần áo phản quang",
+    slug: "quan-ao-phan-quang",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "quan-ao-bao-ho",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    price: 45000,
+    unit: "Cái"
+  },
+  {
+    id: "quan-ao-chong-hoa-chat",
+    name: "Quần áo chống hóa chất",
+    slug: "quan-ao-chong-hoa-chat",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "quan-ao-bao-ho",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    price: 250000,
+    unit: "Bộ"
+  },
+  {
+    id: "quan-ao-phong-sach",
+    name: "Quần áo phòng sạch",
+    slug: "quan-ao-phong-sach",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "quan-ao-bao-ho",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    price: 120000,
+    unit: "Bộ"
+  },
+  {
+    id: "ao-mua-cong-trinh",
+    name: "Áo mưa công trình",
+    slug: "ao-mua-cong-trinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "quan-ao-bao-ho",
+    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    price: 65000,
+    unit: "Cái"
+  },
+
+  // 5. Thiết bị chống rơi
+  {
+    id: "day-dai-an-toan",
+    name: "Dây đai an toàn",
+    slug: "day-dai-an-toan",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-chong-roi",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 250000,
+    unit: "Bộ"
+  },
+  {
+    id: "moc-khoa-chong-roi",
+    name: "Móc khóa chống rơi",
+    slug: "moc-khoa-chong-roi",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-chong-roi",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 85000,
+    unit: "Cái"
+  },
+  {
+    id: "day-cuu-sinh",
+    name: "Dây cứu sinh",
+    slug: "day-cuu-sinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-chong-roi",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 15000,
+    unit: "Mét"
+  },
+  {
+    id: "bo-chong-roi-tu-rut",
+    name: "Bộ chống rơi tự rút",
+    slug: "bo-chong-roi-tu-rut",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-chong-roi",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 1500000,
+    unit: "Bộ"
+  },
+
+  // 6. Thiết bị an toàn khác
+  {
+    id: "binh-chua-chay",
+    name: "Bình chữa cháy",
+    slug: "binh-chua-chay",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-an-toan-khac",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 280000,
+    unit: "Bình"
+  },
+  {
+    id: "bien-canh-bao-an-toan",
+    name: "Biển cảnh báo an toàn",
+    slug: "bien-canh-bao-an-toan",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-an-toan-khac",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 45000,
+    unit: "Tấm"
+  },
+  {
+    id: "luoi-den-xanh-cong-trinh",
+    name: "Lưới đen và lưới xanh công trình",
+    slug: "luoi-den-xanh-cong-trinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "thiet-bi-an-toan-khac",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 12000,
+    unit: "m2"
+  },
+
+  // 7. Vật tư che chắn & bảo vệ công trình (PRIORITY)
+  {
+    id: "bat-che-cong-trinh",
+    name: "Bạt che công trình",
+    slug: "bat-che-cong-trinh",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    isBestSeller: true,
+    price: 15000,
+    unit: "m2"
+  },
+  {
+    id: "mang-pe-quan-hang",
+    name: "Màng PE quấn hàng",
+    slug: "mang-pe-quan-hang",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    isBestSeller: true,
+    price: 85000,
+    unit: "Cuộn"
+  },
+  {
+    id: "bang-keo-cong-nghiep",
+    name: "Băng keo công nghiệp",
+    slug: "bang-keo-cong-nghiep",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 12000,
+    unit: "Cuộn"
+  },
+  {
+    id: "bang-keo-dan-nen",
+    name: "Băng keo dán nền",
+    slug: "bang-keo-dan-nen",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 25000,
+    unit: "Cuộn"
+  },
+  {
+    id: "tam-carton-lot-san",
+    name: "Tấm carton lót sàn",
+    slug: "tam-carton-lot-san",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 8000,
+    unit: "Tấm"
+  },
+  {
+    id: "luoi-bao-che-xay-dung",
+    name: "Lưới bao che xây dựng",
+    slug: "luoi-bao-che-xay-dung",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 18000,
+    unit: "m2"
+  },
+  {
+    id: "tam-phu-chong-bui",
+    name: "Tấm phủ chống bụi",
+    slug: "tam-phu-chong-bui",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 35000,
+    unit: "Tấm"
+  },
+  {
+    id: "tam-nhua-corrugated",
+    name: "Tấm nhựa corrugated",
+    slug: "tam-nhua-corrugated",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 45000,
+    unit: "Tấm"
+  },
+  {
+    id: "xop-chong-soc",
+    name: "Xốp chống sốc",
+    slug: "xop-chong-soc",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 150000,
+    unit: "Cuộn"
+  },
+  {
+    id: "bat-soc-xanh-cam",
+    name: "Bạt sọc xanh cam",
+    slug: "bat-soc-xanh-cam",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    price: 18000,
+    unit: "m2"
+  },
+
+  // 8. Dụng cụ thi công cầm tay
+  {
+    id: "dao-roc-giay",
+    name: "Dao rọc giấy",
+    slug: "dao-roc-giay",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 15000,
+    unit: "Cái"
+  },
+  {
+    id: "bay-tret",
+    name: "Bay trét",
+    slug: "bay-tret",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 25000,
+    unit: "Cái"
+  },
+  {
+    id: "co-son",
+    name: "Cọ sơn",
+    slug: "co-son",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 12000,
+    unit: "Cái"
+  },
+  {
+    id: "ru-lo-son",
+    name: "Ru lô sơn",
+    slug: "ru-lo-son",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 35000,
+    unit: "Cái"
+  },
+  {
+    id: "thuoc-cuon",
+    name: "Thước cuộn",
+    slug: "thuoc-cuon",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 45000,
+    unit: "Cái"
+  },
+  {
+    id: "bua",
+    name: "Búa",
+    slug: "bua",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 85000,
+    unit: "Cái"
+  },
+  {
+    id: "kim",
+    name: "Kìm",
+    slug: "kim",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 65000,
+    unit: "Cái"
+  },
+  {
+    id: "sung-ban-keo-silicon",
+    name: "Súng bắn keo silicon",
+    slug: "sung-ban-keo-silicon",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "dung-cu-cam-tay",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 45000,
+    unit: "Cái"
+  },
+
+  // 9. Thiết bị hỗ trợ sơn & hoàn thiện nội thất
+  {
+    id: "bang-keo-giay-che-son",
+    name: "Băng keo giấy che sơn",
+    slug: "bang-keo-giay-che-son",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 15000,
+    unit: "Cuộn"
+  },
+  {
+    id: "nilon-che-noi-that",
+    name: "Nilon che nội thất",
+    slug: "nilon-che-noi-that",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    isBestSeller: true,
+    price: 25000,
+    unit: "Cuộn"
+  },
+  {
+    id: "khay-son",
+    name: "Khay sơn",
+    slug: "khay-son",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 15000,
+    unit: "Cái"
+  },
+  {
+    id: "thang-nhom",
+    name: "Thang nhôm",
+    slug: "thang-nhom",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 1200000,
+    unit: "Cái"
+  },
+  {
+    id: "may-phun-son",
+    name: "Máy phun sơn",
+    slug: "may-phun-son",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 3500000,
+    unit: "Bộ"
+  },
+  {
+    id: "giay-nham",
+    name: "Giấy nhám",
+    slug: "giay-nham",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 5000,
+    unit: "Tờ"
+  },
+  {
+    id: "keo-silicone",
+    name: "Keo silicone",
+    slug: "keo-silicone",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 45000,
+    unit: "Chai"
+  },
+  {
+    id: "keo-dan-xay-dung",
+    name: "Keo dán xây dựng",
+    slug: "keo-dan-xay-dung",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 65000,
+    unit: "Tuýp"
+  },
+  {
+    id: "khan-lau-cong-nghiep",
+    name: "Khăn lau công nghiệp",
+    slug: "khan-lau-cong-nghiep",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 25000,
+    unit: "kg"
+  },
+  {
+    id: "xe-day-hang",
+    name: "Xe đẩy hàng",
+    slug: "xe-day-hang",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 1500000,
+    unit: "Cái"
+  },
+  {
+    id: "gian-giao-tre",
+    name: "Giàn giáo tre",
+    slug: "gian-giao-tre",
+    category: "bao-ho-lao-dong",
+    categorySlug: "bao-ho-lao-dong",
+    subCategory: "ho-tro-son-noi-that",
+    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    price: 50000,
+    unit: "Cây"
+  },
+];
+
+export const products = PRODUCTS;

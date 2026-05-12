@@ -46,7 +46,7 @@ export default function AddToCartModal({ isOpen, onClose, product }: AddToCartMo
       note,
       price: product.price,
     });
-    toast.success("Đã thêm vào yêu cầu báo giá!", {
+    toast.success("Đã thêm vào giỏ hàng!", {
       icon: '🛒',
       style: {
         borderRadius: '10px',
