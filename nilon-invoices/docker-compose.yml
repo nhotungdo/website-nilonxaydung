@@ -6,7 +6,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: nilon_invoices
+      POSTGRES_DB: nilon-invoices
     ports:
       - "5433:5432"
     volumes:
@@ -28,7 +28,7 @@ services:
     ports:
       - "3001:3001"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nilon_invoices?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/nilon-invoices?schema=public
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
