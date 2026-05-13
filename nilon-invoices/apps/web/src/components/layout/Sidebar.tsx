@@ -19,11 +19,19 @@ import { useState, useEffect } from 'react';
 const Sidebar = () => {
   const pathname = usePathname();
   const [role, setRole] = useState('STAFF');
+  const [name, setName] = useState('Người dùng');
   
   useEffect(() => {
     const savedRole = localStorage.getItem('userRole');
-    if (savedRole) setRole(savedRole);
+    const savedName = localStorage.getItem('userName');
+    if (savedRole || savedName) {
+      setTimeout(() => {
+        if (savedRole) setRole(savedRole);
+        if (savedName) setName(savedName);
+      }, 0);
+    }
   }, []);
+
   
   const menuItems = [
     { icon: <Home size={20} />, label: 'Tổng quan', href: '/dashboard' },
@@ -91,13 +99,15 @@ const Sidebar = () => {
               <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 border-2 border-[#0f172a] rounded-full"></div>
             </div>
             <div className="min-w-0">
-              <div className="text-sm font-bold text-white truncate">{role === 'ADMIN' ? 'Quản trị viên' : 'Nguyễn Văn Nhân'}</div>
+              <div className="text-sm font-bold text-white truncate">{name}</div>
               <div className="text-[10px] text-blue-400 font-bold uppercase tracking-wider">{role === 'ADMIN' ? 'Admin Account' : 'Staff Account'}</div>
             </div>
           </div>
           <button 
             onClick={() => {
               localStorage.removeItem('userRole');
+              localStorage.removeItem('access_token');
+              localStorage.removeItem('userName');
               window.location.href = '/login';
             }}
             className="w-full flex items-center justify-center gap-2 py-2 text-xs font-bold text-slate-400 hover:text-red-400 hover:bg-red-400/10 rounded-lg transition-all"

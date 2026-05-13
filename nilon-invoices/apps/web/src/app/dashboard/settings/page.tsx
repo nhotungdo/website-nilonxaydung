@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { 
   User, 
   Lock, 
-  Bell, 
   Moon, 
   Sun, 
   Globe, 
@@ -21,7 +20,9 @@ const SettingsPage = () => {
 
   useEffect(() => {
     const savedRole = localStorage.getItem('userRole');
-    if (savedRole) setRole(savedRole);
+    if (savedRole) {
+      setTimeout(() => setRole(savedRole), 0);
+    }
   }, []);
 
   return (
@@ -65,7 +66,7 @@ const SettingsPage = () => {
                   <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="text" 
-                    defaultValue={role === 'ADMIN' ? 'Quản trị viên' : 'Nguyễn Văn Nhân'} 
+                    placeholder={role === 'ADMIN' ? 'Tên quản trị viên' : 'Họ và tên của bạn'}
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
@@ -76,7 +77,7 @@ const SettingsPage = () => {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="email" 
-                    defaultValue={role === 'ADMIN' ? 'admin@nilon.com' : 'nhan.nv@nilon.com'} 
+                    placeholder={role === 'ADMIN' ? 'admin@nilon.com' : 'email@nilon.com'}
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
@@ -87,7 +88,7 @@ const SettingsPage = () => {
                   <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="tel" 
-                    defaultValue="0901 234 567" 
+                    placeholder="Số điện thoại"
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
                 </div>

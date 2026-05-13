@@ -7,11 +7,19 @@ import { useState, useEffect } from 'react';
 const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const [role, setRole] = useState('STAFF');
+  const [name, setName] = useState('Người dùng');
 
   useEffect(() => {
     const savedRole = localStorage.getItem('userRole');
-    if (savedRole) setRole(savedRole);
+    const savedName = localStorage.getItem('userName');
+    if (savedRole || savedName) {
+      setTimeout(() => {
+        if (savedRole) setRole(savedRole);
+        if (savedName) setName(savedName);
+      }, 0);
+    }
   }, []);
+
 
   return (
     <header className="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 sticky top-0 z-40 px-8 flex items-center justify-between shadow-sm">
@@ -32,7 +40,7 @@ const Header = () => {
         {/* Notifications */}
         <button className="relative p-2.5 text-slate-500 hover:bg-slate-100 rounded-xl transition-all group">
           <Bell size={22} className="group-hover:rotate-12 transition-transform" />
-          <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span>
+          {/* <span className="absolute top-2.5 right-2.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white"></span> */}
         </button>
 
         {/* User Profile */}
@@ -43,7 +51,7 @@ const Header = () => {
           >
             <div className="text-right hidden md:block">
               <div className="text-sm font-bold text-slate-900 leading-tight">
-                {role === 'ADMIN' ? 'Quản trị viên' : 'Nguyễn Văn Nhân'}
+                {name}
               </div>
               <div className="text-[11px] font-bold text-blue-600 uppercase tracking-tighter">
                 {role === 'ADMIN' ? 'Admin Member' : 'Staff Member'}
@@ -88,6 +96,8 @@ const Header = () => {
                 <button 
                   onClick={() => {
                     localStorage.removeItem('userRole');
+                    localStorage.removeItem('access_token');
+                    localStorage.removeItem('userName');
                     window.location.href = '/login';
                   }}
                   className="w-full flex items-center gap-3 px-4 py-3 text-sm font-semibold text-red-500 hover:bg-red-50 rounded-xl transition-all"

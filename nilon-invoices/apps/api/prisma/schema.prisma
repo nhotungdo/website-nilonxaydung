@@ -57,20 +57,54 @@ model Customer {
   @@map("customers")
 }
 
+model Category {
+  id              String    @id @default(uuid())
+  name            String
+  slug            String    @unique
+  description     String?
+  icon            String?
+  featured        Boolean   @default(false)
+  products        Product[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("categories")
+}
+
 model Product {
-  id            String      @id @default(uuid())
-  name          String
-  description   String?
-  price         Decimal     @db.Decimal(10, 2)
-  sku           String?     @unique
-  stock         Int         @default(0)
-  orderItems    OrderItem[]
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deletedAt     DateTime?
+  id               String         @id @default(uuid())
+  name             String
+  slug             String         @unique
+  description      String?
+  shortDescription String?
+  category         Category       @relation(fields: [categoryId], references: [id])
+  categoryId       String
+  price            Decimal        @db.Decimal(10, 2)
+  unit             String         @default("Cái")
+  stock            Int            @default(0)
+  featured         Boolean        @default(false)
+  bestseller       Boolean        @default(false)
+  seoTitle         String?
+  seoDescription   String?
+  tags             ProductTag[]
+  orderItems       OrderItem[]
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+  deletedAt        DateTime?
 
   @@map("products")
 }
+
+model ProductTag {
+  id       String    @id @default(uuid())
+  name     String    @unique
+  slug     String    @unique
+  products Product[]
+
+  @@map("product_tags")
+}
+
+
 
 model Order {
   id            String      @id @default(uuid())

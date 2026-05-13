@@ -14,18 +14,20 @@ import { EmailModule } from './modules/email/email.module';
 import { PdfModule } from './modules/pdf/pdf.module';
 import { PaymentsModule } from './modules/payments/payments.module';
 import { DatabaseModule } from './database/database.module';
+import { DashboardModule } from './modules/dashboard/dashboard.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
     BullModule.forRootAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
+      useFactory: (configService: ConfigService) => ({
         connection: {
           host: configService.get<string>('REDIS_HOST', 'localhost'),
           port: configService.get<number>('REDIS_PORT', 6379),
         },
       }),
+
       inject: [ConfigService],
     }),
     BullModule.registerQueue({
@@ -37,6 +39,7 @@ import { DatabaseModule } from './database/database.module';
     CustomersModule,
     ProductsModule,
     OrdersModule,
+    DashboardModule,
     InvoicesModule,
     TelegramModule,
     EmailModule,
