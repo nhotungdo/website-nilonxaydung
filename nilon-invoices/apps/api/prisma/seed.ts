@@ -17,9 +17,11 @@ function randomStock(): number {
 async function main() {
   console.log('--- Starting Seed ---');
 
-  // 0. Seed Admin User
-  console.log('Seeding Admin User...');
+  // 0. Seed Admin & Staff Users
+  console.log('Seeding Users...');
   const adminPassword = await bcrypt.hash('admin123', 10);
+  const staffPassword = await bcrypt.hash('staff123', 10);
+
   await prisma.user.upsert({
     where: { email: 'admin@nilon.com' },
     update: { password: adminPassword },
@@ -28,6 +30,17 @@ async function main() {
       password: adminPassword,
       fullName: 'System Administrator',
       role: 'ADMIN',
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'staff@nilon.com' },
+    update: { password: staffPassword },
+    create: {
+      email: 'staff@nilon.com',
+      password: staffPassword,
+      fullName: 'Staff Member',
+      role: 'STAFF',
     },
   });
 

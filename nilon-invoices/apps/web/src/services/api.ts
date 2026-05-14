@@ -51,6 +51,9 @@ export const productsApi = {
     const q = search ? `?search=${encodeURIComponent(search)}` : '';
     return request<{ success: boolean; data: Product[] }>(`/products${q}`);
   },
+  search: (query: string) => {
+    return request<{ success: boolean; data: Product[] }>(`/products/search?q=${encodeURIComponent(query)}`);
+  },
   getLowStock: () => request<{ success: boolean; data: Product[] }>('/products/low-stock'),
   getOne: (id: string) => request<{ success: boolean; data: Product }>(`/products/${id}`),
   create: (body: Partial<Product>) =>
@@ -73,6 +76,9 @@ export const customersApi = {
   getAll: (search?: string) => {
     const q = search ? `?search=${encodeURIComponent(search)}` : '';
     return request<{ success: boolean; data: Customer[] }>(`/customers${q}`);
+  },
+  search: (query: string) => {
+    return request<{ success: boolean; data: Customer[] }>(`/customers/search?q=${encodeURIComponent(query)}`);
   },
   getOne: (id: string) => request<{ success: boolean; data: Customer }>(`/customers/${id}`),
   create: (body: Partial<Customer>) =>
@@ -102,6 +108,15 @@ export const ordersApi = {
   getRecent: (limit = 5) =>
     request<{ success: boolean; data: Order[] }>(`/orders/recent?limit=${limit}`),
   getOne: (id: string) => request<{ success: boolean; data: Order }>(`/orders/${id}`),
+  create: (body: {
+    customerId: string;
+    items: { productId: string; quantity: number }[];
+    notes?: string;
+  }) =>
+    request<{ success: boolean; data: Order }>('/orders', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
   updateStatus: (id: string, status: string) =>
     request<{ success: boolean; data: Order }>(`/orders/${id}/status`, {
       method: 'PATCH',
@@ -121,6 +136,22 @@ export const invoicesApi = {
   getStats: () =>
     request<{ success: boolean; data: InvoiceStats }>('/invoices/stats'),
   getOne: (id: string) => request<{ success: boolean; data: Invoice }>(`/invoices/${id}`),
+};
+
+// ─── Users ────────────────────────────────────────────────────────────────────
+
+export const usersApi = {
+  getProfile: () => request<{ success: boolean; data: User }>('/users/profile'),
+  updateProfile: (body: { fullName?: string; email?: string; phone?: string }) =>
+    request<{ success: boolean; data: User }>('/users/profile', {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    }),
+  changePassword: (body: { oldPass: string; newPass: string }) =>
+    request<{ success: boolean; message: string }>('/users/change-password', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    }),
 };
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -151,6 +182,16 @@ export interface TopProduct {
   totalSold: number;
 }
 
+export interface User {
+  id: string;
+  email: string;
+  fullName: string;
+  phone?: string;
+  role: string;
+  isActive?: boolean;
+  createdAt?: string;
+}
+
 export interface OrderStatusCount {
   status: string;
   count: number;
@@ -163,6 +204,7 @@ export interface Product {
   price: number;
   sku?: string;
   stock: number;
+  unit?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -180,21 +222,30 @@ export interface Customer {
 
 export interface Order {
   id: string;
-  orderNumber: string;
+  orderCode: string;
+  customerId: string;
   status: 'PENDING' | 'CONFIRMED' | 'SHIPPING' | 'COMPLETED' | 'CANCELLED';
-  totalAmount: number;
-  notes?: string;
+  subtotal: number;
+  total: number;
+  totalItems: number;
+  totalQuantity: number;
+  note?: string;
+  createdBy: string;
   createdAt: string;
-  customer: { id: string; name: string; phone?: string };
+  updatedAt: string;
+  customer: { id: string; name: string; phone?: string; email?: string; address?: string };
   items?: OrderItem[];
 }
 
 export interface OrderItem {
   id: string;
+  productId: string;
+  productNameSnapshot: string;
+  skuSnapshot?: string;
+  priceSnapshot: number;
   quantity: number;
-  unitPrice: number;
-  totalPrice: number;
-  product: { id: string; name: string };
+  subtotal: number;
+  product?: { id: string; name: string };
 }
 
 export interface Invoice {
@@ -207,7 +258,7 @@ export interface Invoice {
   pdfUrl?: string;
   order: {
     id: string;
-    orderNumber: string;
+    orderCode: string;
     customer: { id: string; name: string };
     items?: OrderItem[];
   };

@@ -70,8 +70,8 @@ export class CustomersService {
   async getTotalSpent(id: string) {
     const result = await this.prisma.order.aggregate({
       where: { customerId: id, deletedAt: null, status: 'COMPLETED' },
-      _sum: { totalAmount: true },
+      _sum: { total: true },
     });
-    return result._sum.totalAmount ?? 0;
+    return Number(result._sum.total ?? 0);
   }
 }

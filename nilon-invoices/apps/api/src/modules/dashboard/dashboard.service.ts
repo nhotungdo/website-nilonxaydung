@@ -42,11 +42,11 @@ export class DashboardService {
           deletedAt: null,
           createdAt: { gte: startOfToday, lt: endOfToday },
         },
-        _sum: { totalAmount: true },
+        _sum: { total: true },
       }),
       this.prisma.order.aggregate({
         where: { deletedAt: null, status: 'COMPLETED' },
-        _sum: { totalAmount: true },
+        _sum: { total: true },
       }),
       this.prisma.product.count({
         where: { deletedAt: null, stock: { lte: 20 } },
@@ -59,8 +59,8 @@ export class DashboardService {
       totalCustomers,
       totalInvoices,
       todayOrders,
-      todayRevenue: todayRevenue._sum.totalAmount ?? 0,
-      totalRevenue: totalRevenue._sum.totalAmount ?? 0,
+      todayRevenue: Number(todayRevenue._sum.total ?? 0),
+      totalRevenue: Number(totalRevenue._sum.total ?? 0),
       lowStockProducts,
     };
   }
@@ -99,7 +99,7 @@ export class DashboardService {
             deletedAt: null,
             createdAt: { gte: start, lt: end },
           },
-          _sum: { totalAmount: true },
+          _sum: { total: true },
         }),
         this.prisma.order.count({
           where: {
@@ -112,7 +112,7 @@ export class DashboardService {
       result.push({
         name: dayNames[date.getDay()],
         date: start.toISOString().split('T')[0],
-        revenue: Number(revenue._sum.totalAmount ?? 0),
+        revenue: Number(revenue._sum.total ?? 0),
         orders,
       });
     }

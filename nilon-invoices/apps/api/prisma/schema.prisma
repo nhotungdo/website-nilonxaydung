@@ -33,6 +33,7 @@ model User {
   email         String    @unique
   password      String
   fullName      String?
+  phone         String?
   role          Role      @default(STAFF)
   isActive      Boolean   @default(true)
   createdAt     DateTime  @default(now())
@@ -107,33 +108,43 @@ model ProductTag {
 
 
 model Order {
-  id            String      @id @default(uuid())
-  orderNumber   String      @unique @default(cuid())
-  customer      Customer    @relation(fields: [customerId], references: [id])
-  customerId    String
-  status        OrderStatus @default(PENDING)
-  totalAmount   Decimal     @db.Decimal(10, 2)
-  items         OrderItem[]
-  invoice       Invoice?
-  notes         String?
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
-  deletedAt     DateTime?
+  id              String      @id @default(cuid())
+  orderCode       String      @unique
+  customer        Customer    @relation(fields: [customerId], references: [id])
+  customerId      String
+  status          OrderStatus @default(PENDING)
+  subtotal        Decimal     @db.Decimal(10, 2)
+  total           Decimal     @db.Decimal(10, 2)
+  totalItems      Int
+  totalQuantity   Int
+  note            String?
+  createdBy       String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  deletedAt       DateTime?
+
+  items           OrderItem[]
+  invoice         Invoice?
 
   @@map("orders")
 }
 
 model OrderItem {
-  id            String    @id @default(uuid())
-  order         Order     @relation(fields: [orderId], references: [id])
-  orderId       String
-  product       Product   @relation(fields: [productId], references: [id])
-  productId     String
-  quantity      Int
-  unitPrice     Decimal   @db.Decimal(10, 2)
-  totalPrice    Decimal   @db.Decimal(10, 2)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id                   String   @id @default(cuid())
+  order                Order    @relation(fields: [orderId], references: [id])
+  orderId              String
+  product              Product  @relation(fields: [productId], references: [id])
+  productId            String
+  
+  productNameSnapshot  String
+  skuSnapshot          String?
+  priceSnapshot        Decimal  @db.Decimal(10, 2)
+  
+  quantity             Int
+  subtotal             Decimal  @db.Decimal(10, 2)
+  
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   @@map("order_items")
 }

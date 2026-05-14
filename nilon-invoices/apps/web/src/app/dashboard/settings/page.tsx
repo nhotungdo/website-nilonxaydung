@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { 
-  User, 
+  User as UserIcon, 
   Lock, 
   Moon, 
   Sun, 
@@ -10,23 +10,128 @@ import {
   Camera,
   ShieldCheck,
   Smartphone,
-  Mail
+  Mail,
+  Loader2,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { usersApi } from '@/services/api';
 
 const SettingsPage = () => {
+  const queryClient = useQueryClient();
   const [darkMode, setDarkMode] = useState(false);
-  const [role, setRole] = useState('STAFF');
+  const { data: profileRes, isLoading: loadingProfile } = useQuery({
+    queryKey: ['profile'],
+    queryFn: () => usersApi.getProfile(),
+  });
 
-  useEffect(() => {
-    const savedRole = localStorage.getItem('userRole');
-    if (savedRole) {
-      setTimeout(() => setRole(savedRole), 0);
-    }
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [savingPassword, setSavingPassword] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Form states
+
+  const [oldPass, setOldPass] = useState('');
+  const [newPass, setNewPass] = useState('');
+  const [confirmPass, setConfirmPass] = useState('');
+
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  
+  // Sync profile data to form states when it loads
+  const [prevProfileId, setPrevProfileId] = useState<string | undefined>(undefined);
+  if (profileRes?.success && profileRes.data.id !== prevProfileId) {
+    setPrevProfileId(profileRes.data.id);
+    setFullName(profileRes.data.fullName || '');
+    setEmail(profileRes.data.email || '');
+    setPhone(profileRes.data.phone || '');
+  }
+
+  const showFeedback = useCallback((type: 'success' | 'error', text: string) => {
+    setMessage({ type, text });
+    setTimeout(() => setMessage(null), 5000);
   }, []);
 
+  const user = profileRes?.data || null;
+  const loading = loadingProfile;
+
+  const handleUpdateProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingProfile(true);
+    try {
+      const res = await usersApi.updateProfile({ fullName, email, phone });
+      if (res.success) {
+        queryClient.invalidateQueries({ queryKey: ['profile'] });
+        showFeedback('success', 'Cập nhật thông tin thành công');
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Cập nhật thất bại';
+      showFeedback('error', message);
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (newPass !== confirmPass) {
+      showFeedback('error', 'Mật khẩu mới không khớp');
+      return;
+    }
+    if (newPass.length < 6) {
+      showFeedback('error', 'Mật khẩu phải có ít nhất 6 ký tự');
+      return;
+    }
+    
+    setSavingPassword(true);
+    try {
+      const res = await usersApi.changePassword({ oldPass, newPass });
+      if (res.success) {
+        showFeedback('success', 'Đổi mật khẩu thành công');
+        setOldPass('');
+        setNewPass('');
+        setConfirmPass('');
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Đổi mật khẩu thất bại';
+      showFeedback('error', message);
+    } finally {
+      setSavingPassword(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <Loader2 className="w-10 h-10 text-blue-600 animate-spin" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl space-y-10 pb-20">
+    <div className="max-w-4xl space-y-10 pb-20 relative">
+      {/* Toast Notification */}
+      <AnimatePresence>
+        {message && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className={`fixed top-10 right-10 z-50 p-4 rounded-2xl shadow-2xl flex items-center gap-3 border ${
+              message.type === 'success' 
+                ? 'bg-emerald-50 border-emerald-100 text-emerald-800' 
+                : 'bg-rose-50 border-rose-100 text-rose-800'
+            }`}
+          >
+            {message.type === 'success' ? <CheckCircle2 size={20} /> : <AlertCircle size={20} />}
+            <p className="text-sm font-black">{message.text}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Header */}
       <div>
         <h2 className="text-3xl font-black text-slate-900 tracking-tight">Cài đặt cá nhân</h2>
@@ -37,7 +142,7 @@ const SettingsPage = () => {
       <section className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden">
         <div className="p-8 border-b border-slate-50 bg-slate-50/50 flex items-center gap-4">
           <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-            <User size={24} />
+            <UserIcon size={24} />
           </div>
           <div>
             <h3 className="text-xl font-black text-slate-900 tracking-tight">Thông tin cá nhân</h3>
@@ -45,14 +150,14 @@ const SettingsPage = () => {
           </div>
         </div>
         
-        <div className="p-10">
+        <form onSubmit={handleUpdateProfile} className="p-10">
           <div className="flex flex-col md:flex-row gap-12">
             <div className="flex flex-col items-center gap-4">
               <div className="relative group">
-                <div className={`w-32 h-32 rounded-[2rem] bg-gradient-to-tr ${role === 'ADMIN' ? 'from-purple-600 to-pink-600' : 'from-blue-600 to-indigo-600'} flex items-center justify-center text-4xl font-black text-white shadow-2xl`}>
-                  {role === 'ADMIN' ? 'AD' : 'NV'}
+                <div className={`w-32 h-32 rounded-[2rem] bg-gradient-to-tr ${user?.role === 'ADMIN' ? 'from-purple-600 to-pink-600' : 'from-blue-600 to-indigo-600'} flex items-center justify-center text-4xl font-black text-white shadow-2xl`}>
+                  {user?.role === 'ADMIN' ? 'AD' : 'NV'}
                 </div>
-                <button className="absolute -bottom-2 -right-2 p-3 bg-white rounded-2xl shadow-xl border border-slate-100 text-blue-600 hover:scale-110 transition-transform">
+                <button type="button" className="absolute -bottom-2 -right-2 p-3 bg-white rounded-2xl shadow-xl border border-slate-100 text-blue-600 hover:scale-110 transition-transform">
                   <Camera size={20} />
                 </button>
               </div>
@@ -63,10 +168,12 @@ const SettingsPage = () => {
               <div className="space-y-2">
                 <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Họ và tên</label>
                 <div className="relative">
-                  <User className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                  <UserIcon className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="text" 
-                    placeholder={role === 'ADMIN' ? 'Tên quản trị viên' : 'Họ và tên của bạn'}
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Họ và tên của bạn"
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
@@ -77,7 +184,9 @@ const SettingsPage = () => {
                   <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="email" 
-                    placeholder={role === 'ADMIN' ? 'admin@nilon.com' : 'email@nilon.com'}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="email@nilon.com"
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
                 </div>
@@ -88,6 +197,8 @@ const SettingsPage = () => {
                   <Smartphone className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
                   <input 
                     type="tel" 
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
                     placeholder="Số điện thoại"
                     className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all"
                   />
@@ -100,19 +211,24 @@ const SettingsPage = () => {
                   <input 
                     type="text" 
                     disabled 
-                    defaultValue={role === 'ADMIN' ? 'Admin Account' : 'Staff Member'} 
-                    className={`w-full pl-12 pr-4 py-3.5 bg-slate-100 border border-slate-100 rounded-2xl text-sm font-black ${role === 'ADMIN' ? 'text-purple-600' : 'text-blue-600'} outline-none cursor-not-allowed`}
+                    value={user?.role === 'ADMIN' ? 'Admin Account' : 'Staff Member'} 
+                    className={`w-full pl-12 pr-4 py-3.5 bg-slate-100 border border-slate-100 rounded-2xl text-sm font-black ${user?.role === 'ADMIN' ? 'text-purple-600' : 'text-blue-600'} outline-none cursor-not-allowed`}
                   />
                 </div>
               </div>
             </div>
           </div>
           <div className="mt-12 flex justify-end">
-            <button className="px-10 py-4 bg-blue-600 text-white rounded-[1.5rem] font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95">
+            <button 
+              type="submit"
+              disabled={savingProfile}
+              className="px-10 py-4 bg-blue-600 text-white rounded-[1.5rem] font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
+            >
+              {savingProfile && <Loader2 size={18} className="animate-spin" />}
               Lưu thay đổi
             </button>
           </div>
-        </div>
+        </form>
       </section>
 
       {/* Security Section */}
@@ -126,23 +242,56 @@ const SettingsPage = () => {
             <p className="text-sm font-semibold text-slate-400">Thay đổi mật khẩu và quản lý bảo mật</p>
           </div>
         </div>
-        <div className="p-10 space-y-8">
+        <form onSubmit={handleChangePassword} className="p-10 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Mật khẩu hiện tại</label>
-              <input type="password" placeholder="••••••••" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all" />
+              <input 
+                type="password" 
+                value={oldPass}
+                onChange={(e) => setOldPass(e.target.value)}
+                placeholder="••••••••" 
+                required
+                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all" 
+              />
+            </div>
+            <div className="space-y-2 invisible hidden md:block">
+              {/* Spacer */}
             </div>
             <div className="space-y-2">
               <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Mật khẩu mới</label>
-              <input type="password" placeholder="Nhập mật khẩu mới" className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all" />
+              <input 
+                type="password" 
+                value={newPass}
+                onChange={(e) => setNewPass(e.target.value)}
+                placeholder="Nhập mật khẩu mới" 
+                required
+                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all" 
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Xác nhận mật khẩu mới</label>
+              <input 
+                type="password" 
+                value={confirmPass}
+                onChange={(e) => setConfirmPass(e.target.value)}
+                placeholder="Xác nhận mật khẩu mới" 
+                required
+                className="w-full px-5 py-3.5 bg-slate-50 border border-slate-100 rounded-2xl text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-blue-500/10 transition-all" 
+              />
             </div>
           </div>
           <div className="flex justify-end">
-            <button className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all">
+            <button 
+              type="submit"
+              disabled={savingPassword}
+              className="px-8 py-3 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all disabled:opacity-70 flex items-center gap-2"
+            >
+              {savingPassword && <Loader2 size={18} className="animate-spin" />}
               Đổi mật khẩu
             </button>
           </div>
-        </div>
+        </form>
       </section>
 
       {/* Preferences Section */}

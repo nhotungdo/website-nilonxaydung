@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Post,
   Delete,
   Patch,
   Param,
@@ -10,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { GetUser } from '../../common/decorators/get-user.decorator';
 
 @Controller('orders')
 @UseGuards(JwtAuthGuard)
@@ -22,6 +24,20 @@ export class OrdersController {
     @Query('status') status?: string,
   ) {
     const data = await this.ordersService.findAll(search, status);
+    return { success: true, data };
+  }
+
+  @Post()
+  async create(
+    @GetUser('id') userId: string,
+    @Body()
+    body: {
+      customerId: string;
+      items: { productId: string; quantity: number }[];
+      note?: string;
+    },
+  ) {
+    const data = await this.ordersService.create({ ...body, userId });
     return { success: true, data };
   }
 

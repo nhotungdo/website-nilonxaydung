@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 import {
   Search,
   Filter,
@@ -11,13 +12,13 @@ import {
   Trash2,
   ChevronLeft,
   ChevronRight,
-  ShoppingCart,
   Loader2,
   AlertCircle,
   ShoppingBag,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ordersApi, type Order } from '@/services/api';
+import { CreateOrderModal } from '@/components/orders/CreateOrderModal';
 
 const PAGE_SIZE = 10;
 
@@ -39,10 +40,12 @@ const STATUS_FILTERS = [
 ];
 
 const OrdersPage = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState(searchParams.get('create') === 'true');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [showFilterMenu, setShowFilterMenu] = useState(false);
@@ -53,6 +56,24 @@ const OrdersPage = () => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
     return () => clearTimeout(t);
   }, [search]);
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      router.replace('/dashboard/orders', { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  // Keyboard shortcut Ctrl+N
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+        e.preventDefault();
+        setShowModal(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   const fetchOrders = useCallback(() => {
     setTimeout(() => {
@@ -221,7 +242,7 @@ const OrdersPage = () => {
                         className="hover:bg-slate-50/50 transition-colors group"
                       >
                         <td className="px-6 py-5">
-                          <span className="text-sm font-black text-blue-600">{order.orderNumber}</span>
+                          <span className="text-sm font-black text-blue-600">{order.orderCode}</span>
                         </td>
                         <td className="px-6 py-5">
                           <span className="text-sm font-bold text-slate-900">{order.customer.name}</span>
@@ -230,7 +251,7 @@ const OrdersPage = () => {
                           {order.customer.phone ?? '—'}
                         </td>
                         <td className="px-6 py-5 text-sm font-black text-slate-900">
-                          {Number(order.totalAmount).toLocaleString('vi-VN')}đ
+                          {Number(order.total).toLocaleString('vi-VN')}đ
                         </td>
                         <td className="px-6 py-5">
                           <span className={`px-3 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider border ${statusInfo.style}`}>
@@ -242,7 +263,10 @@ const OrdersPage = () => {
                         </td>
                         <td className="px-6 py-5 text-right">
                           <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
-                            <button className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors">
+                            <button
+                              onClick={() => router.push(`/dashboard/orders/${order.id}`)}
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            >
                               <Eye size={18} />
                             </button>
                             <button
@@ -300,80 +324,11 @@ const OrdersPage = () => {
         )}
       </div>
 
-      {/* Create Order Modal */}
-      <AnimatePresence>
-        {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowModal(false)}
-              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9, y: 20 }}
-              className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
-            >
-              <div className="p-8 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
-                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
-                  <ShoppingCart size={24} />
-                </div>
-                <div>
-                  <h3 className="text-xl font-black text-slate-900 tracking-tight">Tạo đơn hàng mới</h3>
-                  <p className="text-sm font-semibold text-slate-400">Điền thông tin chi tiết để tạo đơn hàng</p>
-                </div>
-              </div>
-
-              <div className="p-8 space-y-6">
-                <div className="grid grid-cols-2 gap-6">
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Khách hàng</label>
-                    <select className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all">
-                      <option>Chọn khách hàng...</option>
-                    </select>
-                  </div>
-                  <div className="space-y-1.5">
-                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Ngày hẹn giao</label>
-                    <input type="date" className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all" />
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Sản phẩm</label>
-                  <div className="p-4 bg-slate-50 rounded-2xl border border-dashed border-slate-300 flex flex-col items-center justify-center gap-3 text-slate-400">
-                    <Plus size={24} className="opacity-40" />
-                    <p className="text-sm font-bold">Thêm sản phẩm vào đơn hàng</p>
-                    <button className="px-4 py-1.5 bg-white border border-slate-200 text-slate-600 rounded-lg text-xs font-bold shadow-sm hover:bg-slate-50 transition-all">
-                      Chọn từ danh mục
-                    </button>
-                  </div>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Ghi chú đơn hàng</label>
-                  <textarea
-                    rows={3}
-                    placeholder="Giao trong giờ hành chính..."
-                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none"
-                  />
-                </div>
-              </div>
-
-              <div className="p-8 pt-0 flex justify-end gap-3">
-                <button onClick={() => setShowModal(false)} className="px-6 py-3 text-slate-500 font-bold hover:text-slate-700 transition-colors">
-                  Hủy bỏ
-                </button>
-                <button className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95">
-                  Xác nhận tạo đơn
-                </button>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <CreateOrderModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchOrders}
+      />
     </div>
   );
 };

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { MoreHorizontal, ExternalLink, Loader2, ShoppingBag } from 'lucide-react';
 import { ordersApi, type Order } from '@/services/api';
@@ -29,9 +30,9 @@ const RecentOrders = () => {
     <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm shadow-slate-200/50 flex flex-col h-full">
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-black text-slate-900 tracking-tight">Đơn hàng mới nhất</h3>
-        <a href="/dashboard/orders" className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">
+        <Link href="/dashboard/orders" className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1">
           Xem tất cả <ExternalLink size={14} />
-        </a>
+        </Link>
       </div>
 
       {/* Loading */}
@@ -66,7 +67,7 @@ const RecentOrders = () => {
         <div className="space-y-4 flex-1">
           {orders.map((order, idx) => {
             const statusInfo = STATUS_MAP[order.status] ?? STATUS_MAP['PENDING'];
-            const shortId = order.orderNumber.slice(-4);
+            const shortId = order.orderCode.slice(-4);
             const timeStr = new Date(order.createdAt).toLocaleTimeString('vi-VN', {
               hour: '2-digit',
               minute: '2-digit',
@@ -86,14 +87,14 @@ const RecentOrders = () => {
                   <div>
                     <div className="text-sm font-bold text-slate-900">{order.customer.name}</div>
                     <div className="text-xs text-slate-400 font-semibold">
-                      {order.orderNumber} • {timeStr}
+                      {order.orderCode} • {timeStr}
                     </div>
                   </div>
                 </div>
                 <div className="flex items-center gap-6">
                   <div className="text-right hidden sm:block">
                     <div className="text-sm font-black text-slate-900">
-                      {Number(order.totalAmount).toLocaleString('vi-VN')}đ
+                      {Number(order.total).toLocaleString('vi-VN')}đ
                     </div>
                     <div
                       className={`mt-1 inline-block px-2 py-0.5 rounded-lg text-[10px] font-black uppercase tracking-wider border ${statusInfo.style}`}

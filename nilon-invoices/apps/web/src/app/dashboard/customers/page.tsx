@@ -19,16 +19,24 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { customersApi, type Customer } from '@/services/api';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { CreateCustomerModal } from '@/components/customers/CreateCustomerModal';
 
 const PAGE_SIZE = 15;
 
 const CustomersPage = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
   const [page, setPage] = useState(1);
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  
+  // Modal state
+  const [showModal, setShowModal] = useState(searchParams.get('create') === 'true');
+
 
   // Debounce search input
   useEffect(() => {
@@ -56,6 +64,14 @@ const CustomersPage = () => {
     fetchCustomers();
   }, [fetchCustomers]);
 
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      router.replace('/dashboard/customers', { scroll: false });
+    }
+  }, [searchParams, router]);
+
+
+
   const totalPages = Math.max(1, Math.ceil(customers.length / PAGE_SIZE));
   const paginated = customers.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
@@ -72,7 +88,10 @@ const CustomersPage = () => {
             <Download size={18} />
             Xuất báo cáo
           </button>
-          <button className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          >
             <UserPlus size={18} />
             Thêm khách hàng
           </button>
@@ -132,10 +151,13 @@ const CustomersPage = () => {
               </p>
             </div>
             {!debouncedSearch && (
-              <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2">
-                <UserPlus size={18} />
-                Thêm khách hàng
-              </button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2"
+            >
+              <UserPlus size={18} />
+              Thêm khách hàng
+            </button>
             )}
           </div>
         )}
@@ -251,6 +273,12 @@ const CustomersPage = () => {
           </>
         )}
       </div>
+
+      <CreateCustomerModal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        onSuccess={fetchCustomers}
+      />
     </div>
   );
 };

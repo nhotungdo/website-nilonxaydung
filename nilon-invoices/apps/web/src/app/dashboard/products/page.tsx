@@ -17,8 +17,9 @@ import {
   AlertCircle,
   Loader2,
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { productsApi, type Product } from '@/services/api';
+import { useSearchParams, useRouter } from 'next/navigation';
 
 const PAGE_SIZE = 10;
 
@@ -29,6 +30,8 @@ const getStockStatus = (stock: number): { label: string; style: string } => {
 };
 
 const ProductsPage = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,6 +39,17 @@ const ProductsPage = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
+
+  // Modal state
+  const [showModal, setShowModal] = useState(searchParams.get('create') === 'true');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    sku: '',
+    price: 0,
+    stock: 0,
+    description: '',
+  });
 
   useEffect(() => {
     const t = setTimeout(() => setDebouncedSearch(search), 400);
@@ -60,6 +74,30 @@ const ProductsPage = () => {
   useEffect(() => {
     fetchProducts();
   }, [fetchProducts]);
+
+  useEffect(() => {
+    if (searchParams.get('create') === 'true') {
+      router.replace('/dashboard/products', { scroll: false });
+    }
+  }, [searchParams, router]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!formData.name) return alert('Vui lòng nhập tên sản phẩm');
+    if (formData.price <= 0) return alert('Giá sản phẩm phải lớn hơn 0');
+
+    setIsSubmitting(true);
+    try {
+      await productsApi.create(formData);
+      setShowModal(false);
+      setFormData({ name: '', sku: '', price: 0, stock: 0, description: '' });
+      fetchProducts();
+    } catch (err: unknown) {
+      alert(err instanceof Error ? err.message : 'Lỗi không xác định');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Bạn có chắc muốn xóa sản phẩm này?')) return;
@@ -89,7 +127,10 @@ const ProductsPage = () => {
             <Upload size={18} />
             Import
           </button>
-          <button className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+          <button
+            onClick={() => setShowModal(true)}
+            className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          >
             <Plus size={18} />
             Thêm sản phẩm
           </button>
@@ -180,10 +221,13 @@ const ProductsPage = () => {
               </p>
             </div>
             {!debouncedSearch && (
-              <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2">
-                <Plus size={18} />
-                Thêm sản phẩm
-              </button>
+            <button
+              onClick={() => setShowModal(true)}
+              className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold hover:bg-blue-700 transition-all flex items-center gap-2"
+            >
+              <Plus size={18} />
+              Thêm sản phẩm
+            </button>
             )}
           </div>
         )}
@@ -281,6 +325,117 @@ const ProductsPage = () => {
           </>
         )}
       </div>
+
+      {/* Create Product Modal */}
+      <AnimatePresence>
+        {showModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setShowModal(false)}
+              className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="relative w-full max-w-xl bg-white rounded-[2.5rem] shadow-2xl overflow-hidden"
+            >
+              <div className="p-8 border-b border-slate-100 flex items-center gap-4 bg-slate-50/50">
+                <div className="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg shadow-blue-500/20">
+                  <Plus size={24} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-black text-slate-900 tracking-tight">Thêm sản phẩm mới</h3>
+                  <p className="text-sm font-semibold text-slate-400">Điền thông tin chi tiết sản phẩm</p>
+                </div>
+              </div>
+
+              <form onSubmit={handleSubmit} className="p-8 space-y-5">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Tên sản phẩm *</label>
+                  <input
+                    type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    placeholder="Tên sản phẩm..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">SKU</label>
+                    <input
+                      type="text"
+                      value={formData.sku}
+                      onChange={(e) => setFormData({ ...formData, sku: e.target.value })}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                      placeholder="SKU..."
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Giá bán *</label>
+                    <input
+                      type="number"
+                      required
+                      min="0"
+                      value={formData.price}
+                      onChange={(e) => setFormData({ ...formData, price: Number(e.target.value) })}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1.5">
+                    <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Tồn kho ban đầu</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={formData.stock}
+                      onChange={(e) => setFormData({ ...formData, stock: Number(e.target.value) })}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-black text-slate-400 uppercase tracking-widest ml-1">Mô tả sản phẩm</label>
+                  <textarea
+                    value={formData.description}
+                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                    rows={3}
+                    className="w-full bg-slate-50 border border-slate-100 rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 focus:bg-white focus:ring-4 focus:ring-blue-500/10 outline-none transition-all resize-none"
+                    placeholder="Mô tả chi tiết..."
+                  />
+                </div>
+
+                <div className="pt-4 flex justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowModal(false)}
+                    className="px-6 py-3 text-slate-500 font-bold hover:text-slate-700 transition-colors"
+                  >
+                    Hủy bỏ
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="px-10 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all active:scale-95 disabled:opacity-50 flex items-center gap-2"
+                  >
+                    {isSubmitting && <Loader2 size={18} className="animate-spin" />}
+                    Lưu sản phẩm
+                  </button>
+                </div>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };

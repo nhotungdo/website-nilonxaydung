@@ -23,6 +23,12 @@ export class ProductsController {
     return { success: true, data };
   }
 
+  @Get('search')
+  async search(@Query('q') q?: string) {
+    const data = await this.productsService.findAll(q);
+    return { success: true, data };
+  }
+
   @Get('low-stock')
   async getLowStock(@Query('threshold') threshold?: string) {
     const data = await this.productsService.getLowStock(

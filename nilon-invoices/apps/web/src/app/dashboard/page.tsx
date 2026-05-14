@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { ShoppingBag, Users, FileCheck, DollarSign, Bell, AlertCircle, Loader2 } from 'lucide-react';
 import StatCard from '@/components/dashboard/StatCard';
 import RevenueChart from '@/components/charts/RevenueChart';
@@ -64,9 +65,12 @@ const DashboardOverview = () => {
           <p className="text-slate-500 font-semibold mt-1">Dữ liệu thực từ database, cập nhật theo thời gian thực.</p>
         </div>
         <div className="flex gap-3">
-          <button className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all">
+          <Link
+            href="/dashboard/orders?create=true"
+            className="px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all"
+          >
             Tạo đơn hàng mới
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -111,9 +115,9 @@ const DashboardOverview = () => {
               Có {stats.lowStockProducts} sản phẩm đang sắp hết hàng (≤ 20 đơn vị). Vui lòng cập nhật.
             </p>
           </div>
-          <a href="/dashboard/products" className="text-xs font-black text-amber-900 hover:underline">
+          <Link href="/dashboard/products" className="text-xs font-black text-amber-900 hover:underline">
             Xem ngay
-          </a>
+          </Link>
         </div>
       )}
 

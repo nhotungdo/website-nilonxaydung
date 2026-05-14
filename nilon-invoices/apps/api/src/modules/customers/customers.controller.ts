@@ -23,6 +23,12 @@ export class CustomersController {
     return { success: true, data };
   }
 
+  @Get('search')
+  async search(@Query('q') q?: string) {
+    const data = await this.customersService.findAll(q);
+    return { success: true, data };
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     const data = await this.customersService.findOne(id);

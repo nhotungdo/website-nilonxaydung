@@ -15,6 +15,7 @@ import {
   Loader2,
   AlertCircle,
 } from 'lucide-react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import { invoicesApi, type Invoice, type InvoiceStats } from '@/services/api';
 
@@ -91,10 +92,13 @@ const InvoicesPage = () => {
             <Printer size={18} />
             In hàng loạt
           </button>
-          <button className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
+          <Link
+            href="/dashboard/orders?create=true"
+            className="flex-1 md:flex-none px-5 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-bold shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+          >
             <Plus size={18} />
             Tạo hóa đơn mới
-          </button>
+          </Link>
         </div>
       </div>
 
@@ -195,7 +199,7 @@ const InvoicesPage = () => {
                         <td className="px-6 py-5">
                           <div className="flex flex-col">
                             <span className="text-sm font-black text-blue-600">{inv.invoiceNo}</span>
-                            <span className="text-[10px] text-slate-400 font-bold">{inv.order?.orderNumber}</span>
+                            <span className="text-[10px] text-slate-400 font-bold">{inv.order?.orderCode}</span>
                           </div>
                         </td>
                         <td className="px-6 py-5">
@@ -334,13 +338,13 @@ const InvoicesPage = () => {
                     <tbody className="divide-y divide-slate-100">
                       {previewInvoice.order.items.map((item, i) => (
                         <tr key={i}>
-                          <td className="py-6 text-sm font-bold text-slate-900">{item.product?.name}</td>
+                          <td className="py-6 text-sm font-bold text-slate-900">{item.productNameSnapshot}</td>
                           <td className="py-6 text-sm text-slate-500 text-center font-semibold">{item.quantity}</td>
                           <td className="py-6 text-sm text-slate-500 text-right font-semibold">
-                            {Number(item.unitPrice).toLocaleString('vi-VN')}đ
+                            {Number(item.priceSnapshot).toLocaleString('vi-VN')}đ
                           </td>
                           <td className="py-6 text-sm font-black text-slate-900 text-right">
-                            {Number(item.totalPrice).toLocaleString('vi-VN')}đ
+                            {Number(item.subtotal).toLocaleString('vi-VN')}đ
                           </td>
                         </tr>
                       ))}
