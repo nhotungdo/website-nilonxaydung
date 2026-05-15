@@ -1,8 +1,9 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { ordersApi } from '@/services/api';
+import { toast } from 'sonner';
 import { 
   ChevronLeft, 
   Printer, 
@@ -35,6 +36,24 @@ export default function OrderDetailPage() {
     queryKey: ['order', id],
     queryFn: () => ordersApi.getOne(id),
   });
+
+  const queryClient = useQueryClient();
+  const statusMutation = useMutation({
+    mutationFn: ({ status }: { status: string }) => ordersApi.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['order', id] });
+      toast.success('Cập nhật trạng thái thành công');
+    },
+    onError: (err) => {
+      toast.error(err instanceof Error ? err.message : 'Lỗi cập nhật trạng thái');
+    },
+  });
+
+  const handleUpdateStatus = (status: string) => {
+    if (confirm(`Bạn có chắc chắn muốn chuyển đơn hàng sang trạng thái ${STATUS_MAP[status].label}?`)) {
+      statusMutation.mutate({ status });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -97,14 +116,46 @@ export default function OrderDetailPage() {
           Quay lại danh sách
         </button>
         <div className="flex gap-3 w-full md:w-auto">
-          <button className="flex-1 md:flex-none px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-black shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2">
-            <Printer size={18} />
-            In hóa đơn
-          </button>
-          <button className="flex-1 md:flex-none px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2">
-            <Download size={18} />
-            Xuất PDF
-          </button>
+          {order.invoice && (
+            <>
+              <button 
+                onClick={() => router.push(`/dashboard/invoices/${order.invoice?.id}`)}
+                className="flex-1 md:flex-none px-6 py-3 bg-white border border-slate-200 text-slate-700 rounded-2xl font-black shadow-sm hover:bg-slate-50 transition-all flex items-center justify-center gap-2"
+              >
+                <Printer size={18} />
+                Xem hóa đơn
+              </button>
+              <button 
+                onClick={() => router.push(`/dashboard/invoices/${order.invoice?.id}`)}
+                className="flex-1 md:flex-none px-6 py-3 bg-blue-600 text-white rounded-2xl font-black shadow-lg shadow-blue-600/20 hover:bg-blue-700 transition-all flex items-center justify-center gap-2"
+              >
+                <Download size={18} />
+                Xuất PDF
+              </button>
+            </>
+          )}
+          
+          {order.status === 'PENDING' && (
+            <button 
+              onClick={() => handleUpdateStatus('CONFIRMED')}
+              disabled={statusMutation.isPending}
+              className="flex-1 md:flex-none px-6 py-3 bg-emerald-600 text-white rounded-2xl font-black shadow-lg shadow-emerald-600/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <CheckCircle2 size={18} />
+              Xác nhận đơn hàng
+            </button>
+          )}
+
+          {order.status !== 'CANCELLED' && order.status !== 'COMPLETED' && (
+            <button 
+              onClick={() => handleUpdateStatus('CANCELLED')}
+              disabled={statusMutation.isPending}
+              className="flex-1 md:flex-none px-6 py-3 bg-white border border-red-100 text-red-500 rounded-2xl font-black shadow-sm hover:bg-red-50 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <AlertCircle size={18} />
+              Hủy đơn
+            </button>
+          )}
         </div>
       </div>
 

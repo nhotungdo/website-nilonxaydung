@@ -235,6 +235,7 @@ export interface Order {
   updatedAt: string;
   customer: { id: string; name: string; phone?: string; email?: string; address?: string };
   items?: OrderItem[];
+  invoice?: Invoice;
 }
 
 export interface OrderItem {

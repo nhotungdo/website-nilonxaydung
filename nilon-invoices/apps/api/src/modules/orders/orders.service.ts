@@ -1,11 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../../database/prisma.service';
 import { OrderStatus } from '@prisma/client';
-import { generateOrderCode } from '../../lib/generate-order-code.js';
+import { generateOrderCode } from '../../lib/generate-order-code';
+import { generateInvoiceNo } from '../../lib/generate-invoice-no';
+import { TelegramService } from '../telegram/telegram.service';
 
 @Injectable()
 export class OrdersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly telegramService: TelegramService,
+  ) {}
 
   async findAll(search?: string, status?: string) {
     return this.prisma.order.findMany({
@@ -70,7 +75,7 @@ export class OrdersService {
   }) {
     const { customerId, items, note, userId } = data;
 
-    return this.prisma.$transaction(async (tx) => {
+    const order = await this.prisma.$transaction(async (tx) => {
       // 1. Fetch all products and check stock
       const productIds = items.map((i) => i.productId);
       const products = await tx.product.findMany({
@@ -116,7 +121,7 @@ export class OrdersService {
       const orderCode = await generateOrderCode(tx);
 
       // 4. Create Order
-      const order = await tx.order.create({
+      const createdOrder = await tx.order.create({
         data: {
           orderCode,
           customerId,
@@ -149,8 +154,38 @@ export class OrdersService {
         });
       }
 
-      return order;
+      // 6. Create Draft Invoice
+      const invoiceNo = await generateInvoiceNo(tx);
+      await tx.invoice.create({
+        data: {
+          invoiceNo,
+          orderId: createdOrder.id,
+          totalAmount: subtotal,
+          status: 'DRAFT',
+        },
+      });
+
+      return createdOrder;
     });
+
+    // Send Telegram Notification
+    try {
+      const message = [
+        `<b>🆕 ĐƠN HÀNG MỚI: ${order.orderCode}</b>`,
+        `👤 Khách hàng: <b>${order.customer.name}</b>`,
+        `💰 Tổng tiền: <b>${Number(order.total).toLocaleString('vi-VN')}đ</b>`,
+        `📦 Số lượng SP: <b>${order.totalItems}</b> items`,
+        `📝 Ghi chú: ${order.note || '<i>Không có</i>'}`,
+        `🔗 <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/orders/${order.id}">Xem chi tiết đơn hàng</a>`,
+      ].join('\n');
+
+      await this.telegramService.sendMessage(message);
+    } catch (error) {
+      // Log error but don't fail the order creation
+      console.error('Failed to send Telegram notification:', error);
+    }
+
+    return order;
   }
 
   async remove(id: string) {
@@ -162,10 +197,32 @@ export class OrdersService {
   }
 
   async updateStatus(id: string, status: string) {
-    await this.findOne(id);
-    return this.prisma.order.update({
+    const order = await this.findOne(id);
+    const updatedOrder = await this.prisma.order.update({
       where: { id },
       data: { status: status as OrderStatus },
+      include: {
+        customer: { select: { id: true, name: true } },
+      },
     });
+
+    // Send Notification for important status changes
+    if (status === 'CONFIRMED' || status === 'CANCELLED') {
+      try {
+        const statusText = status === 'CONFIRMED' ? '✅ ĐÃ XÁC NHẬN' : '❌ ĐÃ HỦY';
+        const message = [
+          `<b>${statusText}: ${updatedOrder.orderCode}</b>`,
+          `👤 Khách hàng: <b>${updatedOrder.customer.name}</b>`,
+          `💰 Tổng tiền: <b>${Number(updatedOrder.total).toLocaleString('vi-VN')}đ</b>`,
+          `🔗 <a href="${process.env.FRONTEND_URL || 'http://localhost:3000'}/dashboard/orders/${updatedOrder.id}">Xem chi tiết đơn hàng</a>`,
+        ].join('\n');
+
+        await this.telegramService.sendMessage(message);
+      } catch (error) {
+        console.error('Failed to send status update notification:', error);
+      }
+    }
+
+    return updatedOrder;
   }
 }
