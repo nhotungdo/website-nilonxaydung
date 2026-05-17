@@ -12,8 +12,10 @@ import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { useQueueStore } from '../../stores/queueStore';
 import { usePrinterStore } from '../../stores/printerStore';
+import { useTranslation } from '../../locales';
 
 export const FailedJobsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { jobs, reprintJob, cancelJob } = useQueueStore();
   const printers = usePrinterStore((s) => s.printers);
 
@@ -21,14 +23,14 @@ export const FailedJobsPage: React.FC = () => {
 
   const getPrinterName = (printerId: string) => {
     const printer = printers.find((p) => p.id === printerId);
-    return printer ? printer.name : 'Unknown Driver';
+    return printer ? printer.name : t('failed.unknownDriver');
   };
 
   const handleRetryAll = async () => {
     for (const job of failedJobs) {
       await reprintJob(job.id);
     }
-    alert('Reprint commands sent for all failed spools.');
+    alert(t('failed.retryAllAlert'));
   };
 
   return (
@@ -36,8 +38,8 @@ export const FailedJobsPage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Failed Print Spools"
-        subtitle="Troubleshoot and retry blocked print jobs. High contrast diagnostic signals."
+        title={t('failed.title')}
+        subtitle={t('failed.subtitle')}
         actions={
           failedJobs.length > 0 && (
             <button
@@ -45,7 +47,7 @@ export const FailedJobsPage: React.FC = () => {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-600 hover:bg-red-500 text-white transition-all shadow-md shadow-red-500/10 active:scale-[0.98]"
             >
               <RotateCcw className="h-4 w-4" />
-              Retry All Spools
+              {t('failed.retryAll')}
             </button>
           )
         }
@@ -62,9 +64,9 @@ export const FailedJobsPage: React.FC = () => {
             <FileWarning className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">Blocked Spools</span>
+            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">{t('failed.blockedSpools')}</span>
             <span className="text-2xl font-black text-white">{failedJobs.length}</span>
-            <span className="text-[10px] text-red-400 font-bold block mt-0.5">Spooler stack delayed</span>
+            <span className="text-[10px] text-red-400 font-bold block mt-0.5">{t('failed.spoolerDelayed')}</span>
           </div>
         </GlassCard>
 
@@ -75,9 +77,9 @@ export const FailedJobsPage: React.FC = () => {
             <Percent className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">Spool Recovery Rate</span>
+            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">{t('failed.recoveryRate')}</span>
             <span className="text-2xl font-black text-white">92.4%</span>
-            <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">High printer resilience</span>
+            <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">{t('failed.highResilience')}</span>
           </div>
         </GlassCard>
 
@@ -88,9 +90,9 @@ export const FailedJobsPage: React.FC = () => {
             <Activity className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">Top Hardware Error</span>
+            <span className="text-xs font-semibold text-red-400/80 uppercase tracking-wider block">{t('failed.topHardwareError')}</span>
             <span className="text-lg font-black text-white truncate max-w-[180px] block">PRINTER_OFFLINE</span>
-            <span className="text-[10px] text-red-400 font-bold block mt-0.5">Check USB connection</span>
+            <span className="text-[10px] text-red-400 font-bold block mt-0.5">{t('failed.checkUsb')}</span>
           </div>
         </GlassCard>
 
@@ -102,12 +104,12 @@ export const FailedJobsPage: React.FC = () => {
           <table className="w-full text-left text-sm border-collapse text-slate-300">
             <thead>
               <tr className="border-b border-red-500/15 bg-red-500/[0.02] text-red-400 text-xs font-bold uppercase tracking-wider">
-                <th className="py-4 px-6">Error Spool ID</th>
-                <th className="py-4 px-6">Customer Name</th>
-                <th className="py-4 px-6">Hardware Target</th>
-                <th className="py-4 px-6">Error Code / Diagnostic message</th>
-                <th className="py-4 px-6">Retries</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6">{t('failed.errorSpoolId')}</th>
+                <th className="py-4 px-6">{t('queueTable.customer')}</th>
+                <th className="py-4 px-6">{t('failed.hardwareTarget')}</th>
+                <th className="py-4 px-6">{t('failed.diagnosticMessage')}</th>
+                <th className="py-4 px-6">{t('queue.retries')}</th>
+                <th className="py-4 px-6 text-right">{t('failed.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -123,7 +125,7 @@ export const FailedJobsPage: React.FC = () => {
                     <td className="py-4 px-6">
                       <div className="flex flex-col gap-0.5">
                         <span className="text-xs font-bold text-red-400 font-mono">PRINTER_OFFLINE</span>
-                        <span className="text-[11px] text-slate-400 leading-relaxed font-sans">{job.error_message || 'Hardware did not acknowledge print query.'}</span>
+                        <span className="text-[11px] text-slate-400 leading-relaxed font-sans">{job.error_message || t('failed.hardwareDidNotAcknowledge')}</span>
                       </div>
                     </td>
                     <td className="py-4 px-6 font-mono text-xs text-slate-300">{job.retry_count} / {job.max_retries}</td>
@@ -132,7 +134,7 @@ export const FailedJobsPage: React.FC = () => {
                       <button
                         onClick={() => reprintJob(job.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-                        title="Retry Spool"
+                        title={t('buttons.retrySpool')}
                       >
                         <RotateCcw className="h-4 w-4" />
                       </button>
@@ -141,7 +143,7 @@ export const FailedJobsPage: React.FC = () => {
                       <button
                         onClick={() => cancelJob(job.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                        title="Purge Spool Job"
+                        title={t('failed.purgeSpoolJob')}
                       >
                         <Trash2 className="h-4 w-4" />
                       </button>
@@ -153,7 +155,7 @@ export const FailedJobsPage: React.FC = () => {
                   <td colSpan={6} className="py-12 text-center text-slate-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <AlertTriangle className="h-8 w-8 text-slate-600 mb-1" />
-                      <span className="text-xs">No active failed jobs detected. Spooler health is normal.</span>
+                      <span className="text-xs">{t('failed.noFailedJobsDetected')}</span>
                     </div>
                   </td>
                 </tr>

@@ -34,12 +34,33 @@ export class OrderService {
     // Check code duplication
     const existing = await this.repo.findById(dto.id);
     if (existing) {
-      logger.warn(`[OrderService] Order with ID ${dto.id} already exists. Skipping insertion.`);
+      logger.warn(`[OrderService] Order with ID ${dto.id} already exists. Skipping insertion and automatic printing.`);
       return existing;
     }
 
     logger.info(`[OrderService] Persisting new sales order: ${dto.order_code} for ${dto.customer_name}`);
-    return await this.repo.create(dto);
+    const newOrder = await this.repo.create(dto);
+
+    // Automatically trigger physical print command only for new database orders
+    try {
+      const { invoiceService } = require('../../../services/invoice.service');
+      const orderPayload = {
+        id: newOrder.id,
+        orderCode: newOrder.order_code,
+        customerName: newOrder.customer_name,
+        customerPhone: newOrder.customer_phone,
+        totalAmount: Number(newOrder.total_amount),
+        pdfUrl: newOrder.invoice_pdf || undefined,
+        createdAt: newOrder.created_at ? newOrder.created_at.toISOString() : new Date().toISOString(),
+        items: [] // Line items will be loaded dynamically by invoice print template
+      };
+      await invoiceService.processIncomingOrder(orderPayload);
+      logger.info(`[OrderService] Automatically dispatched invoice print job for new order: ${newOrder.order_code}`);
+    } catch (printErr: any) {
+      logger.error(`[OrderService] Failed to automatically print invoice for new order ${newOrder.order_code}: ${printErr.message}`);
+    }
+
+    return newOrder;
   }
 
   public async updateOrder(id: string, dto: UpdateOrderDTO): Promise<Order | null> {

@@ -4,8 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Server, Printer, CheckCircle, Database, AlertCircle, RefreshCw } from 'lucide-react';
 import { GlassCard } from '../../components/GlassCard';
 import { useAuthStore } from '../../stores/authStore';
+import { useTranslation } from '../../locales';
 
 export const SplashScreen: React.FC = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   
@@ -14,10 +16,10 @@ export const SplashScreen: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
 
   const steps = [
-    { label: 'Initializing SQLite Database...', icon: <Database className="h-4 w-4" /> },
-    { label: 'Connecting Central Socket...', icon: <Server className="h-4 w-4" /> },
-    { label: 'Loading Spooler Printers...', icon: <Printer className="h-4 w-4" /> },
-    { label: 'System Ready', icon: <CheckCircle className="h-4 w-4 text-emerald-400" /> }
+    { label: t('splash.initializingDb'), icon: <Database className="h-4 w-4" /> },
+    { label: t('splash.connectingSocket'), icon: <Server className="h-4 w-4" /> },
+    { label: t('splash.loadingPrinters'), icon: <Printer className="h-4 w-4" /> },
+    { label: t('splash.systemReady'), icon: <CheckCircle className="h-4 w-4 text-emerald-400" /> }
   ];
 
   const runStartupSequence = async () => {
@@ -35,7 +37,7 @@ export const SplashScreen: React.FC = () => {
         setTimeout(() => {
           // Simulate rare network hiccup (10% chance) for demonstration
           if (Math.random() < 0.05) {
-            reject(new Error('SOCKET_TIMEOUT: Central API socket server unreachable.'));
+            reject(new Error(t('splash.socketTimeoutError')));
           } else {
             resolve(true);
           }
@@ -58,7 +60,7 @@ export const SplashScreen: React.FC = () => {
       }
     } catch (err: any) {
       setErrorStep(currentStep);
-      setErrorMessage(err.message || 'Unknown initialization error occurred.');
+      setErrorMessage(err.message || t('splash.unknownError'));
     }
   };
 
@@ -104,7 +106,7 @@ export const SplashScreen: React.FC = () => {
             transition={{ delay: 0.3 }}
             className="text-xs text-blue-400 font-semibold tracking-widest uppercase mt-1"
           >
-            Thermal Autoprint Client
+            {t('sidebar.autoprint')} CLIENT
           </motion.span>
 
           {/* Realtime progress tracker */}
@@ -124,7 +126,7 @@ export const SplashScreen: React.FC = () => {
                     className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-red-600 hover:bg-red-500 text-white transition-colors"
                   >
                     <RefreshCw className="h-3 w-3" />
-                    Retry Connection
+                    {t('splash.retryConnection')}
                   </button>
                 </motion.div>
               ) : (

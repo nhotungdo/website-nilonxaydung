@@ -12,8 +12,6 @@ import {
   Plus, 
   Activity, 
   Sliders, 
-  Volume2, 
-  VolumeX, 
   FileText,
   Clock,
   Terminal,
@@ -58,42 +56,7 @@ export default function Dashboard() {
   const [editBranchId, setEditBranchId] = useState('');
   const [editApiKey, setEditApiKey] = useState('');
 
-  // Synthesize premium high-fidelity notify sound via Web Audio API (zero asset dependency)
-  const playNewOrderChime = () => {
-    if (settings && !settings.sound_alert) return;
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      const ctx = new AudioCtx();
-      
-      // Tone 1 (C5 - Ding)
-      const osc1 = ctx.createOscillator();
-      const gain1 = ctx.createGain();
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(523.25, ctx.currentTime); 
-      gain1.gain.setValueAtTime(0.15, ctx.currentTime);
-      gain1.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.4);
-      osc1.connect(gain1);
-      gain1.connect(ctx.destination);
-      osc1.start();
-      osc1.stop(ctx.currentTime + 0.4);
 
-      // Tone 2 (E5 - Dong)
-      setTimeout(() => {
-        const osc2 = ctx.createOscillator();
-        const gain2 = ctx.createGain();
-        osc2.type = 'sine';
-        osc2.frequency.setValueAtTime(659.25, ctx.currentTime); 
-        gain2.gain.setValueAtTime(0.20, ctx.currentTime);
-        gain2.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.5);
-        osc2.connect(gain2);
-        gain2.connect(ctx.destination);
-        osc2.start();
-        osc2.stop(ctx.currentTime + 0.5);
-      }, 150);
-    } catch (e) {
-      console.warn('Web Audio synthesis blocked or unsupported:', e);
-    }
-  };
 
   // Run initial state fetching loops
   useEffect(() => {
@@ -162,7 +125,6 @@ export default function Dashboard() {
 
     // 3. New real-time order alerts
     const unbindNewOrder = window.electronAPI.socket.onNewOrder((order: any) => {
-      playNewOrderChime();
       addSystemLog({
         id: Date.now(),
         level: 'INFO',
@@ -549,18 +511,7 @@ export default function Dashboard() {
               <span>Tự động in đơn</span>
             </label>
 
-            <label className="flex items-center space-x-2 text-xs font-semibold cursor-pointer">
-              <input 
-                type="checkbox" 
-                checked={settings.sound_alert} 
-                onChange={(e) => updateSettings({ sound_alert: e.target.checked })}
-                className="rounded border-slate-700 bg-slate-900 text-brand-500 focus:ring-brand-500 h-4 w-4"
-              />
-              <span className="flex items-center">
-                {settings.sound_alert ? <Volume2 className="h-3.5 w-3.5 mr-1" /> : <VolumeX className="h-3.5 w-3.5 mr-1 text-slate-500" />}
-                Âm báo khi có đơn
-              </span>
-            </label>
+
 
             <label className="flex items-center space-x-2 text-xs font-semibold cursor-pointer">
               <input 

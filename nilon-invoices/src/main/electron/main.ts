@@ -2,6 +2,7 @@ import { app, BrowserWindow, ipcMain } from 'electron';
 import { initDatabase, db } from '../database/sqlite';
 import { db as postgresDb } from '../database/postgres';
 import { runMigrations } from '../database/migrate';
+import { runSeeds } from '../database/seed';
 import { registerDatabaseIpcHandlers } from '../ipc/database.ipc';
 import { logger } from '../utils/logger';
 import { createMainWindow, getMainWindow } from './window';
@@ -38,7 +39,8 @@ if (!isSingleInstance) {
     try {
       await postgresDb.connectDatabase();
       await runMigrations();
-      logger.info('[Main] PostgreSQL database connection & migrations successful.');
+      await runSeeds();
+      logger.info('[Main] PostgreSQL database connection, migrations & seeding successful.');
     } catch (dbErr: any) {
       logger.error('[Main] CRITICAL PostgreSQL Startup Error:', dbErr.message);
     }

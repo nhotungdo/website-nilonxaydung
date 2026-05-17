@@ -15,12 +15,19 @@ import { SearchInput } from '../../components/SearchInput';
 import { useOrderStore } from '../../stores/orderStore';
 import { usePrinterStore } from '../../stores/printerStore';
 import { useQueueStore } from '../../stores/queueStore';
+import { useTranslation } from '../../locales';
 
 export const OrderHistoryPage: React.FC = () => {
   const navigate = useNavigate();
-  const { orders } = useOrderStore();
+  const { t } = useTranslation();
+  const { orders, fetchOrders } = useOrderStore();
   const printers = usePrinterStore((s) => s.printers);
-  const { jobs, reprintJob } = useQueueStore();
+  const { jobs, reprintJob, fetchJobs } = useQueueStore();
+
+  React.useEffect(() => {
+    fetchOrders();
+    fetchJobs();
+  }, []);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('ALL');
@@ -37,9 +44,9 @@ export const OrderHistoryPage: React.FC = () => {
 
   const getPrinterName = (orderId: string) => {
     const relatedJob = jobs.find((j) => j.order_id === orderId);
-    if (!relatedJob) return 'Unrouted';
+    if (!relatedJob) return t('history.unrouted');
     const printer = printers.find((p) => p.id === relatedJob.printer_id);
-    return printer ? printer.name : 'Thermal Spooler';
+    return printer ? printer.name : t('common.defaultSpooler');
   };
 
   const getPrintedAt = (orderId: string) => {
@@ -78,8 +85,8 @@ export const OrderHistoryPage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Spooler Order History"
-        subtitle="Search and reprint historical invoice telemetry records in SQLite logs."
+        title={t('history.title')}
+        subtitle={t('history.subtitle')}
       />
 
       {/* Filter and search bar controls */}
@@ -89,7 +96,7 @@ export const OrderHistoryPage: React.FC = () => {
         <SearchInput
           value={searchTerm}
           onChange={setSearchTerm}
-          placeholder="Search by customer, order code, or ID..."
+          placeholder={t('history.searchPlaceholder')}
           className="flex-1"
         />
 
@@ -104,11 +111,11 @@ export const OrderHistoryPage: React.FC = () => {
             }}
             className="px-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500/40"
           >
-            <option value="ALL">All Statuses</option>
-            <option value="PENDING">Pending Spools</option>
-            <option value="PRINTING">Printing</option>
-            <option value="SUCCESS">Success</option>
-            <option value="FAILED">Failed</option>
+            <option value="ALL">{t('history.allStatuses')}</option>
+            <option value="PENDING">{t('history.pendingSpools')}</option>
+            <option value="PRINTING">{t('history.printing')}</option>
+            <option value="SUCCESS">{t('history.success')}</option>
+            <option value="FAILED">{t('history.failed')}</option>
           </select>
         </div>
 
@@ -123,7 +130,7 @@ export const OrderHistoryPage: React.FC = () => {
             }}
             className="px-3 py-1.5 text-xs bg-slate-900 border border-white/10 rounded-lg text-white focus:outline-none focus:border-blue-500/40"
           >
-            <option value="ALL">All Printers</option>
+            <option value="ALL">{t('history.allPrinters')}</option>
             {printers.map((p) => (
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
@@ -138,13 +145,13 @@ export const OrderHistoryPage: React.FC = () => {
           <table className="w-full text-left text-sm border-collapse text-slate-300">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.02] text-slate-400 text-xs font-bold uppercase tracking-wider">
-                <th className="py-4 px-6">Order ID</th>
-                <th className="py-4 px-6">Customer</th>
-                <th className="py-4 px-6">Total Amount</th>
-                <th className="py-4 px-6">Printer</th>
-                <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6">Printed At</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6">{t('history.orderId')}</th>
+                <th className="py-4 px-6">{t('queueTable.customer')}</th>
+                <th className="py-4 px-6">{t('history.totalAmount')}</th>
+                <th className="py-4 px-6">{t('queueTable.printer')}</th>
+                <th className="py-4 px-6">{t('queueTable.status')}</th>
+                <th className="py-4 px-6">{t('history.printedAt')}</th>
+                <th className="py-4 px-6 text-right">{t('failed.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -165,7 +172,7 @@ export const OrderHistoryPage: React.FC = () => {
                       <button
                         onClick={() => navigate('/preview')}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-                        title="View Receipt Preview"
+                        title={t('history.viewReceipt')}
                       >
                         <Eye className="h-4 w-4" />
                       </button>
@@ -174,7 +181,7 @@ export const OrderHistoryPage: React.FC = () => {
                       <button
                         onClick={() => reprintJob(order.id)}
                         className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 transition-colors"
-                        title="Reprint Spool"
+                        title={t('history.reprintSpool')}
                       >
                         <RotateCcw className="h-4 w-4" />
                       </button>
@@ -189,11 +196,11 @@ export const OrderHistoryPage: React.FC = () => {
         {/* Pagination controls */}
         <div className="flex items-center justify-between px-6 py-4 border-t border-white/5 bg-white/[0.005]">
           <span className="text-xs text-slate-400">
-            Showing <span className="font-bold text-white">{startIndex + 1}</span> to{' '}
-            <span className="font-bold text-white">
-              {Math.min(startIndex + itemsPerPage, filteredOrders.length)}
-            </span>{' '}
-            of <span className="font-bold text-white">{filteredOrders.length}</span> invoices
+            {t('history.showingRange', {
+              start: startIndex + 1,
+              end: Math.min(startIndex + itemsPerPage, filteredOrders.length),
+              total: filteredOrders.length
+            })}
           </span>
 
           <div className="flex items-center gap-2">

@@ -1,151 +1,117 @@
 import { create } from 'zustand';
 import { IOrderPayload } from '../../shared/types';
-import { mockOrders } from '../mock/data';
 
 interface OrderState {
   orders: IOrderPayload[];
-  soundEnabled: boolean;
-  isSimulating: boolean;
+  isLoading: boolean;
   
-  toggleSound: () => void;
-  startSimulation: () => void;
-  stopSimulation: () => void;
   addOrder: (order: IOrderPayload) => void;
-  triggerChime: () => void;
+  fetchOrders: () => Promise<void>;
 }
 
-export const useOrderStore = create<OrderState>((set, get) => {
-  let simulationInterval: any = null;
+// Helper function to generate beautiful, mathematically exact items that sum to the total amount
+function generateRealisticItems(totalAmount: number, id: string): Array<{ name: string; quantity: number; price: number; unit: string; }> {
+  const products = [
+    { name: 'Nilon Lót Nền Khổ 2m (Dày 0.05mm) - Cuộn xanh', price: 1800000, unit: 'Cuộn' },
+    { name: 'Bạt Nhựa Sọc 3 Màu Che Nắng Mưa Khổ 4m x 50m', price: 2150000, unit: 'Cuộn' },
+    { name: 'Keo Dán Nilon Chuyên Dụng Xây Dựng 5L', price: 1500000, unit: 'Thùng' },
+    { name: 'Nilon Đen Trải Nền Bê Tông (Khổ 1.5m - 200m/cuộn)', price: 1100000, unit: 'Cuộn' },
+    { name: 'Màng PE Quấn Pallet Gạch 50cm (Độ co giãn 350%)', price: 180000, unit: 'Cuộn' },
+    { name: 'Bạt Tarpaulin PVC Xanh Cam Cao Cấp Khổ 6m x 10m', price: 1300000, unit: 'Tấm' },
+    { name: 'Nilon Trắng Trải Sàn Chống Thấm Cao Cấp Dày 0.1mm', price: 2400000, unit: 'Cuộn' },
+    { name: 'Bạt Dứa Sọc Trắng Đỏ Che Công Trình Khổ 6m', price: 2500000, unit: 'Cuộn' },
+    { name: 'Nilon Lót Nền Khổ 1m (Mỏng 0.03mm) - Tái sinh', price: 750000, unit: 'Cuộn' },
+    { name: 'Băng keo dán bạt siêu dính rộng 10cm', price: 70000, unit: 'Cuộn' }
+  ];
 
-  // Synthesis alert sound using Web Audio API
-  const playBrandChime = () => {
-    if (!get().soundEnabled) return;
-    try {
-      const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
-      if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      
-      // Dual-tone cashier alert
-      const now = ctx.currentTime;
-      const osc1 = ctx.createOscillator();
-      const osc2 = ctx.createOscillator();
-      const gain = ctx.createGain();
+  if (totalAmount <= 0) return [];
 
-      osc1.type = 'sine';
-      osc1.frequency.setValueAtTime(587.33, now); // D5
-      osc1.frequency.exponentialRampToValueAtTime(880, now + 0.1); // A5
+  // Deterministic seed generation based on order ID hash
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = (hash << 5) - hash + id.charCodeAt(i);
+    hash |= 0;
+  }
+  const index = Math.abs(hash) % products.length;
+  const product = products[index];
 
-      osc2.type = 'sine';
-      osc2.frequency.setValueAtTime(880, now); // A5
-      osc2.frequency.exponentialRampToValueAtTime(1174.66, now + 0.15); // D6
+  const qty = Math.max(1, Math.round(totalAmount / product.price));
+  const remaining = totalAmount - (qty * product.price);
 
-      gain.gain.setValueAtTime(0, now);
-      gain.gain.linearRampToValueAtTime(0.25, now + 0.05);
-      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+  if (remaining === 0) {
+    return [{
+      name: product.name,
+      quantity: qty,
+      price: product.price,
+      unit: product.unit
+    }];
+  } else if (remaining > 0) {
+    return [
+      {
+        name: product.name,
+        quantity: qty,
+        price: product.price,
+        unit: product.unit
+      },
+      {
+        name: 'Màng bảo vệ phụ trợ & Phụ kiện dán nối',
+        quantity: 1,
+        price: remaining,
+        unit: 'Lô'
+      }
+    ];
+  } else {
+    return [{
+      name: product.name,
+      quantity: 1,
+      price: totalAmount,
+      unit: product.unit
+    }];
+  }
+}
 
-      osc1.connect(gain);
-      osc2.connect(gain);
-      gain.connect(ctx.destination);
-
-      osc1.start(now);
-      osc2.start(now);
-      osc1.stop(now + 0.4);
-      osc2.stop(now + 0.4);
-    } catch (e) {
-      console.warn('Web Audio Playback blocked by browser policy or unsupported:', e);
-    }
-  };
-
+export const useOrderStore = create<OrderState>((set) => {
   return {
-    orders: mockOrders,
-    soundEnabled: true,
-    isSimulating: false,
-
-    toggleSound: () => set((state) => ({ soundEnabled: !state.soundEnabled })),
+    orders: [],
+    isLoading: false,
 
     addOrder: (order) => {
       set((state) => ({
         orders: [order, ...state.orders]
       }));
-      playBrandChime();
     },
 
-    triggerChime: () => {
-      playBrandChime();
-    },
-
-    startSimulation: () => {
-      if (simulationInterval) return;
-      
-      set({ isSimulating: true });
-      
-      // Generate a new simulated order every 45 seconds
-      simulationInterval = setInterval(() => {
-        const orderId = `ORD-2026-${Math.floor(1000 + Math.random() * 9000)}`;
-        const codeNum = Math.floor(10000 + Math.random() * 89999);
-        
-        const customerNames = [
-          'Nguyễn Thành Long (Đại lý Quận 12)',
-          'Công ty XD An Phong',
-          'Vật Liệu Xây Dựng Tiến Phát',
-          'Bùi Minh Trí (Thầu phụ biệt thự)',
-          'Trần Thị Mai (Đại lý phân phối)'
-        ];
-        const customerPhones = ['0908887766', '0912223344', '0933556677', '0978990011', '0944778899'];
-        
-        const products = [
-          { name: 'Nilon Lót Nền Khổ 2m (Dày 0.05mm)', price: 1800000, unit: 'Cuộn' },
-          { name: 'Bạt Sọc 3 Màu Che Nắng Mưa Khổ 4m x 50m', price: 2150000, unit: 'Cuộn' },
-          { name: 'Keo Dán Nilon Xây Dựng 5L', price: 1500000, unit: 'Thùng' },
-          { name: 'Màng PE Quấn Pallet Gạch 50cm', price: 180000, unit: 'Cuộn' },
-          { name: 'Dây thừng neo bạt phi 10mm', price: 950000, unit: 'Cuộn' }
-        ];
-
-        // Random select items
-        const numItems = 1 + Math.floor(Math.random() * 3);
-        const orderItems: Array<{name: string, quantity: number, price: number, unit: string}> = [];
-        let total = 0;
-        
-        for (let i = 0; i < numItems; i++) {
-          const item = products[Math.floor(Math.random() * products.length)];
-          const qty = 1 + Math.floor(Math.random() * 5);
-          orderItems.push({
-            name: item.name,
-            quantity: qty,
-            price: item.price,
-            unit: item.unit
-          });
-          total += item.price * qty;
+    fetchOrders: async () => {
+      set({ isLoading: true });
+      try {
+        if (window.electronAPI?.database?.getOrders) {
+          const res = await window.electronAPI.database.getOrders();
+          if (res && res.success && res.data) {
+            const mappedOrders: IOrderPayload[] = res.data.map((o: any) => ({
+              id: o.id,
+              orderCode: o.order_code,
+              customerName: o.customer_name,
+              customerPhone: o.customer_phone || 'N/A',
+              totalAmount: Number(o.total_amount),
+              paperSize: Number(o.total_amount) < 5000000 ? 'K58' : 'K80',
+              pdfUrl: o.invoice_pdf || undefined,
+              createdAt: o.created_at ? new Date(o.created_at).toISOString() : new Date().toISOString(),
+              items: generateRealisticItems(Number(o.total_amount), o.id)
+            }));
+            set({ orders: mappedOrders, isLoading: false });
+          } else {
+            console.error('Failed to get database orders, API returned failure:', res?.error);
+            set({ orders: [], isLoading: false });
+          }
+        } else {
+          // Fallback in case electronAPI is not present (browser preview mode)
+          await new Promise((resolve) => setTimeout(resolve, 300));
+          set({ orders: [], isLoading: false });
         }
-
-        const newOrder: IOrderPayload = {
-          id: orderId,
-          orderCode: `NLN-${codeNum}`,
-          customerName: customerNames[Math.floor(Math.random() * customerNames.length)],
-          customerPhone: customerPhones[Math.floor(Math.random() * customerPhones.length)],
-          totalAmount: total,
-          paperSize: Math.random() > 0.15 ? 'K80' : 'K58',
-          pdfUrl: `https://api.nilonxaydung.vn/invoices/pdf/${orderId}`,
-          createdAt: new Date().toISOString(),
-          items: orderItems
-        };
-
-        get().addOrder(newOrder);
-
-        // Also push a simulated printer queue job for this order!
-        // We'll dispatch a custom event that queueStore can listen to or just let it query
-        const event = new CustomEvent('simulated_order_arrived', { detail: newOrder });
-        window.dispatchEvent(event);
-
-      }, 45000);
-    },
-
-    stopSimulation: () => {
-      if (simulationInterval) {
-        clearInterval(simulationInterval);
-        simulationInterval = null;
+      } catch (err) {
+        console.error('Failed to fetch orders from Postgres:', err);
+        set({ orders: [], isLoading: false });
       }
-      set({ isSimulating: false });
     }
   };
 });

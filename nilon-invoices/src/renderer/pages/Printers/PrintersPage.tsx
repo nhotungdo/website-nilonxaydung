@@ -11,8 +11,10 @@ import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { usePrinterStore } from '../../stores/printerStore';
+import { useTranslation } from '../../locales';
 
 export const PrintersPage: React.FC = () => {
+  const { t } = useTranslation();
   const { 
     printers, 
     addPrinter, 
@@ -39,8 +41,8 @@ export const PrintersPage: React.FC = () => {
       name,
       paper_size: paperSize,
       connection_type: connectionType,
-      ip_address: connectionType === 'LAN' ? ipAddress : null,
-      port: connectionType === 'LAN' ? parseInt(port) || 9100 : null,
+      ip_address: connectionType === 'USB' ? null : ipAddress,
+      port: connectionType === 'USB' ? null : parseInt(port) || 9100,
       is_default: 0
     });
 
@@ -58,9 +60,9 @@ export const PrintersPage: React.FC = () => {
     const result = await testPrinter(printerId);
     setTestingId(null);
     if (result.success) {
-      alert('Test print instruction sent successfully! Check physical spooler output.');
+      alert(t('printers.testPrintSuccess'));
     } else {
-      alert(`Test print failed: ${result.error || 'Unknown error'}`);
+      alert(t('printers.testPrintFailed', { error: result.error || t('common.unknownError') }));
     }
   };
 
@@ -69,15 +71,15 @@ export const PrintersPage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Hardware Printers Manager"
-        subtitle="Configure physical thermal print drivers. Auto-print routing controls."
+        title={t('printers.title')}
+        subtitle={t('printers.subtitle')}
         actions={
           <button
             onClick={() => setShowAddModal(true)}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-md shadow-blue-500/10 active:scale-[0.98]"
           >
             <Plus className="h-4 w-4" />
-            Add Spooler Printer
+            {t('printers.addPrinter')}
           </button>
         }
       />
@@ -88,13 +90,13 @@ export const PrintersPage: React.FC = () => {
           <table className="w-full text-left text-sm border-collapse text-slate-300">
             <thead>
               <tr className="border-b border-white/5 bg-white/[0.02] text-slate-400 text-xs font-bold uppercase tracking-wider">
-                <th className="py-4 px-6">Printer Name</th>
-                <th className="py-4 px-6">Paper Size</th>
-                <th className="py-4 px-6">Connection Type</th>
-                <th className="py-4 px-6">Driver Target / IP</th>
-                <th className="py-4 px-6">Status</th>
-                <th className="py-4 px-6">Default</th>
-                <th className="py-4 px-6 text-right">Actions</th>
+                <th className="py-4 px-6">{t('printers.printerName')}</th>
+                <th className="py-4 px-6">{t('printers.paperSize')}</th>
+                <th className="py-4 px-6">{t('printers.connectionType')}</th>
+                <th className="py-4 px-6">{t('printers.driverTarget')}</th>
+                <th className="py-4 px-6">{t('queueTable.status')}</th>
+                <th className="py-4 px-6">{t('printers.default')}</th>
+                <th className="py-4 px-6 text-right">{t('failed.actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-white/5">
@@ -116,7 +118,7 @@ export const PrintersPage: React.FC = () => {
                   <td className="py-4 px-6 font-bold text-xs text-slate-400">{printer.connection_type}</td>
 
                   <td className="py-4 px-6 font-mono text-xs text-slate-400">
-                    {printer.connection_type === 'LAN' ? `${printer.ip_address}:${printer.port}` : 'USB Local Spool'}
+                    {printer.connection_type === 'USB' ? t('printers.usbLocalSpool') : `${printer.ip_address}:${printer.port}`}
                   </td>
 
                   <td className="py-4 px-6">
@@ -127,14 +129,14 @@ export const PrintersPage: React.FC = () => {
                     {printer.is_default === 1 ? (
                       <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400">
                         <Check className="h-4.5 w-4.5 text-emerald-400" />
-                        DEFAULT
+                        {t('printers.default')}
                       </span>
                     ) : (
                       <button
                         onClick={() => setDefaultPrinter(printer.id)}
                         className="text-xs text-slate-500 hover:text-white hover:underline transition-colors opacity-0 group-hover:opacity-100"
                       >
-                        Set Default
+                        {t('printers.setDefault')}
                       </button>
                     )}
                   </td>
@@ -149,10 +151,10 @@ export const PrintersPage: React.FC = () => {
                       {testingId === printer.id ? (
                         <span className="flex items-center gap-1">
                           <Loader2 className="h-3 w-3 animate-spin" />
-                          Testing...
+                          {t('printers.testing')}
                         </span>
                       ) : (
-                        'Print Test'
+                        t('printers.printTest')
                       )}
                     </button>
 
@@ -182,7 +184,7 @@ export const PrintersPage: React.FC = () => {
               <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
                 <h3 className="text-base font-bold text-white flex items-center gap-2">
                   <Printer className="h-5 w-5 text-blue-500" />
-                  Add Spooler Printer
+                  {t('printers.addPrinter')}
                 </h3>
                 <button
                   onClick={() => setShowAddModal(false)}
@@ -195,12 +197,12 @@ export const PrintersPage: React.FC = () => {
               <form onSubmit={handleAddSubmit} className="space-y-4">
                 {/* Printer Name */}
                 <div className="space-y-1">
-                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Printer Name</label>
+                  <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('printers.printerName')}</label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="e.g. Counter Cashier K80"
+                    placeholder={t('printers.namePlaceholder')}
                     required
                     className="w-full px-3 py-2 text-sm bg-white/[0.02] border border-white/10 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-blue-500/40"
                   />
@@ -209,7 +211,7 @@ export const PrintersPage: React.FC = () => {
                 {/* Paper size / Conn layout */}
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Paper Size</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('printers.paperSize')}</label>
                     <select
                       value={paperSize}
                       onChange={(e: any) => setPaperSize(e.target.value)}
@@ -221,7 +223,7 @@ export const PrintersPage: React.FC = () => {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Connection Type</label>
+                    <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('printers.connectionType')}</label>
                     <select
                       value={connectionType}
                       onChange={(e: any) => setConnectionType(e.target.value)}
@@ -238,7 +240,7 @@ export const PrintersPage: React.FC = () => {
                 {connectionType !== 'USB' && (
                   <div className="grid grid-cols-3 gap-3">
                     <div className="col-span-2 space-y-1">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">IP Address</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('printers.ipAddress')}</label>
                       <input
                         type="text"
                         value={ipAddress}
@@ -249,7 +251,7 @@ export const PrintersPage: React.FC = () => {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Port</label>
+                      <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('printers.port')}</label>
                       <input
                         type="text"
                         value={port}
@@ -268,13 +270,13 @@ export const PrintersPage: React.FC = () => {
                     onClick={() => setShowAddModal(false)}
                     className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 text-white transition-colors"
                   >
-                    Cancel
+                    {t('buttons.cancel')}
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg text-sm bg-blue-600 hover:bg-blue-500 font-bold text-white transition-all shadow-md shadow-blue-500/10 active:scale-[0.98]"
                   >
-                    Save Spooler Driver
+                    {t('printers.saveSpooler')}
                   </button>
                 </div>
               </form>

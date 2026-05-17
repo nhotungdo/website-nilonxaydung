@@ -1,15 +1,14 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  TrendingUp, 
-  Printer, 
-  AlertCircle, 
-  Layers, 
-  Clock, 
-  Radio, 
-  Play, 
-  Square,
-  FileSpreadsheet
+  TrendingUp,
+  Printer,
+  AlertCircle,
+  Layers,
+  Clock,
+  Radio,
+  FileSpreadsheet,
+  RefreshCw
 } from 'lucide-react';
 import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
@@ -18,74 +17,51 @@ import { useOrderStore } from '../../stores/orderStore';
 import { usePrinterStore } from '../../stores/printerStore';
 import { useQueueStore } from '../../stores/queueStore';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useTranslation } from '../../locales';
 
 export const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
-  
-  // Connect to Zustand stores for unified, dynamic state!
-  const { orders, isSimulating, startSimulation, stopSimulation, triggerChime } = useOrderStore();
+  const { t } = useTranslation();
+  const orders = useOrderStore((s) => s.orders);
   const printers = usePrinterStore((s) => s.printers);
-  const { jobs, fetchJobs } = useQueueStore();
-  const socketStatus = useSettingsStore((s) => s.socketStatus);
+  const jobs = useQueueStore((s) => s.jobs);
+  const { socketStatus } = useSettingsStore();
 
-  useEffect(() => {
-    fetchJobs();
-    // Auto-start simulation in mock mode to make the UI feel alive!
-    if (!isSimulating) {
-      startSimulation();
-    }
-  }, []);
-
-  // Compute live widget statistics
   const totalOrders = orders.length;
   const onlinePrinters = printers.filter((p) => p.status === 'ONLINE').length;
   const failedJobsCount = jobs.filter((j) => j.status === 'FAILED').length;
   const activeQueueCount = jobs.filter((j) => j.status === 'PENDING' || j.status === 'PRINTING').length;
-
   const recentJobs = jobs.slice(0, 5);
+
+  const getPrinterName = (printerId: string) => {
+    const printer = printers.find((p) => p.id === printerId);
+    return printer ? printer.name : t('common.unknown');
+  };
 
   const formatCurrency = (val: number) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
   };
 
-  const getPrinterName = (printerId: string) => {
-    const printer = printers.find((p) => p.id === printerId);
-    return printer ? printer.name : 'System Driver';
-  };
 
   return (
     <div className="space-y-6">
       
-      {/* Page Header */}
+      {/* Header and Telemetry */}
       <PageHeader
-        title="Industrial Telemetry Dashboard"
-        subtitle="Real-time monitor for local thermal print queues & NestJS API sockets."
+        title={t('dashboard.title')}
+        subtitle={t('dashboard.subtitle')}
         actions={
-          <div className="flex items-center gap-3">
-            {/* Simulation Controller */}
-            {isSimulating ? (
-              <button
-                onClick={stopSimulation}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/20 text-amber-400 transition-all active:scale-[0.98]"
-              >
-                <Square className="h-3.5 w-3.5 fill-current" />
-                Stop Order Simulator
-              </button>
-            ) : (
-              <button
-                onClick={startSimulation}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/20 text-emerald-400 transition-all active:scale-[0.98]"
-              >
-                <Play className="h-3.5 w-3.5 fill-current" />
-                Start Order Simulator
-              </button>
-            )}
-
+          <div className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+              <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span>
+              {t('dashboard.realtimeActive')}
+            </span>
             <button
-              onClick={triggerChime}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors"
+              onClick={() => window.location.reload()}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 transition-colors shadow-sm"
             >
-              Test Chime
+              <RefreshCw className="h-3.5 w-3.5" />
+              {t('dashboard.refreshTelemetry')}
             </button>
           </div>
         }
@@ -101,48 +77,48 @@ export const DashboardPage: React.FC = () => {
             <TrendingUp className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Orders Today</span>
-            <span className="text-2xl font-black text-white">{totalOrders}</span>
-            <span className="text-[10px] text-blue-400 font-bold block mt-0.5">Live arrivals</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">{t('dashboard.ordersToday')}</span>
+            <span className="text-2xl font-black text-slate-800">{totalOrders}</span>
+            <span className="text-[10px] text-blue-500 font-bold block mt-0.5">{t('dashboard.liveArrivals')}</span>
           </div>
         </GlassCard>
 
         {/* Active Printers */}
         <GlassCard className="flex items-center gap-4 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-16 w-16 bg-emerald-500/5 rounded-full blur-xl group-hover:bg-emerald-500/10 transition-all"></div>
-          <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
+          <div className="h-12 w-12 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-500">
             <Printer className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Active Printers</span>
-            <span className="text-2xl font-black text-white">{onlinePrinters} <span className="text-xs font-normal text-slate-400">/ {printers.length}</span></span>
-            <span className="text-[10px] text-emerald-400 font-bold block mt-0.5">Spoolers online</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">{t('dashboard.activePrinters')}</span>
+            <span className="text-2xl font-black text-slate-800">{onlinePrinters} <span className="text-xs font-normal text-slate-400">/ {printers.length}</span></span>
+            <span className="text-[10px] text-emerald-500 font-bold block mt-0.5">{t('dashboard.spoolersOnline')}</span>
           </div>
         </GlassCard>
 
         {/* Failed Jobs */}
         <GlassCard className="flex items-center gap-4 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-16 w-16 bg-red-500/5 rounded-full blur-xl group-hover:bg-red-500/10 transition-all"></div>
-          <div className="h-12 w-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400">
+          <div className="h-12 w-12 rounded-xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-500">
             <AlertCircle className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Failed Spool Jobs</span>
-            <span className="text-2xl font-black text-white">{failedJobsCount}</span>
-            <span className="text-[10px] text-red-400 font-bold block mt-0.5">Requires retry</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">{t('dashboard.failedSpoolJobs')}</span>
+            <span className="text-2xl font-black text-slate-800">{failedJobsCount}</span>
+            <span className="text-[10px] text-red-500 font-bold block mt-0.5">{t('dashboard.requiresRetry')}</span>
           </div>
         </GlassCard>
 
         {/* Active Queue Waiting */}
         <GlassCard className="flex items-center gap-4 relative overflow-hidden group">
           <div className="absolute right-0 top-0 h-16 w-16 bg-amber-500/5 rounded-full blur-xl group-hover:bg-amber-500/10 transition-all"></div>
-          <div className="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+          <div className="h-12 w-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-500">
             <Layers className="h-6 w-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Spool Queue Waiting</span>
-            <span className="text-2xl font-black text-white">{activeQueueCount}</span>
-            <span className="text-[10px] text-amber-400 font-bold block mt-0.5">Background execution</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider block">{t('dashboard.spoolQueueWaiting')}</span>
+            <span className="text-2xl font-black text-slate-800">{activeQueueCount}</span>
+            <span className="text-[10px] text-amber-500 font-bold block mt-0.5">{t('dashboard.backgroundExecution')}</span>
           </div>
         </GlassCard>
 
@@ -153,46 +129,54 @@ export const DashboardPage: React.FC = () => {
         
         {/* Left column (Recent activities & queue telemetry) */}
         <div className="lg:col-span-2 space-y-6">
-          <GlassCard className="border-white/5">
-            <div className="flex items-center justify-between pb-4 border-b border-white/5 mb-4">
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Clock className="h-5 w-5 text-blue-500" />
-                Spooler Queue Activity
+          <GlassCard>
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+              <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+                <Clock className="h-5 w-5 text-[#005B52]" />
+                {t('dashboard.spoolerQueueActivity')}
               </h3>
               <button 
                 onClick={() => navigate('/queue')}
-                className="text-xs text-blue-400 hover:underline"
+                className="text-xs text-[#005B52] font-semibold hover:underline"
               >
-                View Full Spooler
+                {t('buttons.viewFullSpooler')}
               </button>
             </div>
 
             {/* Print Jobs table */}
             <div className="w-full overflow-x-auto">
-              <table className="w-full text-left text-sm border-collapse text-slate-300">
+              <table className="w-full text-left text-sm border-collapse text-slate-600">
                 <thead>
-                  <tr className="border-b border-white/5 text-slate-400 text-xs font-bold uppercase tracking-wider">
-                    <th className="py-3 px-4">Job ID</th>
-                    <th className="py-3 px-4">Customer</th>
-                    <th className="py-3 px-4">Printer</th>
-                    <th className="py-3 px-4">Status</th>
-                    <th className="py-3 px-4 text-right">Spool Time</th>
+                  <tr className="border-b border-slate-200/80 text-slate-500 text-xs font-bold uppercase tracking-wider">
+                    <th className="py-3 px-4">{t('queueTable.jobId')}</th>
+                    <th className="py-3 px-4">{t('queueTable.customer')}</th>
+                    <th className="py-3 px-4">{t('queueTable.printer')}</th>
+                    <th className="py-3 px-4">{t('queueTable.status')}</th>
+                    <th className="py-3 px-4 text-right">{t('queueTable.spoolTime')}</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5">
-                  {recentJobs.map((job) => (
-                    <tr key={job.id} className="hover:bg-white/[0.01] transition-colors">
-                      <td className="py-3 px-4 font-mono text-xs text-blue-400">{job.id}</td>
-                      <td className="py-3 px-4 font-semibold text-white">{job.customer_name}</td>
-                      <td className="py-3 px-4 text-xs text-slate-400">{getPrinterName(job.printer_id)}</td>
-                      <td className="py-3 px-4">
-                        <StatusBadge status={job.status} />
-                      </td>
-                      <td className="py-3 px-4 text-right text-xs text-slate-500">
-                        {new Date(job.created_at).toLocaleTimeString()}
+                <tbody className="divide-y divide-slate-100">
+                  {recentJobs.length > 0 ? (
+                    recentJobs.map((job) => (
+                      <tr key={job.id} className="hover:bg-slate-50/50 transition-colors">
+                        <td className="py-3 px-4 font-mono text-xs text-[#005B52] font-semibold">{job.id}</td>
+                        <td className="py-3 px-4 font-semibold text-slate-800">{job.customer_name}</td>
+                        <td className="py-3 px-4 text-xs text-slate-500">{getPrinterName(job.printer_id)}</td>
+                        <td className="py-3 px-4">
+                          <StatusBadge status={job.status} />
+                        </td>
+                        <td className="py-3 px-4 text-right text-xs text-slate-400">
+                          {new Date(job.created_at).toLocaleTimeString()}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="py-8 text-center text-slate-400 text-xs italic font-medium">
+                        {t('empty.waitingOrders')}
                       </td>
                     </tr>
-                  ))}
+                  )}
                 </tbody>
               </table>
             </div>
@@ -203,74 +187,76 @@ export const DashboardPage: React.FC = () => {
         <div className="space-y-6">
           
           {/* Socket & Network Status Card */}
-          <GlassCard className="border-white/5">
-            <h3 className="text-base font-bold text-white flex items-center gap-2 pb-4 border-b border-white/5 mb-4">
-              <Radio className="h-5 w-5 text-blue-500" />
-              Socket.IO System Health
+          <GlassCard>
+            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 pb-4 border-b border-slate-100 mb-4">
+              <Radio className="h-5 w-5 text-[#005B52]" />
+              {t('socket.title')}
             </h3>
             
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Connection State:</span>
+                <span className="text-xs text-slate-500">{t('socket.connectionState')}:</span>
                 {socketStatus === 'CONNECTED' ? (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-600 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                     <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                    ESTABLISHED
+                    {t('common.established')}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1 text-xs font-bold text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded-full">
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-red-600 bg-red-50 border border-red-200 px-2 py-0.5 rounded-full">
                     <span className="h-1.5 w-1.5 rounded-full bg-red-500"></span>
-                    DISCONNECTED
+                    {t('common.disconnected')}
                   </span>
                 )}
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Network Latency:</span>
-                <span className="text-xs font-mono font-bold text-slate-300">42ms</span>
+                <span className="text-xs text-slate-500">{t('socket.networkLatency')}:</span>
+                <span className="text-xs font-mono font-bold text-slate-700">42ms</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Socket Port:</span>
-                <span className="text-xs font-mono font-bold text-slate-300">80/443 (Secure WSS)</span>
+                <span className="text-xs text-slate-500">{t('socket.socketPort')}:</span>
+                <span className="text-xs font-mono font-bold text-slate-700">80/443 (Secure WSS)</span>
               </div>
 
               <div className="flex items-center justify-between">
-                <span className="text-xs text-slate-400">Listener Subscriptions:</span>
-                <span className="text-xs font-bold text-slate-300">orders, printers, spool</span>
+                <span className="text-xs text-slate-500">{t('socket.listenerSubscriptions')}:</span>
+                <span className="text-xs font-bold text-slate-700">ORDER_CREATED, printers, spool</span>
               </div>
             </div>
           </GlassCard>
 
           {/* Latest Order Alert panel */}
-          <GlassCard className="border-white/5 relative overflow-hidden">
-            <h3 className="text-base font-bold text-white flex items-center gap-2 pb-4 border-b border-white/5 mb-4">
-              <FileSpreadsheet className="h-5 w-5 text-blue-500" />
-              Latest Arrived Order
+          <GlassCard className="relative overflow-hidden">
+            <h3 className="text-base font-bold text-slate-800 flex items-center gap-2 pb-4 border-b border-slate-100 mb-4">
+              <FileSpreadsheet className="h-5 w-5 text-[#005B52]" />
+              {t('dashboard.latestArrivedOrder')}
             </h3>
 
             {orders.length > 0 ? (
               <div className="space-y-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="text-xs font-bold text-white font-mono">{orders[0].orderCode}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">{orders[0].customerName}</span>
+                    <span className="text-xs font-bold text-slate-800 font-mono">{orders[0].orderCode}</span>
+                    <span className="text-[10px] text-slate-500 block mt-0.5">{orders[0].customerName}</span>
                   </div>
-                  <span className="text-sm font-black text-blue-400">{formatCurrency(orders[0].totalAmount)}</span>
+                  <span className="text-sm font-black text-[#005B52]">{formatCurrency(orders[0].totalAmount)}</span>
                 </div>
-                <div className="flex justify-between items-center text-[10px] text-slate-500">
-                  <span>Method: COD / Bank Transfer</span>
+                <div className="flex justify-between items-center text-[10px] text-slate-400">
+                  <span>{t('dashboard.methodCodBank')}</span>
                   <span>{new Date(orders[0].createdAt).toLocaleTimeString()}</span>
                 </div>
                 <button
                   onClick={() => navigate('/orders')}
-                  className="w-full py-2 rounded-lg text-xs font-bold bg-white/5 hover:bg-white/10 border border-white/10 text-white transition-colors"
+                  className="w-full py-2 rounded-lg text-xs font-bold bg-[#005B52]/10 border border-[#005B52]/20 text-[#005B52] hover:bg-[#005B52]/20 transition-colors"
                 >
-                  Interact in Spooler
+                  {t('dashboard.interactInSpooler')}
                 </button>
               </div>
             ) : (
-              <p className="text-xs text-slate-500 text-center py-4">Waiting for new orders...</p>
+              <p className="text-xs text-slate-400 text-center py-6 font-medium italic">
+                {t('empty.waitingOrders')}
+              </p>
             )}
           </GlassCard>
 

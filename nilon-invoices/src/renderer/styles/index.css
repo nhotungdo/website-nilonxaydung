@@ -4,12 +4,14 @@
 
 @layer base {
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    background-color: #070a13; /* Elegant cosmic dark theme */
+    font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background-color: #F4F6F9; /* Pristine modern light theme background */
+    color: #1E293B; /* Slate 800 */
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Outfit', sans-serif;
+    color: #0F172A; /* Slate 900 */
   }
 }
 
@@ -104,4 +106,154 @@
 @keyframes shimmer {
   0% { background-position: -200% 0; }
   100% { background-position: 200% 0; }
+}
+
+/* ==========================================
+   PREMIUM LIGHT-THEME STYLING OVERRIDES
+   ========================================== */
+
+/* Webkit Scrollbars for Light Theme */
+::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 91, 82, 0.25); /* Pine Green accent */
+}
+
+/* Scoped layout classes for all content pages inside MainLayout's <main> container */
+main.flex-1.bg-\[\#F4F6F9\] {
+  color: #334155; /* Slate 700 default body text */
+}
+
+/* Header and title text override */
+main.flex-1.bg-\[\#F4F6F9\] .text-white:not(button):not(.bg-blue-600):not(.bg-\[\#005B52\]):not(.bg-emerald-500):not(.bg-red-500):not(.bg-amber-500) {
+  color: #0f172a !important; /* Deep Slate 900 for headings */
+}
+
+main.flex-1.bg-\[\#F4F6F9\] .text-slate-200 {
+  color: #1e293b !important; /* Slate 800 */
+}
+
+main.flex-1.bg-\[\#F4F6F9\] .text-slate-300 {
+  color: #334155 !important; /* Slate 700 */
+}
+
+main.flex-1.bg-\[\#F4F6F9\] .text-slate-400 {
+  color: #57657a !important; /* Slate 500 */
+}
+
+main.flex-1.bg-\[\#F4F6F9\] .text-slate-500 {
+  color: #64748b !important; /* Slate 500 */
+}
+
+/* Translucent gray background overrides to clean light-gray tints */
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/\[0\.005\],
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/\[0\.01\],
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/\[0\.02\],
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/\[0\.03\],
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/5 {
+  background-color: #f8fafc !important; /* Slate 50 */
+  border-color: #e2e8f0 !important; /* Slate 200 */
+}
+
+/* Tables divide lines */
+main.flex-1.bg-\[\#F4F6F9\] .divide-white\/5 > :not([hidden]) ~ :not([hidden]) {
+  border-color: #e2e8f0 !important; /* Slate 200 */
+}
+
+/* Interactive tables and lists hovers */
+main.flex-1.bg-\[\#F4F6F9\] .hover\:bg-white\/\[0\.01\]:hover,
+main.flex-1.bg-\[\#F4F6F9\] .hover\:bg-white\/\[0\.02\]:hover {
+  background-color: #f1f5f9 !important; /* Slate 100 on hover */
+}
+
+/* Custom form elements (Selects, inputs, textareas) */
+main.flex-1.bg-\[\#F4F6F9\] select,
+main.flex-1.bg-\[\#F4F6F9\] input[type="text"],
+main.flex-1.bg-\[\#F4F6F9\] input[type="number"],
+main.flex-1.bg-\[\#F4F6F9\] input[type="password"] {
+  background-color: #ffffff !important;
+  color: #0f172a !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02) !important;
+  transition: all 0.2s ease-in-out !important;
+}
+
+main.flex-1.bg-\[\#F4F6F9\] select:focus,
+main.flex-1.bg-\[\#F4F6F9\] input[type="text"]:focus,
+main.flex-1.bg-\[\#F4F6F9\] input[type="number"]:focus,
+main.flex-1.bg-\[\#F4F6F9\] input[type="password"]:focus {
+  border-color: #005B52 !important; /* Brand pine green focus border */
+  box-shadow: 0 0 0 2px rgba(0, 91, 82, 0.15) !important;
+  outline: none !important;
+}
+
+/* Translucent secondary buttons */
+main.flex-1.bg-\[\#F4F6F9\] button.bg-white\/5 {
+  background-color: #ffffff !important;
+  color: #334155 !important;
+  border: 1px solid #cbd5e1 !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.2s ease !important;
+}
+
+main.flex-1.bg-\[\#F4F6F9\] button.bg-white\/5:hover {
+  background-color: #f8fafc !important;
+  color: #0f172a !important;
+  border-color: #94a3b8 !important;
+}
+
+/* Invoice Preview desk and containers */
+main.flex-1.bg-\[\#F4F6F9\] .bg-\[\#070A13\] {
+  background-color: #e2e8f0 !important; /* Soft premium desktop gray */
+  border-color: #cbd5e1 !important;
+}
+
+main.flex-1.bg-\[\#F4F6F9\] .bg-blue-950\/5 {
+  background-color: rgba(0, 91, 82, 0.05) !important;
+  color: #005B52 !important;
+  border: 1px solid rgba(0, 91, 82, 0.1) !important;
+}
+
+/* Shimmer animation light override */
+main.flex-1.bg-\[\#F4F6F9\] .shimmer-bg {
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 0%,
+    rgba(0, 0, 0, 0.02) 50%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Table header background overrides */
+main.flex-1.bg-\[\#F4F6F9\] .bg-white\/\[0\.02\] {
+  background-color: #f8fafc !important;
+}
+
+/* Logs and terminals (we want to keep logs dark but styled beautifully) */
+main.flex-1.bg-\[\#F4F6F9\] .bg-black\/60 {
+  background-color: #0f172a !important; /* Deep Slate 900 */
+  border-color: #1e293b !important;
+}
+main.flex-1.bg-\[\#F4F6F9\] .bg-black\/60 .text-white {
+  color: #f8fafc !important;
+}
+main.flex-1.bg-\[\#F4F6F9\] .bg-black\/60 .text-slate-300 {
+  color: #cbd5e1 !important;
+}
+main.flex-1.bg-\[\#F4F6F9\] .bg-black\/60 .text-slate-600 {
+  color: #475569 !important;
+}
+
+/* Splash Page light background alignment */
+.splash-wrapper {
+  background-color: #F4F6F9 !important;
+  color: #1e293b !important;
 }

@@ -12,10 +12,18 @@ import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { usePrinterStore } from '../../stores/printerStore';
 import { useOrderStore } from '../../stores/orderStore';
+import { useTranslation } from '../../locales';
 
 export const InvoicePreviewPage: React.FC = () => {
+  const { t } = useTranslation();
   const printers = usePrinterStore((s) => s.printers);
-  const orders = useOrderStore((s) => s.orders);
+  const fetchPrinters = usePrinterStore((s) => s.fetchPrinters);
+  const { orders, fetchOrders } = useOrderStore();
+
+  React.useEffect(() => {
+    fetchOrders();
+    fetchPrinters();
+  }, []);
 
   const [zoom, setZoom] = useState(100);
   const [selectedPrinterId, setSelectedPrinterId] = useState(
@@ -38,9 +46,9 @@ export const InvoicePreviewPage: React.FC = () => {
   };
 
   const handlePrint = () => {
-    alert(`Print command dispatched to target driver: ${
-      printers.find((p) => p.id === selectedPrinterId)?.name || 'Default Spooler'
-    }`);
+    alert(t('preview.printDispatched', {
+      name: printers.find((p) => p.id === selectedPrinterId)?.name || t('common.defaultSpooler')
+    }));
   };
 
   const formatCurrency = (val: number) => {
@@ -52,8 +60,8 @@ export const InvoicePreviewPage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Active Invoice Preview"
-        subtitle="Pre-render and inspect local thermal print templates before hardware dispatch."
+        title={t('preview.title')}
+        subtitle={t('preview.subtitle')}
       />
 
       {/* Main Core Layout: Preview Layout with Toolbar */}
@@ -64,12 +72,12 @@ export const InvoicePreviewPage: React.FC = () => {
           <GlassCard className="border-white/5 space-y-4">
             <h3 className="text-sm font-bold text-white pb-3 border-b border-white/5 flex items-center gap-2">
               <FileText className="h-4.5 w-4.5 text-blue-500" />
-              Print Spool Options
+              {t('preview.options')}
             </h3>
 
             {/* Select Printer */}
             <div className="space-y-1.5">
-              <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">Target Printer</label>
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-wide">{t('preview.targetPrinter')}</label>
               <select
                 value={selectedPrinterId}
                 onChange={(e) => setSelectedPrinterId(e.target.value)}
@@ -86,7 +94,7 @@ export const InvoicePreviewPage: React.FC = () => {
             {/* Scale Slider */}
             <div className="space-y-1.5 pt-2">
               <div className="flex justify-between text-xs">
-                <span className="font-bold text-slate-400 uppercase tracking-wide">Zoom Level</span>
+                <span className="font-bold text-slate-400 uppercase tracking-wide">{t('preview.zoomLevel')}</span>
                 <span className="text-slate-300 font-mono">{zoom}%</span>
               </div>
               <div className="flex items-center gap-2">
@@ -119,15 +127,15 @@ export const InvoicePreviewPage: React.FC = () => {
                 className="w-full py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 font-bold text-white text-xs flex items-center justify-center gap-1.5 transition-colors shadow-lg shadow-blue-500/10 active:scale-[0.98]"
               >
                 <Printer className="h-4 w-4" />
-                Print Receipt
+                {t('preview.printReceipt')}
               </button>
               
               <button
-                onClick={() => alert('Download PDF successfully saved to C:/Users/MY PC/Downloads/')}
+                onClick={() => alert(t('preview.downloadSuccess'))}
                 className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs flex items-center justify-center gap-1 transition-colors"
               >
                 <Download className="h-3.5 w-3.5" />
-                Download PDF
+                {t('preview.downloadPdf')}
               </button>
             </div>
 
@@ -137,7 +145,7 @@ export const InvoicePreviewPage: React.FC = () => {
           <GlassCard className="border-white/5 p-4 flex gap-3 bg-blue-950/5 text-blue-400">
             <Info className="h-4 w-4 flex-shrink-0 mt-0.5" />
             <p className="text-[11px] leading-relaxed">
-              Thermal print is fully K80 vector formatted. High contrast text scaling optimized for SumatraPDF engines.
+              {t('preview.infoText')}
             </p>
           </GlassCard>
         </div>

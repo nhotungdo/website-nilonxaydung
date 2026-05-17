@@ -138,7 +138,7 @@ export const runSeeds = async (): Promise<void> => {
       logger.info('[Seeder] Seeding troubleshooting failures failed_jobs...');
       for (let i = 1; i <= 5; i++) {
         const failedId = `FAIL-2026-${10 + i}`;
-        const printJobId = `JOB-2026-${5 + i}`; // Jobs 6 to 10 are failed jobs in print_jobs
+        const printJobId = `JOB-2026-${100 + 5 + i}`; // Jobs 106 to 110 are failed jobs in print_jobs
         const errCodes = ['ERR_PAPER_JAM', 'ERR_OFFLINE', 'ERR_OUT_OF_PAPER', 'ERR_TIMEOUT', 'ERR_SPOOL_FAIL'];
         const errMsgs = [
           'Cutter blade jammed.',

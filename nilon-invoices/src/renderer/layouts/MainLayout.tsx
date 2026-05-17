@@ -5,7 +5,7 @@ import { Topbar } from '../components/Topbar';
 
 export const MainLayout: React.FC = () => {
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-[#0A0D1A] text-white">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] text-slate-800">
       {/* Sidebar Navigation */}
       <Sidebar />
 
@@ -15,7 +15,7 @@ export const MainLayout: React.FC = () => {
         <Topbar />
 
         {/* Dynamic Page Views */}
-        <main className="flex-1 overflow-y-auto p-6 bg-gradient-to-br from-[#0F172A] via-[#090D1F] to-[#050712]">
+        <main className="flex-1 overflow-y-auto p-6 bg-[#F4F6F9]">
           <div className="mx-auto max-w-7xl h-full flex flex-col">
             <Outlet />
           </div>

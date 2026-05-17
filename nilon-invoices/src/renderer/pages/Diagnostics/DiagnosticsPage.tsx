@@ -8,8 +8,10 @@ import {
 import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { useSettingsStore } from '../../stores/settingsStore';
+import { useTranslation } from '../../locales';
 
 export const DiagnosticsPage: React.FC = () => {
+  const { t } = useTranslation();
   const { logs } = useSettingsStore();
   const consoleEndRef = useRef<HTMLDivElement>(null);
 
@@ -22,18 +24,18 @@ export const DiagnosticsPage: React.FC = () => {
 
   // System parameters
   const sysInfo = [
-    { label: 'Electron Version', val: '33.4.11' },
-    { label: 'Node.js Version', val: 'v20.18.0' },
-    { label: 'SQLite Version', val: '3.45.1' },
-    { label: 'Windows Version', val: 'Windows 11 Home 23H2 (Build 22631.3447)' },
-    { label: 'Application Version', val: 'Nilon Client v1.0.0-spooler-prod' }
+    { label: t('diagnostics.electronVersion'), val: '33.4.11' },
+    { label: t('diagnostics.nodeVersion'), val: 'v20.18.0' },
+    { label: t('diagnostics.sqliteVersion'), val: '3.45.1' },
+    { label: t('diagnostics.windowsVersion'), val: 'Windows 11 Home 23H2 (Build 22631.3447)' },
+    { label: t('diagnostics.appVersion'), val: 'Nilon Client v1.0.0-spooler-prod' }
   ];
 
   // Printer Latency Array
   const printerLatency = [
-    { name: 'Thermal Cashier K80-A', latency: '42ms', delay: '0.1s spool delay', status: 'GOOD' },
-    { name: 'Warehouse Delivery K80-B', latency: '87ms', delay: '0.4s spool delay', status: 'GOOD' },
-    { name: 'Counter Helper K58', latency: '12ms (Direct USB)', delay: '0.0s spool delay', status: 'EXCELLENT' },
+    { name: 'Thermal Cashier K80-A', latency: '42ms', delay: t('diagnostics.spoolDelay', { n: '0.1' }), status: 'GOOD' },
+    { name: 'Warehouse Delivery K80-B', latency: '87ms', delay: t('diagnostics.spoolDelay', { n: '0.4' }), status: 'GOOD' },
+    { name: 'Counter Helper K58', latency: `12ms (USB)`, delay: t('diagnostics.spoolDelay', { n: '0.0' }), status: 'EXCELLENT' },
     { name: 'Backup POS-58 (Offline)', latency: 'TIMEOUT', delay: 'N/A', status: 'ERROR' }
   ];
 
@@ -42,8 +44,8 @@ export const DiagnosticsPage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Hardware Telemetry Diagnostics"
-        subtitle="Live diagnostics panel for host system health and local spool latency monitors."
+        title={t('diagnostics.title')}
+        subtitle={t('diagnostics.subtitle')}
       />
 
       {/* Grid: System & Gauges */}
@@ -53,7 +55,7 @@ export const DiagnosticsPage: React.FC = () => {
         <GlassCard className="border-white/5 lg:col-span-1 space-y-6">
           <h3 className="text-sm font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
             <Cpu className="h-4.5 w-4.5 text-blue-500" />
-            Hardware Resource Monitor
+            {t('diagnostics.hardwareMonitor')}
           </h3>
 
           <div className="space-y-6">
@@ -61,7 +63,7 @@ export const DiagnosticsPage: React.FC = () => {
             {/* CPU Gauge */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400 font-semibold uppercase tracking-wider">CPU Spindle Load</span>
+                <span className="text-slate-400 font-semibold uppercase tracking-wider">{t('diagnostics.cpuLoad')}</span>
                 <span className="text-slate-200 font-mono font-bold">14.8%</span>
               </div>
               <div className="h-2 bg-white/5 rounded-full overflow-hidden relative">
@@ -72,7 +74,7 @@ export const DiagnosticsPage: React.FC = () => {
             {/* RAM Gauge */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400 font-semibold uppercase tracking-wider">RAM Usage</span>
+                <span className="text-slate-400 font-semibold uppercase tracking-wider">{t('diagnostics.ramUsage')}</span>
                 <span className="text-slate-200 font-mono font-bold">186 MB <span className="text-slate-500">/ 16.0 GB</span></span>
               </div>
               <div className="h-2 bg-white/5 rounded-full overflow-hidden relative">
@@ -83,8 +85,8 @@ export const DiagnosticsPage: React.FC = () => {
             {/* Disk space */}
             <div className="space-y-2">
               <div className="flex justify-between text-xs">
-                <span className="text-slate-400 font-semibold uppercase tracking-wider">Disk Storage (C:)</span>
-                <span className="text-slate-200 font-mono font-bold">428 GB Free</span>
+                <span className="text-slate-400 font-semibold uppercase tracking-wider">{t('diagnostics.diskStorage')}</span>
+                <span className="text-slate-200 font-mono font-bold">428 GB {t('diagnostics.free')}</span>
               </div>
               <div className="h-2 bg-white/5 rounded-full overflow-hidden relative">
                 <div className="h-full bg-indigo-500 rounded-full" style={{ width: '38.4%' }}></div>
@@ -98,7 +100,7 @@ export const DiagnosticsPage: React.FC = () => {
         <GlassCard className="border-white/5 lg:col-span-2 space-y-4">
           <h3 className="text-sm font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
             <Server className="h-4.5 w-4.5 text-blue-500" />
-            Software Telemetry Context
+            {t('diagnostics.softwareTelemetry')}
           </h3>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -120,7 +122,7 @@ export const DiagnosticsPage: React.FC = () => {
         <GlassCard className="border-white/5 lg:col-span-1 space-y-4">
           <h3 className="text-sm font-bold text-white flex items-center gap-2 pb-3 border-b border-white/5">
             <Activity className="h-4.5 w-4.5 text-blue-500" />
-            Hardware Spool Latency
+            {t('diagnostics.hardwareSpoolLatency')}
           </h3>
 
           <div className="space-y-3">
@@ -134,7 +136,7 @@ export const DiagnosticsPage: React.FC = () => {
                   <span className={`text-xs font-mono font-black ${
                     prn.status === 'EXCELLENT' ? 'text-emerald-400' : prn.status === 'GOOD' ? 'text-blue-400' : 'text-red-400'
                   }`}>
-                    {prn.latency}
+                    {prn.latency === 'TIMEOUT' ? t('common.offline') : prn.latency}
                   </span>
                 </div>
               </div>
@@ -147,11 +149,11 @@ export const DiagnosticsPage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Terminal className="h-4.5 w-4.5 text-emerald-500" />
-              Live Spooler Telemetry Console
+              {t('diagnostics.liveSpoolerConsole')}
             </h3>
             <span className="flex items-center gap-1.5 text-[10px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full">
               <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-ping"></span>
-              STREAMING
+              {t('diagnostics.streaming')}
             </span>
           </div>
 

@@ -15,6 +15,7 @@ import {
   Layers
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
+import { useTranslation } from '../locales';
 
 interface SidebarProps {
   className?: string;
@@ -24,16 +25,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const logout = useAuthStore((s) => s.logout);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const menuItems = [
-    { name: 'Dashboard', path: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
-    { name: 'Realtime Orders', path: '/orders', icon: <ShoppingCart className="h-5 w-5" /> },
-    { name: 'Print Queue', path: '/queue', icon: <Layers className="h-5 w-5" /> },
-    { name: 'Printers', path: '/printers', icon: <Printer className="h-5 w-5" /> },
-    { name: 'Invoice Preview', path: '/preview', icon: <Eye className="h-5 w-5" /> },
-    { name: 'Order History', path: '/history', icon: <History className="h-5 w-5" /> },
-    { name: 'Failed Jobs', path: '/failed', icon: <AlertOctagon className="h-5 w-5" /> },
-    { name: 'Diagnostics', path: '/diagnostics', icon: <Activity className="h-5 w-5" /> }
+    { name: t('sidebar.dashboard'), path: '/dashboard', icon: <LayoutDashboard className="h-5 w-5" /> },
+    { name: t('sidebar.realtimeOrders'), path: '/orders', icon: <ShoppingCart className="h-5 w-5" /> },
+    { name: t('sidebar.printQueue'), path: '/queue', icon: <Layers className="h-5 w-5" /> },
+    { name: t('sidebar.printers'), path: '/printers', icon: <Printer className="h-5 w-5" /> },
+    { name: t('sidebar.invoicePreview'), path: '/preview', icon: <Eye className="h-5 w-5" /> },
+    { name: t('sidebar.orderHistory'), path: '/history', icon: <History className="h-5 w-5" /> },
+    { name: t('sidebar.failedJobs'), path: '/failed', icon: <AlertOctagon className="h-5 w-5" /> },
+    { name: t('sidebar.diagnostics'), path: '/diagnostics', icon: <Activity className="h-5 w-5" /> }
   ];
 
   const handleLogout = () => {
@@ -45,10 +47,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
     <motion.div
       animate={{ width: isCollapsed ? 76 : 260 }}
       transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className={`relative h-full flex flex-col bg-slate-950/40 border-r border-white/5 backdrop-blur-xl ${className}`}
+      className={`relative h-full flex flex-col bg-white border-r border-slate-200/80 ${className}`}
     >
       {/* Brand Header */}
-      <div className="flex h-16 items-center justify-between px-4 border-b border-white/5">
+      <div className="flex h-16 items-center justify-between px-4 border-b border-slate-200/80">
         <AnimatePresence mode="wait">
           {!isCollapsed && (
             <motion.div
@@ -57,19 +59,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
               exit={{ opacity: 0, x: -10 }}
               className="flex items-center gap-2"
             >
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white shadow-lg shadow-blue-500/30">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#005B52] font-bold text-white shadow-lg shadow-[#005B52]/20">
                 N
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-white tracking-wide leading-none">NILON INVOICES</span>
-                <span className="text-[9px] text-blue-400 font-semibold tracking-widest mt-0.5">AUTOPRINT</span>
+                <span className="text-sm font-bold text-slate-800 tracking-wide leading-none">{t('sidebar.brand')}</span>
+                <span className="text-[9px] text-[#005B52] font-bold tracking-widest mt-0.5">{t('sidebar.autoprint')}</span>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
 
         {isCollapsed && (
-          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 font-bold text-white shadow-lg">
+          <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-[#005B52] font-bold text-white shadow-lg">
             N
           </div>
         )}
@@ -84,8 +86,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
             className={({ isActive }) =>
               `flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all group relative ${
                 isActive
-                  ? 'bg-blue-600/10 text-blue-400 border border-blue-500/15 shadow-inner'
-                  : 'text-slate-400 hover:text-white hover:bg-white/[0.02] border border-transparent'
+                  ? 'bg-[#005B52]/10 text-[#005B52] border border-[#005B52]/15 shadow-inner'
+                  : 'text-slate-500 hover:text-slate-900 hover:bg-slate-50 border border-transparent'
               }`
             }
           >
@@ -106,7 +108,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
 
             {/* Tooltip for Collapsed Sidebar */}
             {isCollapsed && (
-              <div className="absolute left-16 z-50 rounded-md bg-slate-950 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 border border-white/10 pointer-events-none transition-opacity whitespace-nowrap">
+              <div className="absolute left-16 z-50 rounded-md bg-slate-900 px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 border border-slate-800 pointer-events-none transition-opacity whitespace-nowrap">
                 {item.name}
               </div>
             )}
@@ -115,10 +117,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
       </nav>
 
       {/* Sidebar Footer Controls */}
-      <div className="p-3 border-t border-white/5 flex flex-col gap-2">
+      <div className="p-3 border-t border-slate-200/80 flex flex-col gap-2">
         <button
           onClick={handleLogout}
-          className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-400 hover:text-red-400 hover:bg-red-500/10 hover:border-red-500/15 border border-transparent transition-all group relative"
+          className="flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-500 hover:text-red-600 hover:bg-red-50/50 hover:border-red-200 border border-transparent transition-all group relative"
         >
           <LogOut className="h-5 w-5" />
           <AnimatePresence>
@@ -129,7 +131,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                 exit={{ opacity: 0 }}
                 className="whitespace-nowrap"
               >
-                Disconnect
+                {t('sidebar.disconnect')}
               </motion.span>
             )}
           </AnimatePresence>
@@ -138,7 +140,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
         {/* Toggle Collapse Button */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+          className="mx-auto flex h-8 w-8 items-center justify-center bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all"
         >
           {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </button>

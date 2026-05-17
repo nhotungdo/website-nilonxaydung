@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { IAppSettings, ISystemLog } from '../../shared/types';
-import { mockSettings, mockSystemLogs } from '../mock/data';
+import { mockSettings } from '../mock/data';
 
 interface SettingsState {
   settings: IAppSettings;
@@ -15,28 +15,9 @@ interface SettingsState {
 }
 
 export const useSettingsStore = create<SettingsState>((set, get) => {
-  // Setup standard telemetry loop to simulate system log feeds
-  if (typeof window !== 'undefined') {
-    setInterval(() => {
-      const phrases = [
-        'Heartbeat checked. Latency: 42ms.',
-        'Spooler status: Idle. Queue is empty.',
-        'Telemetry sync: Branch-01 status reporting - online.',
-        'Cleared cached PDF resources older than 7 days.',
-        'Printers online status ping: Cashier K80 is active.'
-      ];
-      
-      get().addSystemLog({
-        level: 'INFO',
-        printer_id: null,
-        message: phrases[Math.floor(Math.random() * phrases.length)]
-      });
-    }, 30000);
-  }
-
   return {
     settings: mockSettings,
-    logs: mockSystemLogs,
+    logs: [],
     socketStatus: 'CONNECTED',
 
     fetchSettings: async () => {

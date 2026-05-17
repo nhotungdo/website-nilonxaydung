@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { IPrintJob } from '../../shared/types';
-import { mockJobs } from '../mock/data';
 
 interface QueueState {
   jobs: IPrintJob[];
@@ -17,45 +16,8 @@ interface QueueState {
 }
 
 export const useQueueStore = create<QueueState>((set, get) => {
-  // Listen for simulated orders to create a dynamic realtime flow
-  if (typeof window !== 'undefined') {
-    window.addEventListener('simulated_order_arrived', (e: any) => {
-      const order = e.detail;
-      const newJob: IPrintJob = {
-        id: `JOB-2026-${Math.floor(100 + Math.random() * 900)}`,
-        order_id: order.id,
-        customer_name: order.customerName,
-        printer_id: order.paperSize === 'K80' ? 'PRN-01' : 'PRN-03',
-        pdf_path: `C:\\Users\\MY PC\\AppData\\Local\\Temp\\invoices\\${order.orderCode}.pdf`,
-        status: 'PENDING',
-        retry_count: 0,
-        max_retries: 3,
-        error_message: null,
-        created_at: new Date().toISOString(),
-        printed_at: null
-      };
-
-      set({ jobs: [newJob, ...get().jobs] });
-
-      // Automatically transition status from PENDING -> PRINTING -> SUCCESS
-      setTimeout(() => {
-        get().updateJobStatus(newJob.id, 'PRINTING');
-      }, 5000);
-
-      setTimeout(() => {
-        // 90% Success rate, 10% failure simulation
-        const isSuccess = Math.random() > 0.1;
-        if (isSuccess) {
-          get().updateJobStatus(newJob.id, 'SUCCESS', null, new Date().toISOString());
-        } else {
-          get().updateJobStatus(newJob.id, 'FAILED', 'ERROR_PAPER_JAM: Paper jam at cutter spindle.');
-        }
-      }, 10000);
-    });
-  }
-
   return {
-    jobs: mockJobs,
+    jobs: [],
     isLoading: false,
 
     fetchJobs: async () => {
@@ -67,7 +29,7 @@ export const useQueueStore = create<QueueState>((set, get) => {
           set({ jobs: [...active, ...history], isLoading: false });
         } else {
           await new Promise((resolve) => setTimeout(resolve, 300));
-          set({ jobs: get().jobs, isLoading: false });
+          set({ jobs: [], isLoading: false });
         }
       } catch (err) {
         console.error('Failed to fetch jobs:', err);
@@ -81,24 +43,7 @@ export const useQueueStore = create<QueueState>((set, get) => {
           await window.electronAPI.jobs.reprint(id);
           await get().fetchJobs();
         } else {
-          const updated = get().jobs.map((j) => {
-            if (j.id === id) {
-              return {
-                ...j,
-                status: 'PENDING',
-                retry_count: 0,
-                error_message: null,
-                created_at: new Date().toISOString(),
-                printed_at: null
-              } as IPrintJob;
-            }
-            return j;
-          });
-          set({ jobs: updated });
-
-          // Mock status update progression
-          setTimeout(() => get().updateJobStatus(id, 'PRINTING'), 2000);
-          setTimeout(() => get().updateJobStatus(id, 'SUCCESS', null, new Date().toISOString()), 6000);
+          console.warn('Electron API reprint not available');
         }
       } catch (err) {
         console.error('Failed to reprint job:', err);
@@ -119,12 +64,10 @@ export const useQueueStore = create<QueueState>((set, get) => {
     },
 
     pauseQueue: () => {
-      // Logic for pausing printer queue
       console.log('Spooler queue paused.');
     },
 
     resumeQueue: () => {
-      // Logic for resuming printer queue
       console.log('Spooler queue resumed.');
     },
 
@@ -135,27 +78,20 @@ export const useQueueStore = create<QueueState>((set, get) => {
     forcePrintJob: async (id) => {
       try {
         set({ isLoading: true });
-        await new Promise((resolve) => setTimeout(resolve, 1500));
-        const updated = get().jobs.map((j) => {
-          if (j.id === id) {
-            return {
-              ...j,
-              status: 'SUCCESS',
-              retry_count: j.retry_count + 1,
-              error_message: null,
-              printed_at: new Date().toISOString()
-            } as IPrintJob;
-          }
-          return j;
-        });
-        set({ jobs: updated, isLoading: false });
+        // Under production, we request a reprint through the actual printer service
+        if (window.electronAPI?.jobs?.reprint) {
+          await window.electronAPI.jobs.reprint(id);
+          await get().fetchJobs();
+        } else {
+          await new Promise((resolve) => setTimeout(resolve, 500));
+        }
+        set({ isLoading: false });
       } catch (e) {
         console.error(e);
         set({ isLoading: false });
       }
     },
 
-    // Helper method to mutate state programmatically for mockup updates
     updateJobStatus: (id: string, status: 'PENDING' | 'PRINTING' | 'SUCCESS' | 'FAILED', errorMsg?: string | null, printedAt?: string | null) => {
       const updated = get().jobs.map((j) => {
         if (j.id === id) {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { AlertTriangle, Info } from 'lucide-react';
 import { GlassCard } from './GlassCard';
+import { useTranslation } from '../locales';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -20,9 +21,13 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
   title,
   message,
   type = 'warning',
-  confirmText = 'Confirm',
-  cancelText = 'Cancel'
+  confirmText,
+  cancelText
 }) => {
+  const { t } = useTranslation();
+  const activeConfirmText = confirmText || t('common.confirm');
+  const activeCancelText = cancelText || t('common.cancel');
+
   if (!isOpen) return null;
 
   const icons = {
@@ -59,7 +64,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   onClick={onClose}
                   className="px-4 py-2 rounded-lg text-sm bg-white/5 hover:bg-white/10 border border-white/15 text-white transition-colors"
                 >
-                  {cancelText}
+                  {activeCancelText}
                 </button>
                 <button
                   onClick={() => {
@@ -68,7 +73,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({
                   }}
                   className={`px-4 py-2 rounded-lg text-sm text-white font-semibold transition-all shadow-md focus:outline-none focus:ring-2 ${buttonClasses[type]}`}
                 >
-                  {confirmText}
+                  {activeConfirmText}
                 </button>
               </div>
             </div>

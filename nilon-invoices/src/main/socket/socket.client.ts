@@ -2,7 +2,9 @@ import { io, Socket } from 'socket.io-client';
 import { db } from '../database/sqlite';
 import IPC_CHANNELS from '../../shared/events';
 import { BrowserWindow } from 'electron';
-import { invoiceService } from '../services/invoice.service';
+import { OrderService } from '../database/services/order.service';
+
+const orderService = new OrderService();
 
 class SocketClient {
   private socket: Socket | null = null;
@@ -83,19 +85,44 @@ class SocketClient {
     });
 
     // 3. Main Real-time Order Reception Hook
-    this.socket.on('order:created', async (orderPayload: any) => {
-      console.log('[SocketClient] Received real-time order alert event:', orderPayload.orderCode || orderPayload.id);
+    const handleIncomingOrder = async (orderPayload: any) => {
+      console.log('[SocketClient] Received real-time order alert event:', orderPayload?.orderCode || orderPayload?.id);
       
-      // Play new order sound alert in Renderer Process
-      this.emitToRenderer(IPC_CHANNELS.SOCKET.ON_NEW_ORDER, orderPayload);
-
       try {
-        // Run full Print/Download pipeline
-        await invoiceService.processIncomingOrder(orderPayload);
+        const orderId = orderPayload.id;
+        if (!orderId) {
+          console.warn('[SocketClient] Received order payload with missing ID:', orderPayload);
+          return;
+        }
+
+        // Check if the order already exists in the database
+        const existingOrder = await orderService.getOrderById(orderId);
+        if (existingOrder) {
+          console.log(`[SocketClient] Order ${orderId} already exists in database. Skipping automatic printing.`);
+          return;
+        }
+
+        // Save new order to the database (which will also automatically trigger physical printing!)
+        await orderService.createOrder({
+          id: orderId,
+          order_code: orderPayload.orderCode || `NLN-${Date.now()}`,
+          customer_name: orderPayload.customerName || 'Khách Hàng Lẻ',
+          customer_phone: orderPayload.customerPhone || 'N/A',
+          total_amount: Number(orderPayload.totalAmount) || 0,
+          payment_method: orderPayload.paymentMethod || 'TRANSFER',
+          status: orderPayload.status || 'COMPLETED',
+          invoice_pdf: orderPayload.pdfUrl || null
+        });
+
+        // Play new order sound alert in Renderer Process
+        this.emitToRenderer(IPC_CHANNELS.SOCKET.ON_NEW_ORDER, orderPayload);
       } catch (err: any) {
         console.error('[SocketClient] Failed to process received real-time order:', err.message);
       }
-    });
+    };
+
+    this.socket.on('order:created', handleIncomingOrder);
+    this.socket.on('ORDER_CREATED', handleIncomingOrder);
   }
 
   /**

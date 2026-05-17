@@ -16,8 +16,10 @@ import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useQueueStore } from '../../stores/queueStore';
 import { usePrinterStore } from '../../stores/printerStore';
+import { useTranslation } from '../../locales';
 
 export const PrintQueuePage: React.FC = () => {
+  const { t } = useTranslation();
   const { jobs, reprintJob, cancelJob, pauseQueue, resumeQueue, forcePrintJob } = useQueueStore();
   const printers = usePrinterStore((s) => s.printers);
 
@@ -43,7 +45,9 @@ export const PrintQueuePage: React.FC = () => {
 
   const getQueueItem = (job: any, isActionable = true) => {
     const elapsedSeconds = Math.floor((Date.now() - new Date(job.created_at).getTime()) / 1000);
-    const durationText = elapsedSeconds < 60 ? `${elapsedSeconds}s ago` : `${Math.floor(elapsedSeconds / 60)}m ago`;
+    const durationText = elapsedSeconds < 60 
+      ? t('topbar.agoSeconds', { n: elapsedSeconds }) 
+      : t('topbar.agoMinutes', { n: Math.floor(elapsedSeconds / 60) });
 
     return (
       <div 
@@ -69,21 +73,21 @@ export const PrintQueuePage: React.FC = () => {
         {/* Details list */}
         <div className="space-y-1 text-[11px] text-slate-400 font-mono">
           <div className="flex justify-between">
-            <span>Printer:</span>
+            <span>{t('queueTable.printer')}:</span>
             <span className="text-slate-300 font-sans">{getPrinterName(job.printer_id)}</span>
           </div>
           <div className="flex justify-between">
-            <span>Retries:</span>
+            <span>{t('queue.retries')}:</span>
             <span className="text-slate-300">{job.retry_count} / {job.max_retries}</span>
           </div>
           <div className="flex justify-between">
-            <span>Settle Time:</span>
+            <span>{t('queue.settleTime')}:</span>
             <span className="text-slate-300">{durationText}</span>
           </div>
           <div className="flex flex-col gap-1 mt-2 pt-2 border-t border-white/5">
             <span className="text-slate-500 flex items-center gap-1">
               <FileText className="h-3 w-3" />
-              PDF Path:
+              {t('queue.pdfPath')}:
             </span>
             <span className="text-slate-400 truncate text-[10px]" title={job.pdf_path}>{job.pdf_path}</span>
           </div>
@@ -105,14 +109,14 @@ export const PrintQueuePage: React.FC = () => {
                   className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-blue-600/10 hover:bg-blue-600/20 border border-blue-500/20 text-blue-400 flex items-center gap-1 transition-colors"
                 >
                   <RotateCcw className="h-3 w-3" />
-                  Retry Spool
+                  {t('buttons.retrySpool')}
                 </button>
                 <button
                   onClick={() => forcePrintJob(job.id)}
                   className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/20 text-emerald-400 flex items-center gap-1 transition-colors"
                 >
                   <Zap className="h-3 w-3" />
-                  Force Success
+                  {t('buttons.forceSuccess')}
                 </button>
               </>
             ) : (
@@ -121,7 +125,7 @@ export const PrintQueuePage: React.FC = () => {
                 className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 text-slate-400 hover:text-red-400 flex items-center gap-1 transition-colors"
               >
                 <Trash2 className="h-3 w-3" />
-                Cancel Job
+                {t('buttons.cancelJob')}
               </button>
             )}
           </div>
@@ -135,8 +139,8 @@ export const PrintQueuePage: React.FC = () => {
       
       {/* Page Header */}
       <PageHeader
-        title="Telemetry Print Queue"
-        subtitle="Manage active hardware spool lines. Fully multi-threaded background printing pipeline."
+        title={t('queue.title')}
+        subtitle={t('queue.subtitle')}
         actions={
           <button
             onClick={handlePauseToggle}
@@ -149,12 +153,12 @@ export const PrintQueuePage: React.FC = () => {
             {isQueuePaused ? (
               <>
                 <Play className="h-3.5 w-3.5" />
-                Resume Spooler
+                {t('buttons.resumeSpooler')}
               </>
             ) : (
               <>
                 <Pause className="h-3.5 w-3.5" />
-                Pause Spooler
+                {t('buttons.pauseSpooler')}
               </>
             )}
           </button>
@@ -169,11 +173,11 @@ export const PrintQueuePage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <Layers className="h-4.5 w-4.5 text-blue-500" />
-              Active Queue ({activeJobs.length})
+              {t('queue.activeQueue')} ({activeJobs.length})
             </h3>
             {isQueuePaused && (
               <span className="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2 py-0.5 rounded-full animate-pulse">
-                PAUSED
+                {t('queue.paused')}
               </span>
             )}
           </div>
@@ -184,7 +188,7 @@ export const PrintQueuePage: React.FC = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
                 <Layers className="h-8 w-8 mb-2 opacity-30" />
-                <span className="text-xs">No active spool jobs waiting.</span>
+                <span className="text-xs">{t('empty.noActiveSpools')}</span>
               </div>
             )}
           </div>
@@ -195,7 +199,7 @@ export const PrintQueuePage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500" />
-              Completed Queue ({completedJobs.length})
+              {t('queue.completedQueue')} ({completedJobs.length})
             </h3>
           </div>
 
@@ -205,7 +209,7 @@ export const PrintQueuePage: React.FC = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
                 <CheckCircle2 className="h-8 w-8 mb-2 opacity-30" />
-                <span className="text-xs">No completed print spools.</span>
+                <span className="text-xs">{t('empty.noCompletedSpools')}</span>
               </div>
             )}
           </div>
@@ -216,7 +220,7 @@ export const PrintQueuePage: React.FC = () => {
           <div className="flex items-center justify-between pb-3 border-b border-white/5 mb-4">
             <h3 className="text-sm font-bold text-white flex items-center gap-2">
               <XCircle className="h-4.5 w-4.5 text-red-500" />
-              Failed Queue ({failedJobs.length})
+              {t('queue.failedQueue')} ({failedJobs.length})
             </h3>
           </div>
 
@@ -226,7 +230,7 @@ export const PrintQueuePage: React.FC = () => {
             ) : (
               <div className="flex flex-col items-center justify-center py-12 text-center text-slate-500">
                 <ShieldAlert className="h-8 w-8 mb-2 opacity-30" />
-                <span className="text-xs">No failed spool logs detected.</span>
+                <span className="text-xs">{t('empty.noFailedLogs')}</span>
               </div>
             )}
           </div>
