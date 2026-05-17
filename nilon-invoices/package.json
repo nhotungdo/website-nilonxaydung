@@ -1,27 +1,97 @@
 {
   "name": "nilon-invoices",
   "version": "1.0.0",
-  "packageManager": "pnpm@11.1.1",
-  "description": "",
-  "main": "index.js",
+  "description": "Real-time Thermal Invoice Auto-Printing Desktop Application for Nilon Construction",
+  "main": "dist/main/main.js",
+  "author": "Google Deepmind team",
+  "license": "MIT",
+  "private": true,
   "scripts": {
-    "dev": "turbo run dev",
-    "build": "turbo run build",
-    "lint": "turbo run lint",
-    "db:generate": "turbo run db:generate",
-    "db:migrate": "turbo run db:migrate",
-    "seed": "turbo run seed",
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "module",
-  "devDependencies": {
-    "turbo": "^2.9.12"
+    "dev": "vite",
+    "build": "tsc && vite build && electron-builder --dir -c.directories.output=../../release-build",
+    "build:dir": "tsc && vite build && electron-builder --dir",
+    "compile": "tsc",
+    "lint": "eslint . --ext .ts,.tsx",
+    "db:migrate": "ts-node src/main/database/migrate.ts",
+    "db:seed": "ts-node src/main/database/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.3",
-    "prisma": "^6.19.3"
+    "better-sqlite3": "^11.8.0",
+    "clsx": "^2.1.1",
+    "dotenv": "^16.4.5",
+    "electron-log": "^5.2.4",
+    "electron-updater": "^6.2.1",
+    "framer-motion": "^12.38.0",
+    "lucide-react": "^0.453.0",
+    "pdf-to-printer": "^5.6.2",
+    "pg": "^8.20.0",
+    "react-router-dom": "^7.15.1",
+    "socket.io-client": "^4.8.1",
+    "tailwind-merge": "^2.5.4",
+    "zustand": "^5.0.1"
+  },
+  "devDependencies": {
+    "@electron/rebuild": "^4.0.4",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^22.8.1",
+    "@types/pg": "^8.20.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "electron": "^33.0.2",
+    "electron-builder": "^25.1.8",
+    "postcss": "^8.4.47",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "tailwindcss": "^3.4.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10",
+    "vite-plugin-electron": "^0.28.8",
+    "vite-plugin-electron-renderer": "^0.14.5"
+  },
+  "build": {
+    "appId": "com.nilonxaydung.invoices",
+    "productName": "Nilon Invoices",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "storage/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "**/node_modules/better-sqlite3/**/*",
+      "**/node_modules/pdf-to-printer/**/*"
+    ],
+    "win": {
+      "target": [
+        "nsis"
+      ],
+      "icon": "build/icon.png",
+      "requestedExecutionLevel": "requireAdministrator"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Nilon Invoices",
+      "runAfterFinish": true
+    },
+    "publish": {
+      "provider": "generic",
+      "url": "https://api.nilonxaydung.vn/app-updates"
+    }
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3",
+      "electron",
+      "esbuild"
+    ]
   }
 }
