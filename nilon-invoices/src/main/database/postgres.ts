@@ -42,6 +42,7 @@ export class PostgresDatabase {
         client.release();
 
         logger.info(`[Postgres] Database connected successfully on attempt ${attempt}.`);
+        console.log('[DB] Connected to nilon-invoices');
         this.isConnecting = false;
 
         // Register pool error events

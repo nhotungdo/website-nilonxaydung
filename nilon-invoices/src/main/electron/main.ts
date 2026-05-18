@@ -1,8 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { initDatabase, db } from '../database/sqlite';
 import { db as postgresDb } from '../database/postgres';
-import { runMigrations } from '../database/migrate';
-import { runSeeds } from '../database/seed';
 import { registerDatabaseIpcHandlers } from '../ipc/database.ipc';
 import { logger } from '../utils/logger';
 import { createMainWindow, getMainWindow } from './window';
@@ -35,12 +33,10 @@ if (!isSingleInstance) {
     // 1. Initialize local SQLite Database & seeding
     initDatabase();
 
-    // 2. Initialize PostgreSQL & run migrations
+    // 2. Initialize PostgreSQL connection (Auto-migrations and seeds disabled to prevent schema overwrites and sync issues)
     try {
       await postgresDb.connectDatabase();
-      await runMigrations();
-      await runSeeds();
-      logger.info('[Main] PostgreSQL database connection, migrations & seeding successful.');
+      logger.info('[Main] PostgreSQL database connection established successfully.');
     } catch (dbErr: any) {
       logger.error('[Main] CRITICAL PostgreSQL Startup Error:', dbErr.message);
     }

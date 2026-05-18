@@ -110,7 +110,9 @@ class SocketClient {
           customer_phone: orderPayload.customerPhone || 'N/A',
           total_amount: Number(orderPayload.totalAmount) || 0,
           payment_method: orderPayload.paymentMethod || 'TRANSFER',
-          status: orderPayload.status || 'COMPLETED',
+          order_status: orderPayload.orderStatus || 'pending',
+          print_status: orderPayload.printStatus || 'waiting',
+          payment_status: orderPayload.paymentStatus || 'pending',
           invoice_pdf: orderPayload.pdfUrl || null
         });
 

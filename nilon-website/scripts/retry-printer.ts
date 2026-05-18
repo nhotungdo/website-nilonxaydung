@@ -7,27 +7,28 @@ export const startRetryJob = () => {
   console.log('🚀 Starting Printer Retry Job...');
   
   cron.schedule('*/30 * * * * *', async () => {
-    console.log('🔍 Checking for failed print jobs...');
+    console.log('🔍 Checking for waiting order notifications...');
     
-    const failedJobs = await prisma.printQueue.findMany({
+    // Find orders that are waiting to be printed
+    const waitingOrders = await prisma.order.findMany({
       where: {
-        status: { in: ['pending', 'failed'] },
-        retryCount: { lt: 10 },
+        printStatus: 'waiting',
+        orderStatus: { not: 'cancelled' }
       },
       orderBy: { createdAt: 'asc' },
       take: 5, // Process 5 at a time
     });
 
-    if (failedJobs.length === 0) {
-      console.log('✅ No failed jobs to process.');
+    if (waitingOrders.length === 0) {
+      console.log('✅ No waiting orders to process.');
       return;
     }
 
-    console.log(`🔄 Retrying ${failedJobs.length} jobs...`);
+    console.log(`🔄 Retrying ${waitingOrders.length} notifications...`);
 
-    for (const job of failedJobs) {
-      console.log(`   Attempting to sync order ${job.orderId} (Retry: ${job.retryCount})`);
-      await PrinterService.sendToPrinter(job.orderId);
+    for (const order of waitingOrders) {
+      console.log(`   Retriggering notify for order ${order.orderCode} (id: ${order.id})`);
+      await PrinterService.sendToPrinter(order.id);
     }
   });
 };

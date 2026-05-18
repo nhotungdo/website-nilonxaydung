@@ -82,6 +82,27 @@ export class PrinterQueue {
     console.log(`[Queue-${this.printerName}] Physical print success for Job: ${job.id}`);
     this.updateJobStatus(job.id, 'SUCCESS', new Date().toISOString());
 
+    // Update the shared PostgreSQL database state
+    try {
+      const { OrderRepository } = require('../database/repositories/order.repository');
+      const orderRepo = new OrderRepository();
+      const orderCode = job.order_id;
+      const { db: postgresDb } = require('../database/postgres');
+      
+      const res = await postgresDb.executeQuery('SELECT id FROM orders WHERE order_code = $1 OR id = $2 LIMIT 1;', [orderCode, orderCode]);
+      if (res.rows.length > 0) {
+        const postgresOrderId = res.rows[0].id;
+        await orderRepo.update(postgresOrderId, {
+          print_status: 'printed',
+          printed_at: new Date(),
+          printed_by: 'App In'
+        });
+        console.log(`[Queue-${this.printerName}] Updated PostgreSQL order print_status to "printed" for order: ${orderCode}`);
+      }
+    } catch (pgErr: any) {
+      console.error(`[Queue-${this.printerName}] Failed to update PostgreSQL order print_status: ${pgErr.message}`);
+    }
+
     // 5. Audit print logs inside SQLite
     db.prepare(`
       INSERT INTO printer_logs (level, printer_id, message) 

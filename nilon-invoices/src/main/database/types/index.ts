@@ -56,16 +56,36 @@ export interface FailedJob {
   created_at: Date;
 }
 
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  price: number;
+  quantity: number;
+  total: number;
+}
+
 export interface Order {
   id: string;
   order_code: string;
   customer_name: string;
   customer_phone: string;
-  total_amount: number;
+  customer_address?: string;
+  subtotal?: number;
+  shipping_fee?: number;
+  total_amount: number; // mapped from total
   payment_method: string;
-  status: string;
-  invoice_pdf: string | null;
+  payment_status: string;
+  order_status: string;
+  print_status: string;
+  note?: string | null;
+  invoice_pdf?: string | null;
   created_at: Date;
+  updated_at?: Date;
+  printed_at?: Date | null;
+  printed_by?: string | null;
+  items?: OrderItem[];
 }
 
 export interface AppSettings {

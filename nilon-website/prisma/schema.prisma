@@ -7,46 +7,127 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
-enum OrderStatus {
-  pending
-  sent_to_printer
-  printing
-  printed
-  failed
+model Customer {
+  id        String   @id @default(uuid())
+  fullName  String   @map("full_name")
+  phone     String   @unique
+  address   String
+  createdAt DateTime @default(now()) @map("created_at")
+  orders    Order[]
+
+  @@map("customers")
+}
+
+model Product {
+  id         String      @id @default(uuid())
+  name       String
+  sku        String      @unique
+  price      Float
+  stock      Int
+  createdAt  DateTime    @default(now()) @map("created_at")
+  orderItems OrderItem[]
+
+  @@map("products")
 }
 
 model Order {
-  id            String      @id @default(cuid())
-  orderCode     String      @unique
-  customerName  String
-  phone         String
-  address       String
-  totalAmount   Float
-  status        OrderStatus @default(pending)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @updatedAt
+  id            String      @id @default(uuid())
+  orderCode     String      @unique @map("order_code")
+  customerId    String      @map("customer_id")
+  customer      Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  subtotal      Float
+  shippingFee   Float       @map("shipping_fee")
+  total         Float
+  paymentMethod String      @map("payment_method")
+  paymentStatus String      @default("pending") @map("payment_status") // pending, paid, failed
+  orderStatus   String      @default("pending") @map("order_status") // pending, confirmed, shipping, completed, cancelled
+  printStatus   String      @default("waiting") @map("print_status") // waiting, printed
+  note          String?
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+  printedAt     DateTime?   @map("printed_at")
+  printedBy     String?     @map("printed_by")
   items         OrderItem[]
-  printQueue    PrintQueue?
+
+  @@map("orders")
 }
 
 model OrderItem {
-  id          String   @id @default(cuid())
-  orderId     String
+  id          String   @id @default(uuid())
+  orderId     String   @map("order_id")
   order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  productName String
-  quantity    Int
+  productId   String   @map("product_id")
+  product     Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productName String   @map("product_name")
   price       Float
+  quantity    Int
+  total       Float
+
+  @@map("order_items")
 }
 
-model PrintQueue {
-  id          String   @id @default(cuid())
-  orderId     String   @unique
-  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  status      String   @default("pending") // pending, sent, failed
-  retryCount  Int      @default(0)
-  lastError   String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+// Below are the Electron desktop application tables
+model Printer {
+  id             String   @id @default(uuid())
+  name           String   @unique
+  paperSize      String   @map("paper_size") // K58, K80
+  connectionType String   @map("connection_type") // USB, LAN, WIFI
+  ipAddress      String?  @map("ip_address")
+  isDefault      Boolean  @default(false) @map("is_default")
+  isActive       Boolean  @default(true) @map("is_active")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  @@map("printers")
+}
+
+model PrintJob {
+  id           String    @id @default(uuid())
+  orderId      String    @map("order_id")
+  printerId    String    @map("printer_id")
+  pdfPath      String    @map("pdf_path")
+  status       String    @default("WAITING") @map("status") // WAITING, PRINTING, COMPLETED, FAILED
+  retryCount   Int       @default(0) @map("retry_count")
+  errorMessage String?   @map("error_message")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  printedAt    DateTime? @map("printed_at")
+
+  @@map("print_jobs")
+}
+
+model FailedJob {
+  id            String   @id @default(uuid())
+  printJobId    String   @unique @map("print_job_id")
+  errorCode     String   @map("error_code")
+  errorMessage  String   @map("error_message")
+  stackTrace    String?  @map("stack_trace")
+  retryAttempts Int      @default(0) @map("retry_attempts")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("failed_jobs")
+}
+
+model AppSettings {
+  id                Int     @id @default(1)
+  apiUrl            String  @map("api_url")
+  socketUrl         String  @map("socket_url")
+  apiToken          String  @map("api_token")
+  autoStartup       Boolean @default(false) @map("auto_startup")
+  notificationSound Boolean @default(true) @map("notification_sound")
+  darkMode          Boolean @default(true) @map("dark_mode")
+
+  @@map("app_settings")
+}
+
+model PrinterLog {
+  id        Int      @id @default(autoincrement())
+  printerId String?  @map("printer_id")
+  logLevel  String   @map("log_level") // INFO, WARN, ERROR
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("printer_logs")
 }

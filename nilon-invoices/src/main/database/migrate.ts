@@ -8,23 +8,62 @@ DROP TABLE IF EXISTS printer_logs CASCADE;
 DROP TABLE IF EXISTS failed_jobs CASCADE;
 DROP TABLE IF EXISTS print_jobs CASCADE;
 DROP TABLE IF EXISTS printers CASCADE;
+DROP TABLE IF EXISTS order_items CASCADE;
 DROP TABLE IF EXISTS orders CASCADE;
+DROP TABLE IF EXISTS customers CASCADE;
+DROP TABLE IF EXISTS products CASCADE;
 DROP TABLE IF EXISTS app_settings CASCADE;
 
--- 1. Table: orders
-CREATE TABLE orders (
+-- 1. Table: customers
+CREATE TABLE customers (
   id VARCHAR(100) PRIMARY KEY,
-  order_code VARCHAR(100) UNIQUE NOT NULL,
-  customer_name VARCHAR(255) NOT NULL,
-  customer_phone VARCHAR(50) NOT NULL,
-  total_amount NUMERIC(15, 2) NOT NULL,
-  payment_method VARCHAR(100) NOT NULL,
-  status VARCHAR(100) NOT NULL DEFAULT 'PENDING',
-  invoice_pdf VARCHAR(512),
+  full_name VARCHAR(255) NOT NULL,
+  phone VARCHAR(50) UNIQUE NOT NULL,
+  address TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 2. Table: printers
+-- 2. Table: products
+CREATE TABLE products (
+  id VARCHAR(100) PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  sku VARCHAR(100) UNIQUE NOT NULL,
+  price NUMERIC(15, 2) NOT NULL,
+  stock INTEGER NOT NULL DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 3. Table: orders
+CREATE TABLE orders (
+  id VARCHAR(100) PRIMARY KEY,
+  order_code VARCHAR(100) UNIQUE NOT NULL,
+  customer_id VARCHAR(100) NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
+  subtotal NUMERIC(15, 2) NOT NULL,
+  shipping_fee NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  total NUMERIC(15, 2) NOT NULL,
+  payment_method VARCHAR(100) NOT NULL,
+  payment_status VARCHAR(100) NOT NULL DEFAULT 'pending',
+  order_status VARCHAR(100) NOT NULL DEFAULT 'pending',
+  print_status VARCHAR(100) NOT NULL DEFAULT 'waiting',
+  note TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  printed_at TIMESTAMP WITH TIME ZONE,
+  printed_by VARCHAR(255)
+);
+
+-- 4. Table: order_items
+CREATE TABLE order_items (
+  id VARCHAR(100) PRIMARY KEY,
+  order_id VARCHAR(100) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  product_id VARCHAR(100) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
+  product_name VARCHAR(255) NOT NULL,
+  price NUMERIC(15, 2) NOT NULL,
+  quantity INTEGER NOT NULL,
+  total NUMERIC(15, 2) NOT NULL
+);
+
+-- 5. Table: printers
 CREATE TABLE printers (
   id VARCHAR(100) PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
@@ -36,7 +75,7 @@ CREATE TABLE printers (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 3. Table: print_jobs
+-- 6. Table: print_jobs
 CREATE TABLE print_jobs (
   id VARCHAR(100) PRIMARY KEY,
   order_id VARCHAR(100) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
@@ -49,7 +88,7 @@ CREATE TABLE print_jobs (
   printed_at TIMESTAMP WITH TIME ZONE
 );
 
--- 4. Table: failed_jobs
+-- 7. Table: failed_jobs
 CREATE TABLE failed_jobs (
   id VARCHAR(100) PRIMARY KEY,
   print_job_id VARCHAR(100) UNIQUE NOT NULL REFERENCES print_jobs(id) ON DELETE CASCADE,
@@ -60,9 +99,9 @@ CREATE TABLE failed_jobs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- 5. Table: app_settings
+-- 8. Table: app_settings
 CREATE TABLE app_settings (
-  id INTEGER PRIMARY KEY, -- We enforce a single config row, e.g., id = 1
+  id INTEGER PRIMARY KEY,
   api_url VARCHAR(255) NOT NULL,
   socket_url VARCHAR(255) NOT NULL,
   api_token VARCHAR(512) NOT NULL,
@@ -71,13 +110,13 @@ CREATE TABLE app_settings (
   dark_mode BOOLEAN DEFAULT TRUE
 );
 
--- 6. Table: printer_logs
+-- 9. Table: printer_logs
 CREATE TABLE printer_logs (
   id SERIAL PRIMARY KEY,
   printer_id VARCHAR(100) REFERENCES printers(id) ON DELETE SET NULL,
   log_level VARCHAR(50) NOT NULL CHECK (log_level IN ('INFO', 'WARN', 'ERROR')),
   message TEXT NOT NULL,
-  metadata TEXT, -- JSON string representation
+  metadata TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
