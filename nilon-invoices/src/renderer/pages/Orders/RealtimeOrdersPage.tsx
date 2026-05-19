@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Printer, Eye, HeartHandshake, FileText, Bell, CheckCircle, AlertTriangle } from 'lucide-react';
+import { Printer, Eye, HeartHandshake, FileText, Bell, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
 import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { EmptyState } from '../../components/EmptyState';
+import { ConfirmModal } from '../../components/ConfirmModal';
 import { useOrderStore } from '../../stores/orderStore';
 import { useQueueStore } from '../../stores/queueStore';
 import { useTranslation } from '../../locales';
@@ -45,10 +46,11 @@ const playNotificationSound = () => {
 export const RealtimeOrdersPage: React.FC = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { orders, fetchOrders } = useOrderStore();
+  const { orders, fetchOrders, deleteOrder } = useOrderStore();
   const { jobs, reprintJob, fetchJobs } = useQueueStore();
   
   const [activeTab, setActiveTab] = React.useState<'waiting' | 'printed' | 'cancelled'>('waiting');
+  const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
   
   const isFirstLoad = React.useRef(true);
   const knownOrderIdsRef = React.useRef<Set<string>>(new Set());
@@ -92,6 +94,20 @@ export const RealtimeOrdersPage: React.FC = () => {
   const getOrderStatus = (orderId: string) => {
     const relatedJob = jobs.find((j) => j.order_id === orderId);
     return relatedJob ? relatedJob.status : 'PENDING';
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!deleteTargetId) return;
+    try {
+      const res = await deleteOrder(deleteTargetId);
+      if (!res.success) {
+        alert(`Không thể xóa đơn hàng: ${res.error}`);
+      }
+    } catch (err: any) {
+      console.error('Failed to delete order:', err);
+    } finally {
+      setDeleteTargetId(null);
+    }
   };
 
   const handlePrintNow = async (orderCode: string) => {
@@ -284,7 +300,7 @@ export const RealtimeOrdersPage: React.FC = () => {
                         <span className="text-lg font-black text-slate-900 dark:text-white">{formatCurrency(order.totalAmount)}</span>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-2">
+                      <div className="grid grid-cols-4 gap-2">
                         {/* Print Action */}
                         <button
                           onClick={() => handlePrintNow(order.orderCode)}
@@ -301,7 +317,15 @@ export const RealtimeOrdersPage: React.FC = () => {
                           className="py-2.5 rounded-lg text-xs font-bold bg-white dark:bg-slate-850 hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 shadow-sm flex items-center justify-center gap-1 transition-colors"
                         >
                           <Eye className="h-3.5 w-3.5" />
-                          {t('orders.preview')}
+                        </button>
+
+                        {/* Delete Action */}
+                        <button
+                          onClick={() => setDeleteTargetId(order.id)}
+                          className="py-2.5 rounded-lg text-xs font-bold bg-red-50 hover:bg-red-100 dark:bg-red-950/20 dark:hover:bg-red-900/30 border border-red-200 dark:border-red-900/50 text-red-600 dark:text-red-400 flex items-center justify-center gap-1 transition-colors shadow-sm"
+                          title="Xóa đơn hàng"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </div>
@@ -333,6 +357,16 @@ export const RealtimeOrdersPage: React.FC = () => {
         </AnimatePresence>
       </div>
 
+      <ConfirmModal
+        isOpen={deleteTargetId !== null}
+        onClose={() => setDeleteTargetId(null)}
+        onConfirm={handleDeleteConfirm}
+        title="Xóa đơn hàng"
+        message="Bạn có chắc chắn muốn xóa đơn hàng này? Thao tác này sẽ xóa đơn hàng vĩnh viễn khỏi hệ thống và không thể phục hồi."
+        type="danger"
+        confirmText="Xóa vĩnh viễn"
+        cancelText="Hủy bỏ"
+      />
     </div>
   );
 };

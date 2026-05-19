@@ -59,12 +59,14 @@ const electronAPI = {
   database: {
     getOrders: () => ipcRenderer.invoke('db:get-orders'),
     createOrder: (order: any) => ipcRenderer.invoke('db:create-order', order),
+    deleteOrder: (id: string) => ipcRenderer.invoke('db:delete-order', id),
     getPrinters: () => ipcRenderer.invoke('db:get-printers'),
     addPrinter: (printer: any) => ipcRenderer.invoke('db:add-printer', printer),
     getQueueJobs: () => ipcRenderer.invoke('db:get-queue-jobs'),
     retryFailedJob: (failedId: string) => ipcRenderer.invoke('db:retry-failed-job', failedId),
     getSettings: () => ipcRenderer.invoke('db:get-settings'),
     saveSettings: (settings: any) => ipcRenderer.invoke('db:save-settings', settings),
+    getProducts: () => ipcRenderer.invoke('db:get-products'),
   }
 };
 

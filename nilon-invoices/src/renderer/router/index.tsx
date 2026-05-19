@@ -9,8 +9,8 @@ import { PrintQueuePage } from '../pages/Queue/PrintQueuePage';
 import { PrintersPage } from '../pages/Printers/PrintersPage';
 import { InvoicePreviewPage } from '../pages/Preview/InvoicePreviewPage';
 import { OrderHistoryPage } from '../pages/History/OrderHistoryPage';
-import { FailedJobsPage } from '../pages/Failed/FailedJobsPage';
-import { DiagnosticsPage } from '../pages/Diagnostics/DiagnosticsPage';
+import { SettingsPage } from '../pages/Settings/SettingsPage';
+import { SupportPage } from '../pages/Support/SupportPage';
 import { useAuthStore } from '../stores/authStore';
 
 // Route Guard to verify connection authorization
@@ -49,8 +49,8 @@ export const AppRouter: React.FC = () => {
           <Route path="printers" element={<PrintersPage />} />
           <Route path="preview" element={<InvoicePreviewPage />} />
           <Route path="history" element={<OrderHistoryPage />} />
-          <Route path="failed" element={<FailedJobsPage />} />
-          <Route path="diagnostics" element={<DiagnosticsPage />} />
+          <Route path="settings" element={<SettingsPage />} />
+          <Route path="support" element={<SupportPage />} />
         </Route>
 
         {/* Fallback Redirection */}

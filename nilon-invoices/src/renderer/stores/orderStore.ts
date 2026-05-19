@@ -13,6 +13,8 @@ interface OrderState {
   isLoading: boolean;
   
   addOrder: (order: ExtendedOrderPayload) => void;
+  createOrder: (order: Omit<ExtendedOrderPayload, 'id' | 'createdAt' | 'printStatus' | 'orderStatus' | 'paperSize'> & { id?: string; createdAt?: string; printStatus?: string; orderStatus?: string; paymentMethod?: string }) => Promise<{ success: boolean; data?: any; error?: string }>;
+  deleteOrder: (orderId: string) => Promise<{ success: boolean; error?: string }>;
   fetchOrders: () => Promise<void>;
   updatePrintStatus: (orderId: string, printStatus: string) => void;
 }
@@ -31,6 +33,104 @@ export const useOrderStore = create<OrderState>((set) => {
           orders: [order, ...state.orders]
         };
       });
+    },
+
+    createOrder: async (orderData) => {
+      set({ isLoading: true });
+      try {
+        const id = orderData.id || crypto.randomUUID();
+        const orderDto = {
+          id,
+          order_code: orderData.orderCode,
+          customer_name: orderData.customerName,
+          customer_phone: orderData.customerPhone || 'N/A',
+          customer_address: orderData.customerAddress || 'N/A',
+          total_amount: orderData.totalAmount || 0,
+          payment_method: orderData.paymentMethod || 'COD',
+          print_status: orderData.printStatus || 'waiting',
+          note: orderData.note || '',
+          items: orderData.items.map((item: any) => ({
+            product_id: item.productId || 'fallback-product-id',
+            product_name: item.name || item.product_name,
+            price: Number(item.price),
+            quantity: Number(item.quantity)
+          }))
+        };
+
+        if (window.electronAPI?.database?.createOrder) {
+          const res = await window.electronAPI.database.createOrder(orderDto);
+          if (res && res.success) {
+            // Re-fetch all orders to keep status and everything in sync
+            await useOrderStore.getState().fetchOrders();
+            set({ isLoading: false });
+            return { success: true, data: res.data };
+          } else {
+            set({ isLoading: false });
+            return { success: false, error: res?.error || 'Database insert failed' };
+          }
+        } else {
+          // Fallback logic for browser environments if running in development outside electron
+          const newOrder: ExtendedOrderPayload = {
+            id,
+            orderCode: orderData.orderCode,
+            customerName: orderData.customerName,
+            customerPhone: orderData.customerPhone || 'N/A',
+            customerAddress: orderData.customerAddress || 'N/A',
+            totalAmount: orderData.totalAmount || 0,
+            paperSize: orderData.totalAmount < 5000000 ? 'K58' : 'K80',
+            pdfUrl: undefined,
+            printStatus: 'waiting',
+            orderStatus: 'pending',
+            note: orderData.note || '',
+            createdAt: new Date().toISOString(),
+            items: orderData.items.map((item: any) => ({
+              name: item.name,
+              quantity: Number(item.quantity),
+              price: Number(item.price),
+              unit: 'sp'
+            }))
+          };
+          set((state) => ({
+            orders: [newOrder, ...state.orders],
+            isLoading: false
+          }));
+          return { success: true, data: newOrder };
+        }
+      } catch (err: any) {
+        console.error('Failed to create order:', err);
+        set({ isLoading: false });
+        return { success: false, error: err.message };
+      }
+    },
+
+    deleteOrder: async (orderId) => {
+      set({ isLoading: true });
+      try {
+        if (window.electronAPI?.database?.deleteOrder) {
+          const res = await window.electronAPI.database.deleteOrder(orderId);
+          if (res && res.success) {
+            set((state) => ({
+              orders: state.orders.filter(o => o.id !== orderId),
+              isLoading: false
+            }));
+            return { success: true };
+          } else {
+            set({ isLoading: false });
+            return { success: false, error: res?.error || 'Database delete failed' };
+          }
+        } else {
+          // Fallback
+          set((state) => ({
+            orders: state.orders.filter(o => o.id !== orderId),
+            isLoading: false
+          }));
+          return { success: true };
+        }
+      } catch (err: any) {
+        console.error('Failed to delete order:', err);
+        set({ isLoading: false });
+        return { success: false, error: err.message };
+      }
     },
 
     updatePrintStatus: (orderId, printStatus) => {

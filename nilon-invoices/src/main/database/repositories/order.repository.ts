@@ -110,6 +110,18 @@ export class OrderRepository {
   }
 
   public async create(dto: any): Promise<Order> {
+    // Validate that all products in dto.items exist in the database to avoid foreign key violations
+    if (dto.items && Array.isArray(dto.items)) {
+      for (const item of dto.items) {
+        const prodId = item.product_id || 'fallback-product-id';
+        const checkSql = 'SELECT id FROM products WHERE id = $1;';
+        const checkRes = await db.executeQuery<any>(checkSql, [prodId]);
+        if (checkRes.rows.length === 0) {
+          throw new Error(`Sản phẩm "${item.product_name || item.name}" (Mã: ${prodId}) không tồn tại trong danh mục sản phẩm của hệ thống.`);
+        }
+      }
+    }
+
     let customerId = dto.customer_id;
     
     // Find or create customer by phone if not explicitly linked by customer_id
@@ -137,12 +149,12 @@ export class OrderRepository {
     }
 
     const orderSql = `
-      INSERT INTO orders (id, order_code, customer_id, subtotal, shipping_fee, total, payment_method, print_status, note)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      INSERT INTO orders (id, order_code, customer_id, subtotal, shipping_fee, total, payment_method, print_status, note, updated_at)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, CURRENT_TIMESTAMP)
       RETURNING *;
     `;
     const orderRes = await db.executeQuery<any>(orderSql, [
-      dto.id,
+      dto.id || require('crypto').randomUUID(),
       dto.order_code,
       customerId,
       dto.total_amount || 0,

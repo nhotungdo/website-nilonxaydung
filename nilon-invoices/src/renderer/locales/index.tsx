@@ -18,14 +18,11 @@ interface TranslationContextProps {
 const TranslationContext = createContext<TranslationContextProps | undefined>(undefined);
 
 export const TranslationProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguageState] = useState<Language>(() => {
-    const saved = localStorage.getItem('app_language');
-    return (saved === 'en' || saved === 'vi') ? saved : 'vi';
-  });
+  const [language, setLanguageState] = useState<Language>('vi');
 
-  const setLanguage = (lang: Language) => {
-    setLanguageState(lang);
-    localStorage.setItem('app_language', lang);
+  const setLanguage = (_lang: Language) => {
+    setLanguageState('vi');
+    localStorage.setItem('app_language', 'vi');
   };
 
   const t = (keyPath: string, variables?: Record<string, string | number>): string => {

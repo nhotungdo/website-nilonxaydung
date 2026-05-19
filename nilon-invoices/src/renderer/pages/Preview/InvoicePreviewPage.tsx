@@ -166,10 +166,10 @@ export const InvoicePreviewPage: React.FC = () => {
 
             {/* Store Header */}
             <div className="text-center space-y-1 pb-4 border-b border-dashed border-black/30">
-              <h2 className="text-base font-black tracking-wide uppercase">CTY NILON XÂY DỰNG</h2>
-              <p className="text-[10px]">ĐC: 154 Tô Ký, Hóc Môn, TP.HCM</p>
-              <p className="text-[10px]">ĐT: 0903.123.456 - 0987.654.321</p>
-              <h3 className="text-xs font-black tracking-wider uppercase mt-4">HÓA ĐƠN BÁN HÀNG</h3>
+              <h2 className="text-base font-black tracking-wide uppercase">{t('preview.companyName')}</h2>
+              <p className="text-[10px]">{t('preview.address')}</p>
+              <p className="text-[10px]">{t('preview.phone')}</p>
+              <h3 className="text-xs font-black tracking-wider uppercase mt-4">{t('preview.receiptTitle')}</h3>
               <p className="text-[9px] font-bold">Mã số: {activeOrder.orderCode}</p>
             </div>
 

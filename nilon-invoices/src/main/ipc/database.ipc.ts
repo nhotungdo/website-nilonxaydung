@@ -42,6 +42,19 @@ export function registerDatabaseIpcHandlers(): void {
     }
   });
 
+  // 2b. deleteOrder()
+  ipcMain.handle('db:delete-order', async (_event, id: string) => {
+    logger.ipc('db:delete-order', { id });
+    try {
+      if (!id) throw new Error('Order ID is required.');
+      const success = await orderService.deleteOrder(id);
+      return { success: true, data: success };
+    } catch (err: any) {
+      logger.error(`[IPC db:delete-order] Failed: ${err.message}`);
+      return { success: false, error: err.message };
+    }
+  });
+
   // 3. getPrinters()
   ipcMain.handle('db:get-printers', async () => {
     logger.ipc('db:get-printers', {});
@@ -113,6 +126,19 @@ export function registerDatabaseIpcHandlers(): void {
       return { success: true, data: updated };
     } catch (err: any) {
       logger.error(`[IPC db:save-settings] Failed: ${err.message}`);
+      return { success: false, error: err.message };
+    }
+  });
+
+  // 9. getProducts()
+  ipcMain.handle('db:get-products', async () => {
+    logger.ipc('db:get-products', {});
+    try {
+      const { db } = await import('../database/postgres');
+      const productsRes = await db.executeQuery('SELECT id, name, price, sku FROM products ORDER BY name ASC;');
+      return { success: true, data: productsRes.rows };
+    } catch (err: any) {
+      logger.error(`[IPC db:get-products] Failed: ${err.message}`);
       return { success: false, error: err.message };
     }
   });

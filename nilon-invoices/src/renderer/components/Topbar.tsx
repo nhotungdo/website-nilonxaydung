@@ -1,114 +1,110 @@
-import React, { useState } from 'react';
-import { Bell, Printer, Shield, User } from 'lucide-react';
-import { useSettingsStore } from '../stores/settingsStore';
-import { usePrinterStore } from '../stores/printerStore';
-import { StatusBadge } from './StatusBadge';
-import { useTranslation } from '../locales';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
+import { Bell, Search, ChevronDown, User } from 'lucide-react';
+import { useQueueStore } from '../stores/queueStore';
 
 export const Topbar: React.FC = () => {
-  const socketStatus = useSettingsStore((s) => s.socketStatus);
-  const settings = useSettingsStore((s) => s.settings);
-  const printers = usePrinterStore((s) => s.printers);
-  const { t } = useTranslation();
+  const location = useLocation();
+  const { pauseQueue, resumeQueue } = useQueueStore();
+  
+  const [isPaused, setIsPaused] = useState(false);
+  const [currentDateText, setCurrentDateText] = useState('');
 
-  const [showNotifications, setShowNotifications] = useState(false);
+  useEffect(() => {
+    const formatVietnameseDate = () => {
+      const now = new Date();
+      const day = String(now.getDate()).padStart(2, '0');
+      const month = String(now.getMonth() + 1).padStart(2, '0');
+      const year = now.getFullYear();
+      return `${day} Tháng ${month}, ${year}`;
+    };
+    setCurrentDateText(formatVietnameseDate());
+  }, []);
 
-  const defaultPrinter = printers.find((p) => p.is_default === 1) || printers[0];
+  const getPageTitle = () => {
+    switch (location.pathname) {
+      case '/dashboard':
+        return 'Bảng điều khiển';
+      case '/orders':
+        return 'Đơn hàng realtime';
+      case '/queue':
+        return 'Hàng đợi in';
+      case '/printers':
+        return 'Cài đặt máy in';
+      case '/history':
+        return 'Lịch sử đơn hàng';
+      case '/preview':
+        return 'Xem trước hóa đơn';
+      case '/settings':
+        return 'Cài đặt';
+      case '/support':
+        return 'Hỗ trợ';
+      default:
+        return 'Bảng điều khiển';
+    }
+  };
 
-  const mockAlerts = [
-    { id: 1, title: t('topbar.newOrderAlert', { code: 'NLN-78932' }), time: t('topbar.agoMinutes', { n: 2 }), read: false },
-    { id: 2, title: t('topbar.printerAlert', { name: 'Cashier K80' }), time: t('topbar.agoMinutes', { n: 10 }), read: true },
-    { id: 3, title: t('topbar.queueAlert'), time: t('topbar.agoMinutes', { n: 25 }), read: true }
-  ];
+  const handleTogglePause = () => {
+    if (isPaused) {
+      resumeQueue();
+      setIsPaused(false);
+    } else {
+      pauseQueue();
+      setIsPaused(true);
+    }
+  };
 
   return (
-    <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-slate-200/80 relative z-40">
+    <header className="h-16 flex items-center justify-between px-6 bg-white border-b border-[#D2E3F6] relative z-40">
       
-      {/* Telemetry info */}
-      <div className="flex items-center gap-4">
-        {/* Branch Info */}
-        <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-[#005B52]" />
-          <span className="text-sm font-semibold text-slate-700">
-            {settings?.branch_id || 'BRANCH-HCM-01'}
-          </span>
-        </div>
-
-        {/* Separator */}
-        <div className="h-4 w-[1px] bg-slate-200 hidden sm:block"></div>
-
-        {/* Default Printer Info */}
-        <div className="hidden sm:flex items-center gap-2 text-slate-500">
-          <Printer className="h-4 w-4 text-slate-400" />
-          <span className="text-xs">
-            {t('topbar.defaultPrinter')}: <span className="font-semibold text-slate-800">{defaultPrinter?.name || t('topbar.none')}</span>
-          </span>
-          {defaultPrinter && (
-            <span className={`inline-block h-1.5 w-1.5 rounded-full ${defaultPrinter.status === 'ONLINE' ? 'bg-emerald-500' : 'bg-red-500'}`}></span>
-          )}
+      {/* Title & Search bar */}
+      <div className="flex items-center gap-4 flex-1">
+        <h1 className="text-[20px] font-bold text-slate-800 leading-none">{getPageTitle()}</h1>
+        <div className="relative w-80 max-w-xs hidden md:block">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 h-[14px] w-[14px]" />
+          <input
+            type="text"
+            placeholder="Tìm kiếm đơn hàng, khách hàng..."
+            className="w-full pl-9 pr-4 py-2 bg-[#E8F0FE] text-slate-700 placeholder:text-slate-400 text-[11px] font-semibold rounded-lg border-0 focus:outline-none focus:ring-2 focus:ring-[#005B52]/10 transition-all"
+          />
         </div>
       </div>
 
-      {/* Action Telemetry Controls */}
-      <div className="flex items-center gap-4">
+      {/* Action Controls */}
+      <div className="flex items-center gap-5">
         
-        {/* Socket Status Badge */}
-        <div className="flex items-center gap-2">
-          {socketStatus === 'CONNECTED' ? (
-            <StatusBadge status="ONLINE" className="font-bold tracking-wide" />
-          ) : (
-            <StatusBadge status="OFFLINE" className="font-bold tracking-wide bg-red-50 text-red-600 border-red-200" />
-          )}
-        </div>
+        {/* Date Display */}
+        <span className="text-[12px] font-semibold text-slate-700 hidden lg:inline-block">
+          {currentDateText}
+        </span>
 
+        {/* Pause/Resume Printing Button */}
+        <button
+          onClick={handleTogglePause}
+          className={`px-4 py-2 text-[11px] font-bold rounded-lg text-white transition-all shadow-sm ${
+            isPaused 
+              ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/10' 
+              : 'bg-[#005B52] hover:bg-[#004D44] shadow-[#005B52]/10'
+          }`}
+        >
+          {isPaused ? 'Tiếp tục in' : 'Tạm dừng in'}
+        </button>
 
-
-        {/* Notifications Icon with Indicator */}
+        {/* Bell Icon with Red Alert Indicator */}
         <div className="relative">
-          <button
-            onClick={() => setShowNotifications(!showNotifications)}
-            className="p-2 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors relative"
-          >
-            <Bell className="h-4 w-4" />
-            <span className="absolute top-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-[#005B52]"></span>
+          <button className="p-2 text-slate-500 hover:text-slate-800 rounded-lg hover:bg-slate-50 transition-colors relative">
+            <Bell className="h-[18px] w-[18px]" />
+            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-red-500 animate-ping"></span>
+            <span className="absolute top-2 right-2 h-1.5 w-1.5 rounded-full bg-red-500"></span>
           </button>
-
-          {/* Notifications Dropdown */}
-          {showNotifications && (
-            <>
-              <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)}></div>
-              <div className="absolute right-0 mt-2 w-80 rounded-xl border border-slate-200 bg-white p-4 shadow-xl z-50">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-100 mb-3">
-                  <h4 className="font-bold text-slate-800 text-sm">{t('topbar.notifications')}</h4>
-                  <button className="text-xs text-[#005B52] hover:underline">{t('topbar.markAllRead')}</button>
-                </div>
-                <div className="space-y-3">
-                  {mockAlerts.map((alert) => (
-                    <div key={alert.id} className="flex flex-col gap-1 p-2 rounded-lg hover:bg-slate-50 transition-colors">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className={`text-xs font-semibold ${alert.read ? 'text-slate-600' : 'text-[#005B52] font-bold'}`}>
-                          {alert.title}
-                        </span>
-                        {!alert.read && <span className="h-1.5 w-1.5 rounded-full bg-[#005B52]"></span>}
-                      </div>
-                      <span className="text-[10px] text-slate-400">{alert.time}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </>
-          )}
         </div>
 
-        {/* User profile */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-          <div className="h-8 w-8 rounded-full bg-[#005B52]/10 border border-[#005B52]/20 flex items-center justify-center text-[#005B52]">
-            <User className="h-4 w-4" />
+        {/* User Profile Avatar with dropdown arrow */}
+        <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
+          <div className="h-8 w-8 rounded-full border border-slate-300 bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors">
+            <User className="h-4 w-4 text-slate-650" />
           </div>
-          <div className="hidden lg:flex flex-col text-left">
-            <span className="text-xs font-bold text-slate-800">{t('topbar.operator')}</span>
-            <span className="text-[10px] text-slate-500">{t('topbar.mainCashier')}</span>
-          </div>
+          <ChevronDown className="h-3.5 w-3.5 text-slate-400 cursor-pointer hover:text-slate-600" />
         </div>
 
       </div>
