@@ -13,12 +13,23 @@ import { SettingsPage } from '../pages/Settings/SettingsPage';
 import { SupportPage } from '../pages/Support/SupportPage';
 import { useAuthStore } from '../stores/authStore';
 
-// Route Guard to verify connection authorization
+// Main authentication guard
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
   
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
+};
+
+// Role-based route guard
+const RoleRoute: React.FC<{ children: React.ReactNode; allowedRoles: ('admin' | 'staff')[] }> = ({ children, allowedRoles }) => {
+  const user = useAuthStore((s) => s.user);
+  
+  if (!user || !allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />; // Both roles now have access to dashboard
   }
 
   return <>{children}</>;
@@ -34,7 +45,7 @@ export const AppRouter: React.FC = () => {
         {/* Login Page */}
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Protected Dashboard Routes */}
+        {/* Protected Application Routes */}
         <Route
           path="/"
           element={
@@ -43,14 +54,17 @@ export const AppRouter: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="orders" element={<RealtimeOrdersPage />} />
-          <Route path="queue" element={<PrintQueuePage />} />
-          <Route path="printers" element={<PrintersPage />} />
-          <Route path="preview" element={<InvoicePreviewPage />} />
-          <Route path="history" element={<OrderHistoryPage />} />
-          <Route path="settings" element={<SettingsPage />} />
-          <Route path="support" element={<SupportPage />} />
+          {/* Admin Only Routes */}
+          <Route path="printers" element={<RoleRoute allowedRoles={['admin']}><PrintersPage /></RoleRoute>} />
+          <Route path="settings" element={<RoleRoute allowedRoles={['admin']}><SettingsPage /></RoleRoute>} />
+          <Route path="support" element={<RoleRoute allowedRoles={['admin']}><SupportPage /></RoleRoute>} />
+          
+          {/* Shared Routes (Admin & Staff) */}
+          <Route path="dashboard" element={<RoleRoute allowedRoles={['admin', 'staff']}><DashboardPage /></RoleRoute>} />
+          <Route path="orders" element={<RoleRoute allowedRoles={['admin', 'staff']}><RealtimeOrdersPage /></RoleRoute>} />
+          <Route path="queue" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintQueuePage /></RoleRoute>} />
+          <Route path="preview" element={<RoleRoute allowedRoles={['admin', 'staff']}><InvoicePreviewPage /></RoleRoute>} />
+          <Route path="history" element={<RoleRoute allowedRoles={['admin', 'staff']}><OrderHistoryPage /></RoleRoute>} />
         </Route>
 
         {/* Fallback Redirection */}

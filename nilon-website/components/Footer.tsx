@@ -99,6 +99,18 @@ export default function Footer() {
                   <span>contact@vatlieuxaydung.vn</span>
                 </li>
               </ul>
+              
+              <div className="mt-6 rounded-lg overflow-hidden border border-gray-700 shadow-sm opacity-90 hover:opacity-100 transition-opacity">
+                <iframe 
+                  width="100%" 
+                  height="160" 
+                  style={{ border: 0 }} 
+                  loading="lazy" 
+                  allowFullScreen 
+                  src="https://maps.google.com/maps?q=Ch%C3%A2u%20Ninh,%20Kho%C3%A1i%20Ch%C3%A2u,%20H%C6%B0ng%20Y%C3%AAn,%20Vi%E1%BB%87t%20Nam&t=&z=14&ie=UTF8&iwloc=&output=embed" 
+                  title="Bản đồ địa chỉ xưởng"
+                ></iframe>
+              </div>
             </div>
 
           </div>

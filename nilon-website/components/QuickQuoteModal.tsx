@@ -35,7 +35,7 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
           name: formData.name,
           phone: formData.phone,
           company: formData.company,
-          content: formData.content
+          message: formData.content
         }),
       });
 

@@ -4,6 +4,7 @@ import { formatPrice } from "@/lib/formatPrice";
 import { prisma } from '@/lib/prisma';
 import { PrinterService } from '@/services/printer.service';
 import { TelegramService } from '@/services/telegram.service';
+import { MailService } from '@/services/mail.service';
 
 interface QuoteItem {
   id: string;
@@ -148,6 +149,11 @@ ${escapeHTML(itemsList)}
       const sent = await PrinterService.sendToPrinter(order.id);
       if (!sent) {
         await TelegramService.sendPrintErrorNotification(order.orderCode, 'Lỗi kích hoạt notify in hóa đơn');
+      }
+
+      // Send Email Invoice to Customer
+      if (customer.email) {
+        await MailService.sendInvoiceEmail(order.orderCode, customer, items, totalAmount);
       }
     });
     

@@ -1,80 +1,106 @@
 import { create } from 'zustand';
+import { authService } from '../services/authService';
+
+export type UserRole = 'admin' | 'staff';
+
+export interface User {
+  username: string;
+  role: UserRole;
+}
 
 interface AuthState {
   isAuthenticated: boolean;
-  apiUrl: string;
-  apiKey: string;
-  clientId: string;
+  user: User | null;
   rememberMe: boolean;
   isLoading: boolean;
   error: string | null;
+  lastActivity: number;
   
-  login: (apiUrl: string, apiKey: string, clientId: string, rememberMe: boolean) => Promise<boolean>;
+  login: (username: string, password: string, rememberMe: boolean) => Promise<boolean>;
   logout: () => void;
   clearError: () => void;
+  updateActivity: () => void;
+  checkTimeout: () => void;
 }
 
-export const useAuthStore = create<AuthState>((set) => {
-  // Load initial state from LocalStorage if active
-  const storedApiUrl = localStorage.getItem('nilon_api_url') || 'https://api.nilonxaydung.vn/v1';
-  const storedApiKey = localStorage.getItem('nilon_api_key') || '';
-  const storedClientId = localStorage.getItem('nilon_client_id') || 'BRANCH-HCM-01';
+const SESSION_TIMEOUT_MS = 8 * 60 * 60 * 1000; // 8 hours
+
+export const useAuthStore = create<AuthState>((set, get) => {
+  const storedUser = localStorage.getItem('nilon_user');
+  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
   const storedRemember = localStorage.getItem('nilon_remember') === 'true';
   const storedAuth = localStorage.getItem('nilon_is_auth') === 'true';
+  const storedActivity = localStorage.getItem('nilon_last_activity');
+  const lastActivity = storedActivity ? parseInt(storedActivity, 10) : Date.now();
 
   return {
     isAuthenticated: storedAuth,
-    apiUrl: storedApiUrl,
-    apiKey: storedApiKey,
-    clientId: storedClientId,
+    user: parsedUser,
     rememberMe: storedRemember,
     isLoading: false,
     error: null,
+    lastActivity,
 
-    login: async (apiUrl, apiKey, clientId, rememberMe) => {
+    login: async (username, password, rememberMe) => {
       set({ isLoading: true, error: null });
       
-      // Simulate real-time API check
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      
-      if (!apiUrl.trim() || !apiKey.trim() || !clientId.trim()) {
-        set({ isLoading: false, error: 'Please enter all active connection configuration fields.' });
-        return false;
-      }
-      
-      if (!apiUrl.startsWith('http://') && !apiUrl.startsWith('https://')) {
-        set({ isLoading: false, error: 'Invalid API base URL. Must start with http:// or https://' });
-        return false;
-      }
+      const response = await authService.login(username, password);
 
-      set({
-        isAuthenticated: true,
-        apiUrl,
-        apiKey,
-        clientId,
-        rememberMe,
-        isLoading: false,
-        error: null
-      });
+      if (response.success && response.user) {
+        set({
+          isAuthenticated: true,
+          user: response.user,
+          rememberMe,
+          isLoading: false,
+          error: null,
+          lastActivity: Date.now()
+        });
 
-      if (rememberMe) {
-        localStorage.setItem('nilon_api_url', apiUrl);
-        localStorage.setItem('nilon_api_key', apiKey);
-        localStorage.setItem('nilon_client_id', clientId);
-        localStorage.setItem('nilon_remember', 'true');
-        localStorage.setItem('nilon_is_auth', 'true');
-      } else {
-        localStorage.setItem('nilon_is_auth', 'true');
+        localStorage.setItem('nilon_last_activity', Date.now().toString());
+
+        if (rememberMe) {
+          localStorage.setItem('nilon_user', JSON.stringify(response.user));
+          localStorage.setItem('nilon_remember', 'true');
+          localStorage.setItem('nilon_is_auth', 'true');
+        } else {
+          localStorage.setItem('nilon_is_auth', 'true');
+          localStorage.removeItem('nilon_user'); 
+        }
+
+        return true;
       }
 
-      return true;
+      set({ isLoading: false, error: response.error || 'Đăng nhập thất bại.' });
+      return false;
     },
 
     logout: () => {
-      set({ isAuthenticated: false });
+      set({ isAuthenticated: false, user: null });
       localStorage.removeItem('nilon_is_auth');
+      localStorage.removeItem('nilon_user');
+      localStorage.removeItem('nilon_remember');
+      localStorage.removeItem('nilon_last_activity');
     },
 
-    clearError: () => set({ error: null })
+    clearError: () => set({ error: null }),
+
+    updateActivity: () => {
+      if (get().isAuthenticated) {
+        const now = Date.now();
+        set({ lastActivity: now });
+        localStorage.setItem('nilon_last_activity', now.toString());
+      }
+    },
+
+    checkTimeout: () => {
+      const state = get();
+      if (state.isAuthenticated) {
+        const now = Date.now();
+        if (now - state.lastActivity > SESSION_TIMEOUT_MS) {
+          state.logout();
+        }
+      }
+    }
   };
 });
+

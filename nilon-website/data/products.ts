@@ -83,7 +83,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1513467535987-fd81bc7d62f8?q=80&w=800",
     description: "Mũ bảo hộ chất lượng cao, chịu lực tốt.",
     price: 45000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa HDPE / ABS chịu lực"},{"label":"Trọng lượng","value":"300g - 400g"},{"label":"Tiêu chuẩn","value":"TCVN 6407:1998"},{"label":"Tính năng","value":"Chống va đập, bảo vệ phần đầu"}],
   },
   {
     id: "non-bao-ho-cach-dien",
@@ -95,7 +96,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800",
     description: "Chống phóng điện, an toàn cho thợ điện.",
     price: 120000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa HDPE / ABS chịu lực"},{"label":"Trọng lượng","value":"300g - 400g"},{"label":"Tiêu chuẩn","value":"TCVN 6407:1998"},{"label":"Tính năng","value":"Chống va đập, bảo vệ phần đầu"}],
   },
   {
     id: "mu-chong-va-dap",
@@ -107,7 +109,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     description: "Nhẹ nhàng, bảo vệ tối ưu.",
     price: 35000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa HDPE / ABS chịu lực"},{"label":"Trọng lượng","value":"300g - 400g"},{"label":"Tiêu chuẩn","value":"TCVN 6407:1998"},{"label":"Tính năng","value":"Chống va đập, bảo vệ phần đầu"}],
   },
   {
     id: "kinh-gan-mu-bao-ho",
@@ -119,7 +122,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     description: "Chống bụi, chống tia UV.",
     price: 25000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa HDPE / ABS chịu lực"},{"label":"Trọng lượng","value":"300g - 400g"},{"label":"Tiêu chuẩn","value":"TCVN 6407:1998"},{"label":"Tính năng","value":"Chống va đập, bảo vệ phần đầu"}],
   },
 
   // 2. Bảo hộ tay
@@ -132,7 +136,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-tay",
     image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=800",
     price: 5000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
   },
   {
     id: "gang-tay-phu-cao-su",
@@ -143,7 +148,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 15000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
   },
   {
     id: "gang-tay-chong-cat",
@@ -154,7 +160,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 85000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
   },
   {
     id: "gang-tay-han",
@@ -165,7 +172,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 75000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
   },
   {
     id: "gang-tay-cach-dien",
@@ -176,7 +184,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 250000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
   },
 
   // 3. Bảo hộ chân
@@ -189,7 +198,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-chan",
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 350000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
   },
   {
     id: "ung-bao-ho",
@@ -200,7 +210,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-chan",
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 85000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
   },
   {
     id: "giay-chong-tinh-dien",
@@ -211,7 +222,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-chan",
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 450000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
   },
   {
     id: "giay-chong-dinh",
@@ -222,7 +234,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "bao-ho-chan",
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 550000,
-    unit: "Đôi"
+    unit: "Đôi",
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
   },
 
   // 4. Quần áo bảo hộ
@@ -235,7 +248,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "quan-ao-bao-ho",
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     price: 180000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
   },
   {
     id: "quan-ao-phan-quang",
@@ -246,7 +260,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "quan-ao-bao-ho",
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     price: 45000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
   },
   {
     id: "quan-ao-chong-hoa-chat",
@@ -257,7 +272,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "quan-ao-bao-ho",
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     price: 250000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
   },
   {
     id: "quan-ao-phong-sach",
@@ -268,7 +284,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "quan-ao-bao-ho",
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     price: 120000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
   },
   {
     id: "ao-mua-cong-trinh",
@@ -279,7 +296,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "quan-ao-bao-ho",
     image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
     price: 65000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
   },
 
   // 5. Thiết bị chống rơi
@@ -292,7 +310,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-chong-roi",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 250000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
   },
   {
     id: "moc-khoa-chong-roi",
@@ -303,7 +322,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-chong-roi",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 85000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
   },
   {
     id: "day-cuu-sinh",
@@ -314,7 +334,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-chong-roi",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 15000,
-    unit: "Mét"
+    unit: "Mét",
+    specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
   },
   {
     id: "bo-chong-roi-tu-rut",
@@ -325,7 +346,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-chong-roi",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 1500000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
   },
 
   // 6. Thiết bị an toàn khác
@@ -338,7 +360,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-an-toan-khac",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 280000,
-    unit: "Bình"
+    unit: "Bình",
+    specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
   },
   {
     id: "bien-canh-bao-an-toan",
@@ -349,7 +372,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-an-toan-khac",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 45000,
-    unit: "Tấm"
+    unit: "Tấm",
+    specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
   },
   {
     id: "luoi-den-xanh-cong-trinh",
@@ -360,7 +384,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "thiet-bi-an-toan-khac",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 12000,
-    unit: "m2"
+    unit: "m2",
+    specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
   },
 
   // 7. Vật tư che chắn & bảo vệ công trình (PRIORITY)
@@ -374,7 +399,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     isBestSeller: true,
     price: 15000,
-    unit: "m2"
+    unit: "m2",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "mang-pe-quan-hang",
@@ -386,7 +412,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     isBestSeller: true,
     price: 85000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "bang-keo-cong-nghiep",
@@ -397,7 +424,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 12000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "bang-keo-dan-nen",
@@ -408,7 +436,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 25000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "tam-carton-lot-san",
@@ -419,7 +448,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 8000,
-    unit: "Tấm"
+    unit: "Tấm",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "luoi-bao-che-xay-dung",
@@ -430,7 +460,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 18000,
-    unit: "m2"
+    unit: "m2",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "tam-phu-chong-bui",
@@ -441,7 +472,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 35000,
-    unit: "Tấm"
+    unit: "Tấm",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "tam-nhua-corrugated",
@@ -452,7 +484,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 45000,
-    unit: "Tấm"
+    unit: "Tấm",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "xop-chong-soc",
@@ -463,7 +496,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 150000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
   {
     id: "bat-soc-xanh-cam",
@@ -474,7 +508,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "vat-tu-che-chan",
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     price: 18000,
-    unit: "m2"
+    unit: "m2",
+    specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
   },
 
   // 8. Dụng cụ thi công cầm tay
@@ -487,7 +522,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 15000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "bay-tret",
@@ -498,7 +534,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 25000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "co-son",
@@ -509,7 +546,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 12000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "ru-lo-son",
@@ -520,7 +558,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 35000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "thuoc-cuon",
@@ -531,7 +570,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 45000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "bua",
@@ -542,7 +582,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 85000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "kim",
@@ -553,7 +594,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 65000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
   {
     id: "sung-ban-keo-silicon",
@@ -564,7 +606,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "dung-cu-cam-tay",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 45000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
   },
 
   // 9. Thiết bị hỗ trợ sơn & hoàn thiện nội thất
@@ -577,7 +620,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 15000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "nilon-che-noi-that",
@@ -589,7 +633,8 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
     isBestSeller: true,
     price: 25000,
-    unit: "Cuộn"
+    unit: "Cuộn",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "khay-son",
@@ -600,7 +645,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 15000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "thang-nhom",
@@ -611,7 +657,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 1200000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "may-phun-son",
@@ -622,7 +669,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 3500000,
-    unit: "Bộ"
+    unit: "Bộ",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "giay-nham",
@@ -633,7 +681,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 5000,
-    unit: "Tờ"
+    unit: "Tờ",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "keo-silicone",
@@ -644,7 +693,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 45000,
-    unit: "Chai"
+    unit: "Chai",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "keo-dan-xay-dung",
@@ -655,7 +705,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 65000,
-    unit: "Tuýp"
+    unit: "Tuýp",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "khan-lau-cong-nghiep",
@@ -666,7 +717,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 25000,
-    unit: "kg"
+    unit: "kg",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "xe-day-hang",
@@ -677,7 +729,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 1500000,
-    unit: "Cái"
+    unit: "Cái",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
   {
     id: "gian-giao-tre",
@@ -688,7 +741,8 @@ export const PRODUCTS: Product[] = [
     subCategory: "ho-tro-son-noi-that",
     image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
     price: 50000,
-    unit: "Cây"
+    unit: "Cây",
+    specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
   },
 ];
 

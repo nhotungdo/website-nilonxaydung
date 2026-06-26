@@ -50,7 +50,7 @@ export default function CartWidget() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={toggleDropdown}
-        className="relative p-2 text-gray-600 hover:text-[#fc6c29] transition-colors"
+        className="relative p-2 text-white/80 hover:text-white transition-colors"
       >
         <ShoppingCart className="w-6 h-6" />
         {totalItems > 0 && (
@@ -112,7 +112,7 @@ export default function CartWidget() {
             <div className="p-4 bg-gray-50 border-t border-gray-100">
               <Link 
                 href="/bao-gia"
-                className="w-full bg-[#fc6c29] hover:bg-[#e65a1f] text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm group"
+                className="w-full bg-secondary hover:bg-secondary-container text-white font-bold py-3 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors shadow-sm group"
               >
                 Gửi yêu cầu ngay <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>

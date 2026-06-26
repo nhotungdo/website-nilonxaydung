@@ -31,6 +31,23 @@ export const runSeeds = async (): Promise<void> => {
         true
       ]);
 
+      // 1b. Seed Users (Admin)
+      logger.info('[Seeder] Seeding users registry...');
+      await client.query(`
+        INSERT INTO users (id, username, password_hash, role, is_active)
+        VALUES ($1, $2, $3, $4, $5)
+        ON CONFLICT (username) DO UPDATE SET
+          password_hash = EXCLUDED.password_hash,
+          role = EXCLUDED.role,
+          is_active = EXCLUDED.is_active;
+      `, [
+        'USR-ADMIN-01',
+        'Admin',
+        '123456', // In a real app this should be a hashed password
+        'admin',
+        true
+      ]);
+
       // 2. Seed Printers (5 Printers)
       logger.info('[Seeder] Seeding printers registry...');
       const printersList = [
