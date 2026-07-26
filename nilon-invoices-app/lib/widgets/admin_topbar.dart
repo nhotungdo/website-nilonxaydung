@@ -7,8 +7,9 @@ import '../theme/app_theme.dart';
 
 class AdminTopbar extends StatelessWidget {
   final String title;
+  final VoidCallback? onMenuPressed;
 
-  const AdminTopbar({super.key, required this.title});
+  const AdminTopbar({super.key, required this.title, this.onMenuPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -18,137 +19,150 @@ class AdminTopbar extends StatelessWidget {
 
     return Container(
       height: 64,
-      padding: const EdgeInsets.symmetric(horizontal: 24),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
       decoration: const BoxDecoration(
         color: Colors.white,
         border: Border(bottom: BorderSide(color: AppTheme.borderLight, width: 1)),
       ),
-      child: Row(
-        children: [
-          // Title
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.textDark,
-            ),
-          ),
-          const SizedBox(width: 24),
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final isNarrow = constraints.maxWidth < 650;
+          final isVeryNarrow = constraints.maxWidth < 450;
 
-          // Search input
-          Expanded(
-            child: SizedBox(
-              width: 320,
-              height: 36,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: const Color(0xFFE8F0FE),
-                  borderRadius: BorderRadius.circular(8),
+          return Row(
+            children: [
+              if (onMenuPressed != null) ...[
+                IconButton(
+                  icon: const Icon(Icons.menu_rounded, color: AppTheme.textDark),
+                  onPressed: onMenuPressed,
+                  tooltip: 'Mở danh mục',
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 12),
+                const SizedBox(width: 4),
+              ],
+
+              // Title
+              Expanded(
+                child: Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: isVeryNarrow ? 14 : 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.textDark,
+                  ),
+                ),
+              ),
+
+              // Search input (hidden on very narrow screens to prevent 0.0 overflow)
+              if (!isVeryNarrow) ...[
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Container(
+                    height: 36,
+                    constraints: const BoxConstraints(maxWidth: 320),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFE8F0FE),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.search_rounded, size: 18, color: Colors.grey),
+                        if (!isNarrow) ...[
+                          const SizedBox(width: 8),
+                          const Expanded(
+                            child: TextField(
+                              decoration: InputDecoration(
+                                hintText: 'Tìm kiếm đơn hàng, khách hàng...',
+                                hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
+                                border: InputBorder.none,
+                                isDense: true,
+                                contentPadding: EdgeInsets.zero,
+                              ),
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+
+              const SizedBox(width: 8),
+
+              // Right Side Control Bar
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
                 child: Row(
-                  children: const [
-                    Icon(Icons.search_rounded, size: 18, color: Colors.grey),
-                    SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: 'Tìm kiếm đơn hàng, khách hàng...',
-                          hintStyle: TextStyle(fontSize: 12, color: Colors.grey),
-                          border: InputBorder.none,
-                          isDense: true,
-                          contentPadding: EdgeInsets.zero,
-                        ),
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Date Text (only on wide screens)
+                    if (!isNarrow) ...[
+                      Text(
+                        formattedDate,
+                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                      ),
+                      const SizedBox(width: 8),
+                    ],
+
+                    // Pause / Resume Print Button
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        visualDensity: VisualDensity.compact,
+                      ),
+                      onPressed: () {
+                        queueProvider.togglePause();
+                      },
+                      child: Text(
+                        queueProvider.isPaused ? 'Tiếp tục in' : 'Dừng in',
+                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                       ),
                     ),
+                    const SizedBox(width: 6),
+
+                    // Bell notification
+                    IconButton(
+                      icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 20),
+                      onPressed: () {},
+                      visualDensity: VisualDensity.compact,
+                    ),
+
+                    if (!isVeryNarrow) ...[
+                      const SizedBox(width: 2),
+                      const VerticalDivider(indent: 18, endIndent: 18, color: AppTheme.borderLight),
+                      const SizedBox(width: 2),
+
+                      // Admin User Profile
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          CircleAvatar(
+                            radius: 14,
+                            backgroundColor: AppTheme.primaryTeal.withValues(alpha: 0.1),
+                            child: const Icon(Icons.admin_panel_settings_rounded, size: 16, color: AppTheme.primaryTeal),
+                          ),
+                          if (!isNarrow) ...[
+                            const SizedBox(width: 6),
+                            Text(
+                              user?.username ?? 'Quản trị viên',
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
                   ],
                 ),
               ),
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Date Text
-          Text(
-            formattedDate,
-            style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Pause / Resume Print Button
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            onPressed: () {
-              queueProvider.togglePause();
-            },
-            child: Text(
-              queueProvider.isPaused ? 'Tiếp tục in' : 'Tạm dừng in',
-              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Colors.white),
-            ),
-          ),
-
-          const SizedBox(width: 16),
-
-          // Bell notification
-          Stack(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 22),
-                onPressed: () {},
-              ),
-              Positioned(
-                right: 12,
-                top: 12,
-                child: Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Colors.redAccent,
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ),
             ],
-          ),
-
-          const SizedBox(width: 8),
-          const VerticalDivider(indent: 16, endIndent: 16, color: AppTheme.borderLight),
-          const SizedBox(width: 8),
-
-          // Admin User Profile
-          Row(
-            children: [
-              CircleAvatar(
-                radius: 16,
-                backgroundColor: AppTheme.primaryTeal.withValues(alpha: 0.1),
-                child: const Icon(Icons.admin_panel_settings_rounded, size: 18, color: AppTheme.primaryTeal),
-              ),
-              const SizedBox(width: 8),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    user?.username ?? 'Admin',
-                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: AppTheme.textDark),
-                  ),
-                  const Text(
-                    'Quản trị viên',
-                    style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: AppTheme.primaryTeal),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+          );
+        },
       ),
     );
   }

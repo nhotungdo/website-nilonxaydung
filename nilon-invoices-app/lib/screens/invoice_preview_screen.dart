@@ -31,53 +31,80 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 650;
+
+              final titleSection = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    'Xem trước hóa đơn (Invoice Preview)',
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                    'Xem trước hóa đơn in',
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppTheme.textDark),
                   ),
                   Text(
-                    'Mô phỏng bản in thực tế trên khổ giấy nhiệt K80 (80mm) và K58 (58mm).',
+                    'Mô phỏng bản in thực tế trên khổ giấy nhiệt K80 và K58.',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
                   ),
                 ],
-              ),
-              Row(
+              );
+
+              final actionSection = SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    SegmentedButton<String>(
+                      segments: const [
+                        ButtonSegment(value: 'K80', label: Text('Khổ K80 (80mm)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                        ButtonSegment(value: 'K58', label: Text('Khổ K58 (58mm)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
+                      ],
+                      selected: {_selectedPaperSize},
+                      onSelectionChanged: (Set<String> newSelection) {
+                        setState(() {
+                          _selectedPaperSize = newSelection.first;
+                        });
+                      },
+                    ),
+                    const SizedBox(width: 12),
+                    ElevatedButton.icon(
+                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryTeal),
+                      onPressed: () {
+                        if (targetOrder != null) {
+                          queueProvider.addJob(targetOrder.id, targetOrder.orderCode, targetOrder.customerName, null);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('Đã gửi lệnh in cho phiếu ${targetOrder.orderCode}')),
+                          );
+                        }
+                      },
+                      icon: const Icon(Icons.print_rounded, color: Colors.white, size: 18),
+                      label: const Text('In phiếu ngay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                  ],
+                ),
+              );
+
+              if (isMobile) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleSection,
+                    const SizedBox(height: 12),
+                    actionSection,
+                  ],
+                );
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  SegmentedButton<String>(
-                    segments: const [
-                      ButtonSegment(value: 'K80', label: Text('Khổ K80 (80mm)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                      ButtonSegment(value: 'K58', label: Text('Khổ K58 (58mm)', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold))),
-                    ],
-                    selected: {_selectedPaperSize},
-                    onSelectionChanged: (Set<String> newSelection) {
-                      setState(() {
-                        _selectedPaperSize = newSelection.first;
-                      });
-                    },
-                  ),
-                  const SizedBox(width: 16),
-                  ElevatedButton.icon(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryTeal),
-                    onPressed: () {
-                      if (targetOrder != null) {
-                        queueProvider.addJob(targetOrder.id, targetOrder.orderCode, targetOrder.customerName, null);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Đã gửi lệnh in cho phiếu ${targetOrder.orderCode}')),
-                        );
-                      }
-                    },
-                    icon: const Icon(Icons.print_rounded, color: Colors.white, size: 18),
-                    label: const Text('In phiếu ngay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                  ),
+                  Expanded(child: titleSection),
+                  const SizedBox(width: 12),
+                  actionSection,
                 ],
-              ),
-            ],
+              );
+            },
           ),
           const SizedBox(height: 24),
 
@@ -174,10 +201,19 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('TỔNG CỘNG TIỀN:', style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
-                          Text(
-                            currencyFormat.format(targetOrder.totalAmount),
-                            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppTheme.primaryTeal),
+                          const Flexible(
+                            child: Text('TỔNG CỘNG TIỀN:', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold)),
+                          ),
+                          const SizedBox(width: 8),
+                          Flexible(
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              alignment: Alignment.centerRight,
+                              child: Text(
+                                currencyFormat.format(targetOrder.totalAmount),
+                                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w900, color: AppTheme.primaryTeal),
+                              ),
+                            ),
                           ),
                         ],
                       ),

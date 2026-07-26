@@ -45,7 +45,13 @@ class _LoginScreenState extends State<LoginScreen> {
             children: const [
               Icon(Icons.gpp_maybe_rounded, color: Colors.redAccent, size: 28),
               SizedBox(width: 8),
-              Text('Từ chối truy cập', style: TextStyle(fontWeight: FontWeight.bold)),
+              Expanded(
+                child: Text(
+                  'Từ chối truy cập',
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                ),
+              ),
             ],
           ),
           content: Text(
@@ -157,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: const Text(
-                          'CỔNG QUẢN TRỊ VIÊN (ADMIN ONLY)',
+                          'CỔNG QUẢN TRỊ VIÊN',
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 11,
@@ -195,14 +201,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                       // Username Input
                       const Text(
-                        'TÊN TÀI KHOẢN ADMIN',
+                        'TÊN TÀI KHOẢN QUẢN TRỊ',
                         style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: AppTheme.textMuted),
                       ),
                       const SizedBox(height: 6),
                       TextField(
                         controller: _usernameController,
                         decoration: InputDecoration(
-                          hintText: 'Nhập tên tài khoản (vd: Admin)',
+                          hintText: 'Nhập tên tài khoản (ví dụ: Admin)',
                           prefixIcon: const Icon(Icons.person_outline_rounded, color: AppTheme.textMuted, size: 20),
                           filled: true,
                           fillColor: const Color(0xFFF1F5F9),
@@ -252,7 +258,13 @@ class _LoginScreenState extends State<LoginScreen> {
                               });
                             },
                           ),
-                          const Text('Ghi nhớ phiên Admin', style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+                          const Expanded(
+                            child: Text(
+                              'Ghi nhớ phiên đăng nhập',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 20),
@@ -277,7 +289,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                   children: const [
                                     Icon(Icons.login_rounded, size: 20, color: Colors.white),
                                     SizedBox(width: 8),
-                                    Text('ĐĂNG NHẬP ADMIN', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white)),
+                                    Flexible(
+                                      child: Text(
+                                        'ĐĂNG NHẬP QUẢN TRỊ',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Colors.white),
+                                      ),
+                                    ),
                                   ],
                                 ),
                         ),
@@ -297,7 +315,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             SizedBox(width: 8),
                             Expanded(
                               child: Text(
-                                'Tài khoản thử nghiệm Admin:\n• Username: Admin  |  Password: 123456',
+                                'Tài khoản thử nghiệm Quản trị:\n• Tên tài khoản: Admin  |  Mật khẩu: 123456',
                                 style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.brown),
                               ),
                             ),

@@ -45,23 +45,27 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 650;
+
+              final titleSection = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
                     'Đơn hàng thời gian thực (Realtime)',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
                   ),
                   Text(
                     'Theo dõi biến động đơn hàng tự động và điều khiển lệnh in tức thì.',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
                   ),
                 ],
-              ),
-              Container(
+              );
+
+              final actionSection = Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
                   color: Colors.green.shade50,
@@ -69,26 +73,56 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                   border: Border.all(color: Colors.green.shade200),
                 ),
                 child: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Icon(Icons.wifi_tethering_rounded, color: Colors.green.shade700, size: 16),
                     const SizedBox(width: 6),
-                    Text('Polling 3s active', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700)),
+                    Flexible(
+                      child: Text(
+                        'Tự động đồng bộ 3s',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-            ],
+              );
+
+              if (isMobile) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleSection,
+                    const SizedBox(height: 12),
+                    actionSection,
+                  ],
+                );
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: titleSection),
+                  const SizedBox(width: 12),
+                  actionSection,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 20),
 
           // Tabs
-          Row(
-            children: [
-              _buildTabButton('waiting', 'Đơn chờ in (${waitingList.length})', Icons.hourglass_top_rounded, Colors.amber.shade800),
-              const SizedBox(width: 12),
-              _buildTabButton('printed', 'Đã in hóa đơn (${printedList.length})', Icons.check_circle_rounded, Colors.green.shade700),
-              const SizedBox(width: 12),
-              _buildTabButton('cancelled', 'Đơn đã hủy (${cancelledList.length})', Icons.cancel_rounded, Colors.redAccent),
-            ],
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildTabButton('waiting', 'Đơn chờ in (${waitingList.length})', Icons.hourglass_top_rounded, Colors.amber.shade800),
+                const SizedBox(width: 12),
+                _buildTabButton('printed', 'Đã in hóa đơn (${printedList.length})', Icons.check_circle_rounded, Colors.green.shade700),
+                const SizedBox(width: 12),
+                _buildTabButton('cancelled', 'Đơn đã hủy (${cancelledList.length})', Icons.cancel_rounded, Colors.redAccent),
+              ],
+            ),
           ),
           const SizedBox(height: 20),
 
@@ -125,28 +159,40 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                                  decoration: BoxDecoration(
-                                    color: AppTheme.primaryTeal.withValues(alpha: 0.1),
-                                    borderRadius: BorderRadius.circular(8),
+                            Expanded(
+                              child: Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                                    decoration: BoxDecoration(
+                                      color: AppTheme.primaryTeal.withValues(alpha: 0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      order.orderCode,
+                                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryTeal),
+                                    ),
                                   ),
-                                  child: Text(
-                                    order.orderCode,
-                                    style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 14, color: AppTheme.primaryTeal),
+                                  const SizedBox(width: 12),
+                                  Flexible(
+                                    child: Text(
+                                      order.customerName,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textDark),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  order.customerName,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15, color: AppTheme.textDark),
-                                ),
-                                const SizedBox(width: 8),
-                                Text('• ${order.customerPhone}', style: const TextStyle(fontSize: 13, color: AppTheme.textMuted)),
-                              ],
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Text(
+                                      '• ${order.customerPhone}',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 13, color: AppTheme.textMuted),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
+                            const SizedBox(width: 12),
                             Text(
                               currencyFormat.format(order.totalAmount),
                               style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 18, color: AppTheme.primaryTeal),
@@ -163,7 +209,13 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                               children: [
                                 const Icon(Icons.location_on_outlined, size: 16, color: Colors.grey),
                                 const SizedBox(width: 6),
-                                Text(order.customerAddress, style: const TextStyle(fontSize: 12, color: AppTheme.textMuted)),
+                                Expanded(
+                                  child: Text(
+                                    order.customerAddress,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -172,7 +224,13 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                             children: [
                               const Icon(Icons.note_alt_outlined, size: 16, color: Colors.amber),
                               const SizedBox(width: 6),
-                              Text('Ghi chú: ${order.note}', style: TextStyle(fontSize: 12, color: Colors.amber.shade900, fontWeight: FontWeight.w600)),
+                              Expanded(
+                                child: Text(
+                                  'Ghi chú: ${order.note}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(fontSize: 12, color: Colors.amber.shade900, fontWeight: FontWeight.w600),
+                                ),
+                              ),
                             ],
                           ),
                         const Divider(height: 24),
@@ -186,10 +244,14 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    '• ${item.name} (${item.quantity} ${item.unit})',
-                                    style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                  Expanded(
+                                    child: Text(
+                                      '• ${item.name} (${item.quantity} ${item.unit})',
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                    ),
                                   ),
+                                  const SizedBox(width: 12),
                                   Text(
                                     currencyFormat.format(item.totalPrice),
                                     style: const TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.grey),
@@ -205,10 +267,14 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            Text(
-                              'Thời gian tạo: ${DateFormat('HH:mm:ss - dd/MM/yyyy').format(order.createdAt)}',
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            Expanded(
+                              child: Text(
+                                'Thời gian tạo: ${DateFormat('HH:mm:ss - dd/MM/yyyy').format(order.createdAt)}',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 11, color: Colors.grey),
+                              ),
                             ),
+                            const SizedBox(width: 12),
                             Row(
                               children: [
                                 if (order.printStatus == 'waiting' && order.orderStatus != 'cancelled')

@@ -38,10 +38,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
     // Filter orders
     final filteredOrders = orders.where((o) {
-      if (_selectedTab == 'Pending') return o.orderStatus == 'pending';
-      if (_selectedTab == 'Paid') return o.orderStatus == 'paid';
-      if (_selectedTab == 'Printed') return o.printStatus == 'printed';
-      if (_selectedTab == 'Canceled') return o.orderStatus == 'cancelled';
+      if (_selectedTab == 'Chờ xử lý' || _selectedTab == 'Pending') return o.orderStatus == 'pending';
+      if (_selectedTab == 'Đã thanh toán' || _selectedTab == 'Paid') return o.orderStatus == 'paid';
+      if (_selectedTab == 'Đã in' || _selectedTab == 'Printed') return o.printStatus == 'printed';
+      if (_selectedTab == 'Đã hủy' || _selectedTab == 'Canceled') return o.orderStatus == 'cancelled';
       return true;
     }).toList();
 
@@ -50,24 +50,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Header Action Row
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 650;
+
+              final titleSection = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
                     'Tổng quan kinh doanh & In ấn',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
                   ),
                   Text(
-                    'Chào mừng Admin! Giám sát hệ thống và điều hành kinh doanh realtime.',
+                    'Chào mừng Quản trị viên! Giám sát hệ thống và điều hành kinh doanh trực tiếp.',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
                   ),
                 ],
-              ),
-              ElevatedButton.icon(
+              );
+
+              final actionSection = ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryTeal,
                   padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
@@ -76,55 +79,89 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 onPressed: () => _showCreateOrderModal(context),
                 icon: const Icon(Icons.add_rounded, color: Colors.white, size: 20),
                 label: const Text('Tạo đơn hàng mới', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-              ),
-            ],
+              );
+
+              if (isMobile) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleSection,
+                    const SizedBox(height: 12),
+                    actionSection,
+                  ],
+                );
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: titleSection),
+                  const SizedBox(width: 16),
+                  actionSection,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
 
           // KPI Cards Grid
-          Row(
-            children: [
-              Expanded(
-                child: _KpiCard(
-                  title: 'TỔNG ĐƠN HÀNG THÁNG',
-                  value: '$totalOrdersCount đơn',
-                  subtitle: '↗ +12% so với tháng trước',
-                  icon: Icons.shopping_bag_outlined,
-                  iconColor: Colors.blue,
-                ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                  child: Row(
+                    children: [
+                  SizedBox(
+                    width: 220,
+                    child: _KpiCard(
+                      title: 'TỔNG ĐƠN HÀNG THÁNG',
+                      value: '$totalOrdersCount đơn',
+                      subtitle: '↗ +12% so với tháng trước',
+                      icon: Icons.shopping_bag_outlined,
+                      iconColor: Colors.blue,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: 220,
+                    child: _KpiCard(
+                      title: 'DOANH THU THÁNG NÀY',
+                      value: currencyFormat.format(totalRevenue),
+                      subtitle: '↗ Tăng trưởng 18.5%',
+                      icon: Icons.account_balance_wallet_outlined,
+                      iconColor: Colors.green,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: 220,
+                    child: _KpiCard(
+                      title: 'ĐƠN CHỜ IN',
+                      value: '$waitingOrders đơn',
+                      subtitle: 'Sẵn sàng đẩy hàng đợi',
+                      icon: Icons.print_outlined,
+                      iconColor: Colors.amber.shade800,
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  SizedBox(
+                    width: 220,
+                    child: _KpiCard(
+                      title: 'TỶ LỆ IN THÀNH CÔNG',
+                      value: '99.2%',
+                      subtitle: 'Spooler hoạt động ổn định',
+                      icon: Icons.check_circle_outline_rounded,
+                      iconColor: AppTheme.primaryTeal,
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _KpiCard(
-                  title: 'DOANH THU THÁNG NÀY',
-                  value: currencyFormat.format(totalRevenue),
-                  subtitle: '↗ Tăng trưởng 18.5%',
-                  icon: Icons.account_balance_wallet_outlined,
-                  iconColor: Colors.green,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _KpiCard(
-                  title: 'ĐƠN CHỜ IN',
-                  value: '$waitingOrders đơn',
-                  subtitle: 'Sẵn sàng đẩy hàng đợi',
-                  icon: Icons.print_outlined,
-                  iconColor: Colors.amber.shade800,
-                ),
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: _KpiCard(
-                  title: 'TỶ LỆ IN THÀNH CÔNG',
-                  value: '99.2%',
-                  subtitle: 'Spooler hoạt động ổn định',
-                  icon: Icons.check_circle_outline_rounded,
-                  iconColor: AppTheme.primaryTeal,
-                ),
-              ),
-            ],
-          ),
+            ),
+          );
+        },
+      ),
           const SizedBox(height: 24),
 
           // Orders Table Section
@@ -134,42 +171,67 @@ class _DashboardScreenState extends State<DashboardScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Filter Tabs & Title
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isMobile = constraints.maxWidth < 650;
+                    
+                    final titleWidget = const Text(
                       'Danh sách đơn hàng phát sinh',
                       style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark),
-                    ),
-                    Row(
-                      children: ['Tất cả', 'Pending', 'Paid', 'Printed', 'Canceled'].map((tab) {
-                        final isSelected = _selectedTab == tab;
-                        return Padding(
-                          padding: const EdgeInsets.only(left: 6),
-                          child: ChoiceChip(
-                            label: Text(
-                              tab,
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
-                                color: isSelected ? Colors.white : AppTheme.textDark,
+                    );
+
+                    final tabsWidget = SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: ['Tất cả', 'Chờ xử lý', 'Đã thanh toán', 'Đã in', 'Đã hủy'].map((tab) {
+                          final isSelected = _selectedTab == tab;
+                          return Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: ChoiceChip(
+                              label: Text(
+                                tab,
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                                  color: isSelected ? Colors.white : AppTheme.textDark,
+                                ),
                               ),
+                              selected: isSelected,
+                              selectedColor: AppTheme.primaryTeal,
+                              backgroundColor: Colors.grey.shade100,
+                              onSelected: (val) {
+                                if (val) {
+                                  setState(() {
+                                    _selectedTab = tab;
+                                  });
+                                }
+                              },
                             ),
-                            selected: isSelected,
-                            selectedColor: AppTheme.primaryTeal,
-                            backgroundColor: Colors.grey.shade100,
-                            onSelected: (val) {
-                              if (val) {
-                                setState(() {
-                                  _selectedTab = tab;
-                                });
-                              }
-                            },
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+                          );
+                        }).toList(),
+                      ),
+                    );
+
+                    if (isMobile) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          titleWidget,
+                          const SizedBox(height: 10),
+                          tabsWidget,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: titleWidget),
+                        const SizedBox(width: 12),
+                        Flexible(child: tabsWidget),
+                      ],
+                    );
+                  },
                 ),
                 const SizedBox(height: 16),
 
@@ -182,11 +244,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ),
                   )
                 else
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: ConstrainedBox(
-                      constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 320),
-                      child: DataTable(
+                  LayoutBuilder(
+                    builder: (context, constraints) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                          child: DataTable(
                         headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)),
                         columns: const [
                           DataColumn(label: Text('MÃ ĐƠN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
@@ -259,7 +323,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         }).toList(),
                       ),
                     ),
-                  ),
+                  );
+                },
+              ),
               ],
             ),
           ),
@@ -294,10 +360,15 @@ class _KpiCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppTheme.textMuted, letterSpacing: 0.5),
+              Expanded(
+                child: Text(
+                  title,
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: const TextStyle(fontSize: 10, fontWeight: FontWeight.w800, color: AppTheme.textMuted, letterSpacing: 0.5),
+                ),
               ),
+              const SizedBox(width: 4),
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
@@ -311,11 +382,15 @@ class _KpiCard extends StatelessWidget {
           const SizedBox(height: 12),
           Text(
             value,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
             style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w900, color: AppTheme.textDark),
           ),
           const SizedBox(height: 4),
           Text(
             subtitle,
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
             style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
           ),
         ],
@@ -414,25 +489,29 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(
-                          color: AppTheme.primaryTeal.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryTeal.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: const Icon(Icons.add_shopping_cart_rounded, color: AppTheme.primaryTeal, size: 24),
                         ),
-                        child: const Icon(Icons.add_shopping_cart_rounded, color: AppTheme.primaryTeal, size: 24),
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text('Tạo đơn hàng thủ công', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                          Text('Mã đơn hàng: $_orderCode', style: const TextStyle(fontSize: 12, color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                    ],
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Tạo đơn hàng thủ công', overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                              Text('Mã đơn hàng: $_orderCode', overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12, color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   IconButton(
                     icon: const Icon(Icons.close_rounded),
@@ -443,30 +522,44 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
               const Divider(height: 32),
 
               // Customer info grid
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _customerNameCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Tên khách hàng *',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+                  final nameField = TextField(
+                    controller: _customerNameCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Tên khách hàng *',
+                      border: OutlineInputBorder(),
+                      isDense: true,
                     ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextField(
-                      controller: _customerPhoneCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Số điện thoại *',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
+                  );
+                  final phoneField = TextField(
+                    controller: _customerPhoneCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Số điện thoại *',
+                      border: OutlineInputBorder(),
+                      isDense: true,
                     ),
-                  ),
-                ],
+                  );
+
+                  if (isNarrow) {
+                    return Column(
+                      children: [
+                        nameField,
+                        const SizedBox(height: 16),
+                        phoneField,
+                      ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      Expanded(child: nameField),
+                      const SizedBox(width: 16),
+                      Expanded(child: phoneField),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
 
@@ -480,36 +573,50 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
               ),
               const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      initialValue: _paymentMethod,
-                      decoration: const InputDecoration(labelText: 'Phương thức thanh toán', border: OutlineInputBorder(), isDense: true),
-                      items: const [
-                        DropdownMenuItem(value: 'COD', child: Text('COD (Tiền mặt khi nhận)')),
-                        DropdownMenuItem(value: 'Chuyển khoản', child: Text('Chuyển khoản Ngân hàng')),
-                        DropdownMenuItem(value: 'Tiền mặt', child: Text('Tiền mặt tại quầy')),
+              LayoutBuilder(
+                builder: (context, constraints) {
+                  final isNarrow = constraints.maxWidth < 450;
+                  final paymentField = DropdownButtonFormField<String>(
+                    initialValue: _paymentMethod,
+                    decoration: const InputDecoration(labelText: 'Phương thức thanh toán', border: OutlineInputBorder(), isDense: true),
+                    items: const [
+                      DropdownMenuItem(value: 'COD', child: Text('COD (Tiền mặt khi nhận)')),
+                      DropdownMenuItem(value: 'Chuyển khoản', child: Text('Chuyển khoản Ngân hàng')),
+                      DropdownMenuItem(value: 'Tiền mặt', child: Text('Tiền mặt tại quầy')),
+                    ],
+                    onChanged: (val) {
+                      setState(() {
+                        _paymentMethod = val ?? 'COD';
+                      });
+                    },
+                  );
+                  final noteField = TextField(
+                    controller: _noteCtrl,
+                    decoration: const InputDecoration(
+                      labelText: 'Ghi chú đơn hàng',
+                      border: OutlineInputBorder(),
+                      isDense: true,
+                    ),
+                  );
+
+                  if (isNarrow) {
+                    return Column(
+                      children: [
+                        paymentField,
+                        const SizedBox(height: 16),
+                        noteField,
                       ],
-                      onChanged: (val) {
-                        setState(() {
-                          _paymentMethod = val ?? 'COD';
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: TextField(
-                      controller: _noteCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Ghi chú đơn hàng',
-                        border: OutlineInputBorder(),
-                        isDense: true,
-                      ),
-                    ),
-                  ),
-                ],
+                    );
+                  }
+
+                  return Row(
+                    children: [
+                      Expanded(child: paymentField),
+                      const SizedBox(width: 16),
+                      Expanded(child: noteField),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 24),
 
@@ -517,7 +624,9 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text('Danh sách vật tư / sản phẩm', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  const Flexible(
+                    child: Text('Danh sách vật tư / sản phẩm', overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+                  ),
                   TextButton.icon(
                     onPressed: () {
                       setState(() {
@@ -553,7 +662,7 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                           items: catalog.map((cat) {
                             return DropdownMenuItem(
                               value: cat['name'].toString(),
-                              child: Text(cat['name'].toString(), style: const TextStyle(fontSize: 12)),
+                              child: Text(cat['name'].toString(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (val) {
@@ -583,9 +692,13 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                       const SizedBox(width: 8),
                       Expanded(
                         flex: 2,
-                        child: Text(
-                          currencyFormat.format((item['price'] as num) * (item['quantity'] as num)),
-                          style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          alignment: Alignment.centerLeft,
+                          child: Text(
+                            currencyFormat.format((item['price'] as num) * (item['quantity'] as num)),
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                          ),
                         ),
                       ),
                       if (_selectedItems.length > 1)
@@ -614,9 +727,14 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Tổng tiền đơn hàng:', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-                    Text(
-                      currencyFormat.format(_calculatedTotal),
-                      style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: AppTheme.primaryTeal),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          currencyFormat.format(_calculatedTotal),
+                          style: const TextStyle(fontWeight: FontWeight.w900, fontSize: 20, color: AppTheme.primaryTeal),
+                        ),
+                      ),
                     ),
                   ],
                 ),
@@ -631,10 +749,16 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                     child: const Text('Hủy bỏ', style: TextStyle(color: Colors.grey, fontWeight: FontWeight.bold)),
                   ),
                   const SizedBox(width: 12),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryTeal),
-                    onPressed: _submitOrder,
-                    child: const Text('Tạo đơn & Lưu hệ thống', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  Flexible(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryTeal),
+                      onPressed: _submitOrder,
+                      child: const Text(
+                        'Tạo đơn & Lưu hệ thống',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ],
               ),

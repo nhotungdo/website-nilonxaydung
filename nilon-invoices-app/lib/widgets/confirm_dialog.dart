@@ -30,6 +30,7 @@ class ConfirmDialog extends StatelessWidget {
           Expanded(
             child: Text(
               title,
+              overflow: TextOverflow.ellipsis,
               style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
             ),
           ),
@@ -53,7 +54,13 @@ class ConfirmDialog extends StatelessWidget {
             Navigator.of(context).pop();
             onConfirm();
           },
-          child: Text(confirmText, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          child: Flexible(
+            child: Text(
+              confirmText,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+            ),
+          ),
         ),
       ],
     );

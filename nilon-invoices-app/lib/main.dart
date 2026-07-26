@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 import 'providers/auth_provider.dart';
 import 'providers/order_provider.dart';
@@ -22,8 +23,9 @@ import 'widgets/admin_sidebar.dart';
 import 'widgets/admin_topbar.dart';
 import 'widgets/admin_footer_status.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await initializeDateFormatting('vi_VN', null);
   runApp(const NilonInvoicesAdminApp());
 }
 
@@ -112,6 +114,8 @@ class _AppShellState extends State<AppShell> {
     }
   }
 
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -121,36 +125,60 @@ class _AppShellState extends State<AppShell> {
       return const LoginScreen();
     }
 
+    final screenWidth = MediaQuery.of(context).size.width;
+    final isDesktop = screenWidth >= 800;
+
     return Scaffold(
-      body: Row(
-        children: [
-          // Navigation Sidebar
-          AdminSidebar(
-            currentRoute: _currentRoute,
-            onSelectRoute: _onNavigate,
-          ),
-
-          // Main View Container
-          Expanded(
-            child: Column(
-              children: [
-                // Top Header
-                AdminTopbar(title: _getPageTitle(_currentRoute)),
-
-                // Main Page Content
-                Expanded(
-                  child: Container(
-                    color: AppTheme.bgCanvas,
-                    child: _buildBody(_currentRoute),
-                  ),
+      key: _scaffoldKey,
+      backgroundColor: Colors.white,
+      drawer: isDesktop
+          ? null
+          : Drawer(
+              child: SafeArea(
+                child: AdminSidebar(
+                  currentRoute: _currentRoute,
+                  onSelectRoute: (route) {
+                    _onNavigate(route);
+                    Navigator.of(context).maybePop();
+                  },
                 ),
-
-                // Footer Status Bar
-                const AdminFooterStatus(),
-              ],
+              ),
             ),
-          ),
-        ],
+      body: SafeArea(
+        child: Row(
+          children: [
+            // Navigation Sidebar (Docked on Desktop / Large Web)
+            if (isDesktop)
+              AdminSidebar(
+                currentRoute: _currentRoute,
+                onSelectRoute: _onNavigate,
+              ),
+
+            // Main View Container
+            Expanded(
+              child: Column(
+                children: [
+                  // Top Header
+                  AdminTopbar(
+                    title: _getPageTitle(_currentRoute),
+                    onMenuPressed: isDesktop ? null : () => _scaffoldKey.currentState?.openDrawer(),
+                  ),
+
+                  // Main Page Content
+                  Expanded(
+                    child: Container(
+                      color: AppTheme.bgCanvas,
+                      child: _buildBody(_currentRoute),
+                    ),
+                  ),
+
+                  // Footer Status Bar
+                  const AdminFooterStatus(),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -69,13 +69,16 @@ class AdminSidebar extends StatelessWidget {
                       child: const Icon(Icons.receipt_rounded, color: Colors.white, size: 20),
                     ),
                     const SizedBox(width: 10),
-                    const Text(
-                      'Nilon Invoices',
-                      style: TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w900,
-                        color: AppTheme.primaryTeal,
-                        letterSpacing: -0.5,
+                    const Expanded(
+                      child: Text(
+                        'Nilon Invoices',
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w900,
+                          color: AppTheme.primaryTeal,
+                          letterSpacing: -0.5,
+                        ),
                       ),
                     ),
                   ],
@@ -83,7 +86,7 @@ class AdminSidebar extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.only(left: 36, top: 2),
                   child: Text(
-                    'ADMIN PORTAL v1.0',
+                    'TRANG QUẢN TRỊ v1.0',
                     style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.grey),
                   ),
                 ),
@@ -127,6 +130,8 @@ class AdminSidebar extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 item.title,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
                                 style: TextStyle(
                                   fontSize: 13.5,
                                   fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
@@ -142,7 +147,7 @@ class AdminSidebar extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(4),
                                 ),
                                 child: const Text(
-                                  'ADMIN',
+                                  'QUẢN TRỊ',
                                   style: TextStyle(fontSize: 9, fontWeight: FontWeight.bold, color: AppTheme.primaryTeal),
                                 ),
                               ),
@@ -185,9 +190,12 @@ class AdminSidebar extends StatelessWidget {
                     children: const [
                       Icon(Icons.logout_rounded, size: 20, color: Colors.redAccent),
                       SizedBox(width: 12),
-                      Text(
-                        'Đăng xuất Admin',
-                        style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold, color: Colors.redAccent),
+                      Expanded(
+                        child: Text(
+                          'Đăng xuất Admin',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 13.5, fontWeight: FontWeight.bold, color: Colors.redAccent),
+                        ),
                       ),
                     ],
                   ),

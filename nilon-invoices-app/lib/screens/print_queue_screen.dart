@@ -18,23 +18,27 @@ class PrintQueueScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 650;
+
+              final titleSection = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Text(
-                    'Hàng đợi in (Print Spooler Queue)',
+                    'Hàng đợi in tự động',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
                   ),
                   Text(
                     'Giám sát và điều khiển luồng lệnh in hóa đơn tự động.',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
                   ),
                 ],
-              ),
-              ElevatedButton.icon(
+              );
+
+              final actionSection = ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -47,8 +51,28 @@ class PrintQueueScreen extends StatelessWidget {
                   queueProvider.isPaused ? 'Tiếp tục hàng đợi' : 'Tạm dừng hàng đợi',
                   style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
                 ),
-              ),
-            ],
+              );
+
+              if (isMobile) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleSection,
+                    const SizedBox(height: 12),
+                    actionSection,
+                  ],
+                );
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: titleSection),
+                  const SizedBox(width: 12),
+                  actionSection,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
 
@@ -90,40 +114,11 @@ class PrintQueueScreen extends StatelessWidget {
 
                 return Padding(
                   padding: const EdgeInsets.all(16),
-                  child: Row(
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(10),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Icon(statusIcon, color: statusColor, size: 22),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              children: [
-                                Text(
-                                  job.orderCode,
-                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal),
-                                ),
-                                const SizedBox(width: 8),
-                                Text('• ${job.customerName}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
-                              ],
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Máy in target: ${job.printerName ?? "HP LaserJet 9000"}  •  ${DateFormat("HH:mm:ss").format(job.createdAt)}',
-                              style: const TextStyle(fontSize: 11, color: Colors.grey),
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
+                  child: LayoutBuilder(
+                    builder: (context, constraints) {
+                      final isMobile = constraints.maxWidth < 600;
+
+                      final statusBadge = Container(
                         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                         decoration: BoxDecoration(
                           color: statusColor.withValues(alpha: 0.1),
@@ -133,9 +128,10 @@ class PrintQueueScreen extends StatelessWidget {
                           statusText,
                           style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
                         ),
-                      ),
-                      const SizedBox(width: 16),
-                      Row(
+                      );
+
+                      final actionButtons = Row(
+                        mainAxisSize: MainAxisSize.min,
                         children: [
                           if (job.status == 'FAILED')
                             IconButton(
@@ -144,6 +140,7 @@ class PrintQueueScreen extends StatelessWidget {
                                 queueProvider.retryJob(job.id);
                               },
                               tooltip: 'Thử lại',
+                              visualDensity: VisualDensity.compact,
                             ),
                           IconButton(
                             icon: const Icon(Icons.vertical_align_top_rounded, color: AppTheme.primaryTeal),
@@ -151,6 +148,7 @@ class PrintQueueScreen extends StatelessWidget {
                               queueProvider.prioritizeJob(job.id);
                             },
                             tooltip: 'Ưu tiên lên đầu',
+                            visualDensity: VisualDensity.compact,
                           ),
                           IconButton(
                             icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
@@ -158,10 +156,109 @@ class PrintQueueScreen extends StatelessWidget {
                               queueProvider.deleteJob(job.id);
                             },
                             tooltip: 'Xóa khỏi hàng đợi',
+                            visualDensity: VisualDensity.compact,
                           ),
                         ],
-                      ),
-                    ],
+                      );
+
+                      if (isMobile) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  decoration: BoxDecoration(
+                                    color: statusColor.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Icon(statusIcon, color: statusColor, size: 22),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        job.orderCode,
+                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal),
+                                      ),
+                                      Text(
+                                        job.customerName,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                statusBadge,
+                              ],
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    'Máy in: ${job.printerName ?? "HP LaserJet 9000"} • ${DateFormat("HH:mm:ss").format(job.createdAt)}',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                  ),
+                                ),
+                                actionButtons,
+                              ],
+                            ),
+                          ],
+                        );
+                      }
+
+                      return Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(10),
+                            decoration: BoxDecoration(
+                              color: statusColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Icon(statusIcon, color: statusColor, size: 22),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      job.orderCode,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Flexible(
+                                      child: Text(
+                                        '• ${job.customerName}',
+                                        overflow: TextOverflow.ellipsis,
+                                        style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  'Máy in target: ${job.printerName ?? "HP LaserJet 9000"}  •  ${DateFormat("HH:mm:ss").format(job.createdAt)}',
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(fontSize: 11, color: Colors.grey),
+                                ),
+                              ],
+                            ),
+                          ),
+                          statusBadge,
+                          const SizedBox(width: 16),
+                          actionButtons,
+                        ],
+                      );
+                    },
                   ),
                 );
               },

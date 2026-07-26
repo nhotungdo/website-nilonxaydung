@@ -26,21 +26,25 @@ class PrintersScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Column(
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final isMobile = constraints.maxWidth < 650;
+
+              final titleSection = Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: const [
                   Row(
                     children: [
-                      Text(
-                        'Cài đặt máy in',
-                        style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                      Flexible(
+                        child: Text(
+                          'Cài đặt máy in',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                        ),
                       ),
                       SizedBox(width: 8),
                       Chip(
-                        label: Text('ADMIN ONLY', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
+                        label: Text('CHỈ QUẢN TRỊ', style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: Colors.white)),
                         backgroundColor: AppTheme.primaryTeal,
                         padding: EdgeInsets.zero,
                         visualDensity: VisualDensity.compact,
@@ -49,11 +53,13 @@ class PrintersScreen extends StatelessWidget {
                   ),
                   Text(
                     'Cấu hình danh sách máy in hóa đơn nhiệt LAN/USB/WIFI và máy in mặc định.',
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
                   ),
                 ],
-              ),
-              ElevatedButton.icon(
+              );
+
+              final actionSection = ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryTeal,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -61,24 +67,46 @@ class PrintersScreen extends StatelessWidget {
                 onPressed: () => _showAddPrinterModal(context),
                 icon: const Icon(Icons.add_rounded, color: Colors.white),
                 label: const Text('Thêm máy in mới', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-              ),
-            ],
+              );
+
+              if (isMobile) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    titleSection,
+                    const SizedBox(height: 12),
+                    actionSection,
+                  ],
+                );
+              }
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(child: titleSection),
+                  const SizedBox(width: 12),
+                  actionSection,
+                ],
+              );
+            },
           ),
           const SizedBox(height: 24),
 
           GlassCard(
             padding: const EdgeInsets.all(0),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minWidth: MediaQuery.of(context).size.width - 320),
-                child: DataTable(
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(minWidth: constraints.maxWidth),
+                    child: DataTable(
                   headingRowColor: WidgetStateProperty.all(const Color(0xFFF8FAFC)),
                   columns: const [
                     DataColumn(label: Text('TÊN MÁY IN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     DataColumn(label: Text('KHỔ GIẤY', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     DataColumn(label: Text('KẾT NỐI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
-                    DataColumn(label: Text('ĐỊA CHỈ TARGET', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
+                    DataColumn(label: Text('ĐỊA CHỈ MÁY IN', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     DataColumn(label: Text('TRẠNG THÁI', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     DataColumn(label: Text('MẶC ĐỊNH', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
                     DataColumn(label: Text('THAO TÁC', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 11))),
@@ -119,7 +147,7 @@ class PrintersScreen extends StatelessWidget {
                         DataCell(Text(printer.connectionType, style: const TextStyle(fontWeight: FontWeight.w600))),
                         DataCell(
                           Text(
-                            printer.connectionType == 'USB' ? 'USB Local Spooler' : '${printer.ipAddress}:${printer.port}',
+                            printer.connectionType == 'USB' ? 'Cổng USB cục bộ' : '${printer.ipAddress}:${printer.port}',
                             style: const TextStyle(fontSize: 12, fontFamily: 'monospace'),
                           ),
                         ),
@@ -131,7 +159,7 @@ class PrintersScreen extends StatelessWidget {
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Text(
-                              printer.status,
+                              isOnline ? 'TRỰC TUYẾN' : 'MẤT KẾT NỐI',
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.bold,
@@ -196,7 +224,9 @@ class PrintersScreen extends StatelessWidget {
                   }).toList(),
                 ),
               ),
-            ),
+            );
+          },
+        ),
           ),
         ],
       ),
@@ -226,7 +256,13 @@ class _AddPrinterDialogState extends State<_AddPrinterDialog> {
         children: const [
           Icon(Icons.print_rounded, color: AppTheme.primaryTeal),
           SizedBox(width: 8),
-          Text('Thêm máy in hóa đơn mới', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+          Expanded(
+            child: Text(
+              'Thêm máy in hóa đơn mới',
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+          ),
         ],
       ),
       content: SizedBox(
