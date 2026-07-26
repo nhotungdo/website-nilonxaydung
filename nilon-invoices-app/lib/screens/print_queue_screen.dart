@@ -1,0 +1,174 @@
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import '../providers/queue_provider.dart';
+import '../theme/app_theme.dart';
+import '../widgets/glass_card.dart';
+
+class PrintQueueScreen extends StatelessWidget {
+  const PrintQueueScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final queueProvider = context.watch<QueueProvider>();
+    final jobs = queueProvider.jobs;
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Hàng đợi in (Print Spooler Queue)',
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                  ),
+                  Text(
+                    'Giám sát và điều khiển luồng lệnh in hóa đơn tự động.',
+                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                  ),
+                ],
+              ),
+              ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+                onPressed: () {
+                  queueProvider.togglePause();
+                },
+                icon: Icon(queueProvider.isPaused ? Icons.play_arrow_rounded : Icons.pause_rounded, color: Colors.white),
+                label: Text(
+                  queueProvider.isPaused ? 'Tiếp tục hàng đợi' : 'Tạm dừng hàng đợi',
+                  style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+
+          GlassCard(
+            padding: const EdgeInsets.all(0),
+            child: ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: jobs.length,
+              separatorBuilder: (ctx, idx) => const Divider(height: 1),
+              itemBuilder: (context, index) {
+                final job = jobs[index];
+
+                Color statusColor;
+                String statusText;
+                IconData statusIcon;
+
+                switch (job.status) {
+                  case 'PROCESSING':
+                    statusColor = Colors.blue;
+                    statusText = 'Đang in...';
+                    statusIcon = Icons.sync_rounded;
+                    break;
+                  case 'SUCCESS':
+                    statusColor = Colors.green;
+                    statusText = 'Hoàn thành';
+                    statusIcon = Icons.check_circle_outline_rounded;
+                    break;
+                  case 'FAILED':
+                    statusColor = Colors.redAccent;
+                    statusText = 'Lỗi kết nối';
+                    statusIcon = Icons.error_outline_rounded;
+                    break;
+                  default:
+                    statusColor = Colors.amber.shade800;
+                    statusText = 'Chờ xử lý';
+                    statusIcon = Icons.schedule_rounded;
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(10),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Icon(statusIcon, color: statusColor, size: 22),
+                      ),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Text(
+                                  job.orderCode,
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal),
+                                ),
+                                const SizedBox(width: 8),
+                                Text('• ${job.customerName}', style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                              ],
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Máy in target: ${job.printerName ?? "HP LaserJet 9000"}  •  ${DateFormat("HH:mm:ss").format(job.createdAt)}',
+                              style: const TextStyle(fontSize: 11, color: Colors.grey),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: statusColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          statusText,
+                          style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: statusColor),
+                        ),
+                      ),
+                      const SizedBox(width: 16),
+                      Row(
+                        children: [
+                          if (job.status == 'FAILED')
+                            IconButton(
+                              icon: const Icon(Icons.refresh_rounded, color: Colors.blue),
+                              onPressed: () {
+                                queueProvider.retryJob(job.id);
+                              },
+                              tooltip: 'Thử lại',
+                            ),
+                          IconButton(
+                            icon: const Icon(Icons.vertical_align_top_rounded, color: AppTheme.primaryTeal),
+                            onPressed: () {
+                              queueProvider.prioritizeJob(job.id);
+                            },
+                            tooltip: 'Ưu tiên lên đầu',
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent),
+                            onPressed: () {
+                              queueProvider.deleteJob(job.id);
+                            },
+                            tooltip: 'Xóa khỏi hàng đợi',
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
