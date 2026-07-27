@@ -17,6 +17,24 @@ class PrintJobModel {
     this.printerName,
   });
 
+  factory PrintJobModel.fromSupabase(Map<String, dynamic> json) {
+    // Handle joined data: orders(order_code, customers(full_name))
+    final order = json['orders'] as Map<String, dynamic>?;
+    final customer = order?['customers'] as Map<String, dynamic>?;
+
+    return PrintJobModel(
+      id: json['id'] as String,
+      orderId: json['order_id'] as String? ?? '',
+      orderCode: order?['order_code'] as String? ?? json['order_code'] as String? ?? '',
+      customerName: customer?['full_name'] as String? ?? json['customer_name'] as String? ?? '',
+      status: json['status'] as String? ?? 'PENDING',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String).toLocal()
+          : DateTime.now(),
+      printerName: json['printer_name'] as String?,
+    );
+  }
+
   PrintJobModel copyWith({
     String? id,
     String? orderId,

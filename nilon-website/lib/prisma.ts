@@ -10,37 +10,26 @@ const createPrismaClient = () => {
     throw new Error('DATABASE_URL is not set in environment variables');
   }
 
-  // Parse the schema parameter from the connection string if present
-  let schema = 'public';
-  try {
-    const url = new URL(connectionString);
-    const schemaParam = url.searchParams.get('schema');
-    if (schemaParam) {
-      schema = schemaParam;
-    }
-  } catch {
-    // If URL parsing fails, default to public and let pg handle the connection error
-  }
-
+  // Supabase uses pgbouncer (Transaction Pooler) — disable prepared statements
   const pool = new Pool({
     connectionString,
-    // Set the search path to our custom schema upon every physical connection
-    onConnect: async (client) => {
-      await client.query(`SET search_path TO "${schema}", public`);
+    ssl: {
+      rejectUnauthorized: false, // Required for Supabase SSL connection
     },
+    max: 1, // Serverless: limit pool size when using pgbouncer
   });
 
   const adapter = new PrismaPg(pool);
   const prismaClient = new PrismaClient({
     adapter,
-    log: ['query'],
+    log: process.env.NODE_ENV === 'development' ? ['error', 'warn'] : ['error'],
   });
 
   // Verify connection at startup
   prismaClient.$queryRaw`SELECT 1`.then(() => {
-    console.log('[DB] Connected to nilon-invoices');
+    console.log('[DB] ✅ Connected to Supabase PostgreSQL (nilon-invoices)');
   }).catch((err) => {
-    console.error('[DB] Connection to nilon-invoices failed:', err);
+    console.error('[DB] ❌ Connection to Supabase failed:', err.message);
   });
 
   return prismaClient;
@@ -49,5 +38,3 @@ const createPrismaClient = () => {
 export const prisma = globalForPrisma.prisma || createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;
-
-

@@ -2,20 +2,14 @@ import { db } from './postgres';
 import { logger } from '../utils/logger';
 import { assertConfigIsValid } from '../utils/config';
 
+/**
+ * Schema for nilon-invoices tables on Supabase PostgreSQL.
+ * Uses CREATE TABLE IF NOT EXISTS to be safe with cloud DB —
+ * will NOT drop existing data if tables already exist.
+ */
 const SCHEMA_SQL = `
--- Drop existing tables to enable clean re-runs if necessary
-DROP TABLE IF EXISTS printer_logs CASCADE;
-DROP TABLE IF EXISTS failed_jobs CASCADE;
-DROP TABLE IF EXISTS print_jobs CASCADE;
-DROP TABLE IF EXISTS printers CASCADE;
-DROP TABLE IF EXISTS order_items CASCADE;
-DROP TABLE IF EXISTS orders CASCADE;
-DROP TABLE IF EXISTS customers CASCADE;
-DROP TABLE IF EXISTS products CASCADE;
-DROP TABLE IF EXISTS app_settings CASCADE;
-
 -- 1. Table: customers
-CREATE TABLE customers (
+CREATE TABLE IF NOT EXISTS customers (
   id VARCHAR(100) PRIMARY KEY,
   full_name VARCHAR(255) NOT NULL,
   phone VARCHAR(50) UNIQUE NOT NULL,
@@ -24,7 +18,7 @@ CREATE TABLE customers (
 );
 
 -- 2. Table: products
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
   id VARCHAR(100) PRIMARY KEY,
   name VARCHAR(255) NOT NULL,
   sku VARCHAR(100) UNIQUE NOT NULL,
@@ -34,7 +28,7 @@ CREATE TABLE products (
 );
 
 -- 3. Table: orders
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
   id VARCHAR(100) PRIMARY KEY,
   order_code VARCHAR(100) UNIQUE NOT NULL,
   customer_id VARCHAR(100) NOT NULL REFERENCES customers(id) ON DELETE CASCADE,
@@ -53,7 +47,7 @@ CREATE TABLE orders (
 );
 
 -- 4. Table: order_items
-CREATE TABLE order_items (
+CREATE TABLE IF NOT EXISTS order_items (
   id VARCHAR(100) PRIMARY KEY,
   order_id VARCHAR(100) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   product_id VARCHAR(100) NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -64,7 +58,7 @@ CREATE TABLE order_items (
 );
 
 -- 5. Table: printers
-CREATE TABLE printers (
+CREATE TABLE IF NOT EXISTS printers (
   id VARCHAR(100) PRIMARY KEY,
   name VARCHAR(255) UNIQUE NOT NULL,
   paper_size VARCHAR(50) NOT NULL CHECK (paper_size IN ('K58', 'K80')),
@@ -76,7 +70,7 @@ CREATE TABLE printers (
 );
 
 -- 6. Table: print_jobs
-CREATE TABLE print_jobs (
+CREATE TABLE IF NOT EXISTS print_jobs (
   id VARCHAR(100) PRIMARY KEY,
   order_id VARCHAR(100) NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
   printer_id VARCHAR(100) NOT NULL REFERENCES printers(id) ON DELETE CASCADE,
@@ -89,7 +83,7 @@ CREATE TABLE print_jobs (
 );
 
 -- 7. Table: failed_jobs
-CREATE TABLE failed_jobs (
+CREATE TABLE IF NOT EXISTS failed_jobs (
   id VARCHAR(100) PRIMARY KEY,
   print_job_id VARCHAR(100) UNIQUE NOT NULL REFERENCES print_jobs(id) ON DELETE CASCADE,
   error_code VARCHAR(100) NOT NULL,
@@ -100,7 +94,7 @@ CREATE TABLE failed_jobs (
 );
 
 -- 8. Table: app_settings
-CREATE TABLE app_settings (
+CREATE TABLE IF NOT EXISTS app_settings (
   id INTEGER PRIMARY KEY,
   api_url VARCHAR(255) NOT NULL,
   socket_url VARCHAR(255) NOT NULL,
@@ -111,7 +105,7 @@ CREATE TABLE app_settings (
 );
 
 -- 9. Table: printer_logs
-CREATE TABLE printer_logs (
+CREATE TABLE IF NOT EXISTS printer_logs (
   id SERIAL PRIMARY KEY,
   printer_id VARCHAR(100) REFERENCES printers(id) ON DELETE SET NULL,
   log_level VARCHAR(50) NOT NULL CHECK (log_level IN ('INFO', 'WARN', 'ERROR')),
@@ -120,14 +114,15 @@ CREATE TABLE printer_logs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
--- Create optimization indexes
-CREATE INDEX idx_orders_created_at ON orders(created_at);
-CREATE INDEX idx_print_jobs_status ON print_jobs(status);
-CREATE INDEX idx_printer_logs_created_at ON printer_logs(created_at);
+-- Create optimization indexes (IF NOT EXISTS to be idempotent)
+CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
+CREATE INDEX IF NOT EXISTS idx_orders_print_status ON orders(print_status);
+CREATE INDEX IF NOT EXISTS idx_print_jobs_status ON print_jobs(status);
+CREATE INDEX IF NOT EXISTS idx_printer_logs_created_at ON printer_logs(created_at);
 `;
 
 export const runMigrations = async (): Promise<void> => {
-  logger.info('[Migration] Running PostgreSQL database migrations...');
+  logger.info('[Migration] Running schema migrations on Supabase PostgreSQL...');
   
   try {
     assertConfigIsValid();
@@ -138,9 +133,9 @@ export const runMigrations = async (): Promise<void> => {
       await client.query(SCHEMA_SQL);
     });
 
-    logger.info('[Migration] Database tables migrated successfully.');
+    logger.info('[Migration] ✅ Supabase schema migrated successfully (tables created if not existed).');
   } catch (err: any) {
-    logger.error(`[Migration] Database migration failed: ${err.message}`, err.stack);
+    logger.error(`[Migration] ❌ Schema migration failed: ${err.message}`, err.stack);
     throw err;
   }
 };

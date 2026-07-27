@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../models/order_model.dart';
 import '../providers/order_provider.dart';
-import '../services/mock_data_service.dart';
+import '../services/product_api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 
@@ -415,15 +415,48 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
   late String _orderCode;
 
   List<Map<String, dynamic>> _selectedItems = [];
-  final catalog = MockDataService.getProductCatalog();
+  List<Map<String, dynamic>> _catalog = [];
+  bool _catalogLoading = true;
 
   @override
   void initState() {
     super.initState();
     _orderCode = context.read<OrderProvider>().generateOrderCode();
-    _selectedItems = [
-      {'name': catalog[0]['name'], 'price': catalog[0]['price'], 'quantity': 1, 'unit': catalog[0]['unit']}
-    ];
+    _loadCatalog();
+  }
+
+  Future<void> _loadCatalog() async {
+    try {
+      final data = await ProductApiService.fetchProducts();
+      if (mounted) {
+        setState(() {
+          _catalog = data;
+          _catalogLoading = false;
+          if (_catalog.isNotEmpty) {
+            _selectedItems = [
+              {
+                'name': _catalog[0]['name'],
+                'price': _catalog[0]['price'],
+                'quantity': 1,
+                'unit': _catalog[0]['unit'] ?? 'sp',
+              }
+            ];
+          } else {
+            _selectedItems = [{'name': '', 'price': 0.0, 'quantity': 1, 'unit': 'sp'}];
+          }
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _catalogLoading = false;
+          _selectedItems = [{'name': '', 'price': 0.0, 'quantity': 1, 'unit': 'sp'}];
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Không thể tải danh mục sản phẩm: $e')),
+        );
+      }
+    }
   }
 
   double get _calculatedTotal {
@@ -477,7 +510,20 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-      child: Container(
+      child: _catalogLoading
+          ? Container(
+              width: 680,
+              padding: const EdgeInsets.all(60),
+              child: const Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(),
+                  SizedBox(height: 16),
+                  Text('Đang tải danh mục sản phẩm...'),
+                ],
+              ),
+            )
+          : Container(
         width: 680,
         padding: const EdgeInsets.all(28),
         child: SingleChildScrollView(
@@ -631,10 +677,10 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                     onPressed: () {
                       setState(() {
                         _selectedItems.add({
-                          'name': catalog[0]['name'],
-                          'price': catalog[0]['price'],
+                          'name': _catalog.isNotEmpty ? _catalog[0]['name'] : '',
+                          'price': _catalog.isNotEmpty ? _catalog[0]['price'] : 0.0,
                           'quantity': 1,
-                          'unit': catalog[0]['unit'],
+                          'unit': _catalog.isNotEmpty ? (_catalog[0]['unit'] ?? 'sp') : 'sp',
                         });
                       });
                     },
@@ -659,18 +705,18 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                         child: DropdownButtonFormField<String>(
                           initialValue: item['name'].toString(),
                           decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
-                          items: catalog.map((cat) {
+                          items: _catalog.map((cat) {
                             return DropdownMenuItem(
                               value: cat['name'].toString(),
                               child: Text(cat['name'].toString(), overflow: TextOverflow.ellipsis, style: const TextStyle(fontSize: 12)),
                             );
                           }).toList(),
                           onChanged: (val) {
-                            final selectedCat = catalog.firstWhere((c) => c['name'] == val);
+                            final selectedCat = _catalog.firstWhere((c) => c['name'] == val);
                             setState(() {
                               _selectedItems[idx]['name'] = selectedCat['name'];
                               _selectedItems[idx]['price'] = selectedCat['price'];
-                              _selectedItems[idx]['unit'] = selectedCat['unit'];
+                              _selectedItems[idx]['unit'] = selectedCat['unit'] ?? 'sp';
                             });
                           },
                         ),

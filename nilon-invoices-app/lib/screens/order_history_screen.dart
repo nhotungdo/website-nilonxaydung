@@ -189,20 +189,78 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                             ),
                             DataCell(Text(DateFormat('dd/MM/yyyy HH:mm').format(order.createdAt), style: const TextStyle(fontSize: 11, color: Colors.grey))),
                             DataCell(
-                              ElevatedButton.icon(
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.primaryTeal,
-                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                                  visualDensity: VisualDensity.compact,
-                                ),
-                                onPressed: () {
-                                  queueProvider.addJob(order.id, order.orderCode, order.customerName, null);
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Đã gửi lại lệnh in cho đơn hàng ${order.orderCode}')),
-                                  );
-                                },
-                                icon: const Icon(Icons.print_rounded, size: 14),
-                                label: const Text('In lại', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  ElevatedButton.icon(
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: AppTheme.primaryTeal,
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                      visualDensity: VisualDensity.compact,
+                                    ),
+                                    onPressed: () {
+                                      queueProvider.addJob(order.id, order.orderCode, order.customerName, null);
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(content: Text('Đã gửi lại lệnh in cho đơn hàng ${order.orderCode}')),
+                                      );
+                                    },
+                                    icon: const Icon(Icons.print_rounded, size: 14),
+                                    label: const Text('In lại', style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold)),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  IconButton(
+                                    icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
+                                    tooltip: 'Xóa đơn hàng',
+                                    visualDensity: VisualDensity.compact,
+                                    onPressed: () async {
+                                      final orderProvider = context.read<OrderProvider>();
+                                      final confirmed = await showDialog<bool>(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                                          title: const Row(
+                                            children: [
+                                              Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 26),
+                                              SizedBox(width: 10),
+                                              Text('Xác nhận xóa', style: TextStyle(fontWeight: FontWeight.bold)),
+                                            ],
+                                          ),
+                                          content: Text(
+                                            'Bạn có chắc muốn xóa đơn hàng\n"${order.orderCode} — ${order.customerName}" không?\n\nHành động này không thể hoàn tác.',
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.pop(ctx, false),
+                                              child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+                                            ),
+                                            ElevatedButton.icon(
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.redAccent,
+                                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                              ),
+                                              onPressed: () => Navigator.pop(ctx, true),
+                                              icon: const Icon(Icons.delete_outline_rounded, size: 16, color: Colors.white),
+                                              label: const Text('Xóa', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                      if (confirmed == true) {
+                                        await orderProvider.deleteOrder(order.id);
+                                        if (context.mounted) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Đã xóa đơn hàng "${order.orderCode}"'),
+                                              backgroundColor: Colors.redAccent,
+                                              behavior: SnackBarBehavior.floating,
+                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    },
+                                  ),
+                                ],
                               ),
                             ),
                           ],

@@ -93,71 +93,73 @@ class AdminTopbar extends StatelessWidget {
               const SizedBox(width: 8),
 
               // Right Side Control Bar
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    // Date Text (only on wide screens)
-                    if (!isNarrow) ...[
-                      Text(
-                        formattedDate,
-                        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
-                      ),
-                      const SizedBox(width: 8),
-                    ],
+              Flexible(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Date Text (only on wide screens)
+                      if (!isNarrow) ...[
+                        Text(
+                          formattedDate,
+                          style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
 
-                    // Pause / Resume Print Button
-                    ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      // Pause / Resume Print Button
+                      ElevatedButton(
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: queueProvider.isPaused ? Colors.amber.shade700 : AppTheme.primaryTeal,
+                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                        onPressed: () {
+                          queueProvider.togglePause();
+                        },
+                        child: Text(
+                          queueProvider.isPaused ? 'Tiếp tục in' : 'Dừng in',
+                          style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+
+                      // Bell notification
+                      IconButton(
+                        icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 20),
+                        onPressed: () {},
                         visualDensity: VisualDensity.compact,
                       ),
-                      onPressed: () {
-                        queueProvider.togglePause();
-                      },
-                      child: Text(
-                        queueProvider.isPaused ? 'Tiếp tục in' : 'Dừng in',
-                        style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
-                      ),
-                    ),
-                    const SizedBox(width: 6),
 
-                    // Bell notification
-                    IconButton(
-                      icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 20),
-                      onPressed: () {},
-                      visualDensity: VisualDensity.compact,
-                    ),
+                      if (!isVeryNarrow) ...[
+                        const SizedBox(width: 2),
+                        const VerticalDivider(indent: 18, endIndent: 18, color: AppTheme.borderLight),
+                        const SizedBox(width: 2),
 
-                    if (!isVeryNarrow) ...[
-                      const SizedBox(width: 2),
-                      const VerticalDivider(indent: 18, endIndent: 18, color: AppTheme.borderLight),
-                      const SizedBox(width: 2),
-
-                      // Admin User Profile
-                      Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          CircleAvatar(
-                            radius: 14,
-                            backgroundColor: AppTheme.primaryTeal.withValues(alpha: 0.1),
-                            child: const Icon(Icons.admin_panel_settings_rounded, size: 16, color: AppTheme.primaryTeal),
-                          ),
-                          if (!isNarrow) ...[
-                            const SizedBox(width: 6),
-                            Text(
-                              user?.username ?? 'Quản trị viên',
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                        // Admin User Profile
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CircleAvatar(
+                              radius: 14,
+                              backgroundColor: AppTheme.primaryTeal.withValues(alpha: 0.1),
+                              child: const Icon(Icons.admin_panel_settings_rounded, size: 16, color: AppTheme.primaryTeal),
                             ),
+                            if (!isNarrow) ...[
+                              const SizedBox(width: 6),
+                              Text(
+                                user?.username ?? 'Quản trị viên',
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                              ),
+                            ],
                           ],
-                        ],
-                      ),
+                        ),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ],

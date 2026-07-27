@@ -40,6 +40,18 @@ dependencies:
   qr_flutter: ^4.1.0
   shared_preferences: ^2.5.5
 
+  # Supabase - Cloud PostgreSQL + Auth + Realtime
+  supabase_flutter: ^2.9.0
+
+  # HTTP client for REST API calls
+  http: ^1.2.2
+
+  # UUID generator for new entity IDs
+  uuid: ^4.5.0
+
+  # Local push notifications when new orders arrive
+  flutter_local_notifications: ^18.0.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

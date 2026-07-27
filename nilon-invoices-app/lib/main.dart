@@ -8,6 +8,9 @@ import 'providers/printer_provider.dart';
 import 'providers/queue_provider.dart';
 import 'providers/settings_provider.dart';
 
+import 'services/supabase_service.dart';
+import 'services/notification_service.dart';
+
 import 'theme/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
@@ -26,6 +29,14 @@ import 'widgets/admin_footer_status.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi_VN', null);
+
+  // Initialize Supabase before runApp
+  // ⚠️  Set your ANON KEY in lib/services/supabase_service.dart
+  await SupabaseService.initialize();
+
+  // Initialize local push notification service
+  await NotificationService.initialize();
+
   runApp(const NilonInvoicesAdminApp());
 }
 

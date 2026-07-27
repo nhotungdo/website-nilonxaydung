@@ -112,10 +112,76 @@ class PrintQueueScreen extends StatelessWidget {
                     statusIcon = Icons.schedule_rounded;
                 }
 
-                return Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) {
+                Future<bool?> confirmDelete() => showDialog<bool>(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        title: const Row(
+                          children: [
+                            Icon(Icons.warning_amber_rounded, color: Colors.redAccent, size: 26),
+                            SizedBox(width: 10),
+                            Text('Xác nhận xóa', style: TextStyle(fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        content: Text(
+                          'Bạn có chắc muốn xóa lệnh in\n"${job.orderCode} — ${job.customerName}"\nkhỏi hàng đợi không?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(ctx, false),
+                            child: const Text('Hủy', style: TextStyle(color: Colors.grey)),
+                          ),
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.redAccent,
+                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            ),
+                            onPressed: () => Navigator.pop(ctx, true),
+                            icon: const Icon(Icons.delete_outline_rounded, size: 16, color: Colors.white),
+                            label: const Text('Xóa', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
+                    );
+
+                return Dismissible(
+                  key: ValueKey(job.id),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (_) => confirmDelete(),
+                  onDismissed: (_) {
+                    queueProvider.deleteJob(job.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Đã xóa lệnh in "${job.orderCode}" khỏi hàng đợi'),
+                        backgroundColor: Colors.redAccent,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      ),
+                    );
+                  },
+                  background: Container(
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFFFF6B6B), Color(0xFFEE0979)],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                    ),
+                    child: const Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.delete_sweep_rounded, color: Colors.white, size: 28),
+                        SizedBox(height: 4),
+                        Text('Xóa', style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
                       final isMobile = constraints.maxWidth < 600;
 
                       final statusBadge = Container(
@@ -260,6 +326,7 @@ class PrintQueueScreen extends StatelessWidget {
                       );
                     },
                   ),
+                ),
                 );
               },
             ),

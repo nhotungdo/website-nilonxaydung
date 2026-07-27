@@ -19,30 +19,36 @@ export class PostgresDatabase {
   }
 
   /**
-   * Initializes and connects to the PostgreSQL Pool
+   * Initializes and connects to the Supabase PostgreSQL Pool
    */
   public async connectDatabase(retries = 5, delayMs = 1000): Promise<void> {
     if (this.pool) return;
     if (this.isConnecting) return;
 
     this.isConnecting = true;
-    logger.info(`[Postgres] Connecting to database at ${config.db.host}:${config.db.port}/${config.db.name}...`);
+    logger.info(`[Postgres] Connecting to Supabase at ${config.db.host}:${config.db.port}/${config.db.name}...`);
 
     for (let attempt = 1; attempt <= retries; attempt++) {
       try {
         this.pool = new Pool({
           connectionString: config.db.url,
+          // SSL is required for Supabase cloud PostgreSQL
+          ssl: {
+            rejectUnauthorized: false,
+          },
           max: 20,
           idleTimeoutMillis: 30000,
-          connectionTimeoutMillis: 5000
+          connectionTimeoutMillis: 10000, // Increased for cloud latency
         });
 
         // Test connection
         const client = await this.pool.connect();
+        const result = await client.query('SELECT version()');
         client.release();
 
-        logger.info(`[Postgres] Database connected successfully on attempt ${attempt}.`);
-        console.log('[DB] Connected to nilon-invoices');
+        logger.info(`[Postgres] ✅ Supabase connected successfully on attempt ${attempt}.`);
+        logger.info(`[Postgres] Server: ${result.rows[0]?.version?.substring(0, 50) || 'Unknown'}`);
+        console.log('[DB] ✅ Connected to Supabase PostgreSQL (nilon-invoices)');
         this.isConnecting = false;
 
         // Register pool error events
@@ -53,7 +59,7 @@ export class PostgresDatabase {
 
         return;
       } catch (err: any) {
-        logger.error(`[Postgres] Connection attempt ${attempt} failed: ${err.message}`);
+        logger.error(`[Postgres] Supabase connection attempt ${attempt} failed: ${err.message}`);
         if (this.pool) {
           try {
             await this.pool.end();
@@ -63,12 +69,12 @@ export class PostgresDatabase {
 
         if (attempt === retries) {
           this.isConnecting = false;
-          throw new Error(`[Postgres] Max connection retries reached. Could not connect to database: ${err.message}`);
+          throw new Error(`[Postgres] Max connection retries reached. Could not connect to Supabase: ${err.message}`);
         }
 
         // Exponential backoff delay
         const backoffDelay = delayMs * Math.pow(2, attempt - 1);
-        logger.warn(`[Postgres] Retrying connection in ${backoffDelay}ms...`);
+        logger.warn(`[Postgres] Retrying Supabase connection in ${backoffDelay}ms...`);
         await new Promise((resolve) => setTimeout(resolve, backoffDelay));
       }
     }
@@ -79,11 +85,11 @@ export class PostgresDatabase {
    */
   private async handleDisconnect() {
     this.pool = null;
-    logger.warn('[Postgres] Connection lost. Re-initiating auto reconnect...');
+    logger.warn('[Postgres] Connection lost. Re-initiating auto reconnect to Supabase...');
     try {
       await this.connectDatabase();
     } catch (err: any) {
-      logger.error(`[Postgres] Auto-reconnect failed: ${err.message}`);
+      logger.error(`[Postgres] Auto-reconnect to Supabase failed: ${err.message}`);
     }
   }
 
@@ -95,7 +101,7 @@ export class PostgresDatabase {
     try {
       await this.pool.end();
       this.pool = null;
-      logger.info('[Postgres] Database connection pool closed.');
+      logger.info('[Postgres] Supabase database connection pool closed.');
     } catch (err: any) {
       logger.error(`[Postgres] Failed to close database: ${err.message}`, err.stack);
     }

@@ -25,6 +25,17 @@ class OrderItemModel {
     );
   }
 
+  /// Parse from Supabase order_items row (uses snake_case column names)
+  factory OrderItemModel.fromSupabase(Map<String, dynamic> json) {
+    return OrderItemModel(
+      productId: json['product_id'] as String?,
+      name: json['product_name'] as String? ?? '',
+      quantity: (json['quantity'] as int?) ?? 1,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      unit: 'sp', // unit is not stored in DB, default
+    );
+  }
+
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
@@ -64,6 +75,31 @@ class OrderModel {
     required this.createdAt,
     required this.items,
   });
+
+  /// Parse from Supabase SELECT with joined customers + order_items
+  factory OrderModel.fromSupabase(Map<String, dynamic> json) {
+    final customer = json['customers'] as Map<String, dynamic>?;
+    final rawItems = json['order_items'] as List<dynamic>? ?? [];
+
+    return OrderModel(
+      id: json['id'] as String,
+      orderCode: json['order_code'] as String? ?? '',
+      customerName: customer?['full_name'] as String? ?? 'Khách lẻ',
+      customerPhone: customer?['phone'] as String? ?? '',
+      customerAddress: customer?['address'] as String? ?? '',
+      totalAmount: (json['total'] as num?)?.toDouble() ?? 0.0,
+      note: json['note'] as String? ?? '',
+      paymentMethod: json['payment_method'] as String? ?? 'COD',
+      printStatus: json['print_status'] as String? ?? 'waiting',
+      orderStatus: json['order_status'] as String? ?? 'pending',
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'] as String).toLocal()
+          : DateTime.now(),
+      items: rawItems
+          .map((item) => OrderItemModel.fromSupabase(item as Map<String, dynamic>))
+          .toList(),
+    );
+  }
 
   OrderModel copyWith({
     String? id,
