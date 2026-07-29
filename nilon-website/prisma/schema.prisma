@@ -7,8 +7,6 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
 }
 
 model Customer {
@@ -132,3 +130,24 @@ model PrinterLog {
 
   @@map("printer_logs")
 }
+
+model QuoteInquiry {
+  id            String   @id @default(uuid())
+  quoteCode     String   @unique @map("quote_code")
+  customerName  String   @map("customer_name")
+  phone         String
+  address       String
+  productName   String   @map("product_name")
+  thicknessZem  String   @default("4 zem") @map("thickness_zem")
+  quantityKg    Float    @map("quantity_kg")
+  unitPrice     Float    @map("unit_price")
+  subtotal      Float
+  shippingFee   Float    @default(0) @map("shipping_fee")
+  totalAmount   Float    @map("total_amount")
+  status        String   @default("pending") // pending, contacted, closed
+  aiNotes       String?  @map("ai_notes")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("quote_inquiries")
+}
+

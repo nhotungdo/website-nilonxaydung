@@ -40,7 +40,7 @@ export default function CartWidget() {
 
   if (!mounted) {
     return (
-      <div className="relative p-2 text-blue-100">
+      <div className="relative p-2.5 text-slate-700">
         <ShoppingCart className="w-5 h-5" />
       </div>
     );
@@ -50,11 +50,12 @@ export default function CartWidget() {
     <div className="relative" ref={dropdownRef}>
       <button 
         onClick={toggleDropdown}
-        className="relative p-2 text-blue-100 hover:text-white transition-colors bg-white/10 hover:bg-white/20 rounded-xl border border-white/10 flex items-center justify-center"
+        aria-label="Xem giỏ hàng báo giá"
+        className="relative p-2.5 text-slate-700 hover:text-[#1a365d] transition-colors bg-slate-100 hover:bg-slate-200/80 rounded-xl border border-slate-200 flex items-center justify-center"
       >
         <ShoppingCart className="w-5 h-5" />
         {totalItems > 0 && (
-          <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-black leading-none text-white bg-blue-500 rounded-full border-2 border-[#1E3A8A] shadow-sm">
+          <span className="absolute -top-1.5 -right-1.5 inline-flex items-center justify-center min-w-[20px] h-[20px] px-1 text-[11px] font-black leading-none text-white bg-blue-600 rounded-full border-2 border-white shadow-sm">
             {totalItems > 99 ? '99+' : totalItems}
           </span>
         )}
