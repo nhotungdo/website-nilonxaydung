@@ -80,16 +80,22 @@ export default function CartWidget() {
               <div className="divide-y divide-slate-100">
                 {items.map((item) => (
                   <div key={item.id} className="p-4 flex gap-3 hover:bg-slate-50 transition-colors">
-                    <div className="w-14 h-14 bg-slate-100 rounded-xl overflow-hidden shrink-0 relative border border-slate-200/60">
+                    <Link 
+                      href={`/san-pham/${item.productId || item.id}`}
+                      className="w-14 h-14 bg-slate-100 rounded-xl overflow-hidden shrink-0 relative border border-slate-200/60 group block"
+                      title="Xem chi tiết sản phẩm"
+                    >
                       <Image 
                         src={item.image} 
                         alt={item.name} 
                         fill
-                        className="object-cover" 
+                        className="object-cover group-hover:scale-105 transition-transform" 
                       />
-                    </div>
+                    </Link>
                     <div className="flex-1 min-w-0">
-                      <h5 className="font-bold text-sm text-slate-900 truncate mb-1">{item.name}</h5>
+                      <Link href={`/san-pham/${item.productId || item.id}`} className="hover:text-blue-600 transition-colors">
+                        <h5 className="font-bold text-sm text-slate-900 truncate mb-1 hover:underline">{item.name}</h5>
+                      </Link>
                       <div className="text-xs text-slate-500 space-y-0.5 font-mono">
                         <div><span className="font-medium text-slate-700">Độ dày:</span> {item.thickness}</div>
                         <div><span className="font-medium text-slate-700">Quy cách:</span> {item.size}</div>

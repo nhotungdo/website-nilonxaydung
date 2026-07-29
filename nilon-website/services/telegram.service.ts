@@ -1,7 +1,4 @@
-import axios from 'axios';
-
-const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID = process.env.TELEGRAM_CHAT_ID;
+import { sendTelegramMessage } from '@/lib/telegram';
 
 interface OrderNotificationPayload {
   orderCode: string;
@@ -19,21 +16,7 @@ interface OrderNotificationPayload {
 
 export const TelegramService = {
   async sendMessage(message: string) {
-    if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) {
-      console.warn('Telegram bot token or chat ID not found');
-      return;
-    }
-
-    try {
-      const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
-      await axios.post(url, {
-        chat_id: TELEGRAM_CHAT_ID,
-        text: message,
-        parse_mode: 'HTML',
-      });
-    } catch (error) {
-      console.error('Error sending Telegram message:', error);
-    }
+    return await sendTelegramMessage(message);
   },
 
   async sendOrderNotification(order: OrderNotificationPayload) {
@@ -51,8 +34,9 @@ export const TelegramService = {
 <b>Tổng tiền:</b> ${total.toLocaleString('vi-VN')}đ
 
 ✅ <i>Đã chuyển sang app in hóa đơn</i>
-    `;
-    await this.sendMessage(message.trim());
+    `.trim();
+
+    await this.sendMessage(message);
   },
 
   async sendPrintErrorNotification(orderCode: string, error: string) {
@@ -62,7 +46,8 @@ export const TelegramService = {
 <b>Nội dung:</b> ${error}
 <b>Nội dung lỗi:</b> Hóa đơn không thể in tự động.
 ⚠️ <i>Hệ thống sẽ tự động retry sau 30s</i>
-    `;
-    await this.sendMessage(message.trim());
+    `.trim();
+
+    await this.sendMessage(message);
   }
 };

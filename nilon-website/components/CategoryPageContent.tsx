@@ -419,7 +419,7 @@ function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: 
       
       <div className="p-4 flex flex-col flex-1 justify-between">
         <div>
-          <Link href={`/san-pham/${product.id}`}>
+          <Link href={`/san-pham/${product.slug || product.id}`}>
             <h3 className="font-heading font-semibold text-slate-900 text-base mb-1.5 line-clamp-2 group-hover:text-[#2b6cb0] transition-colors leading-[1.2]">
               {product.name}
             </h3>

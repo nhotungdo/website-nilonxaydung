@@ -166,8 +166,8 @@ export async function POST(req: NextRequest) {
     console.log(`Order Code: ${order.orderCode}`);
     console.log('Saved to database successfully');
 
-    // 2. Trigger sync and notification (async)
-    Promise.resolve().then(async () => {
+    // 2. Trigger sync and notification
+    try {
       // Send real-time notify to Printer App using PostgreSQL NOTIFY
       const sent = await PrinterService.sendToPrinter(order.id);
       
@@ -177,7 +177,9 @@ export async function POST(req: NextRequest) {
       if (!sent) {
         await TelegramService.sendPrintErrorNotification(order.orderCode, 'Lỗi kích hoạt notify in hóa đơn');
       }
-    });
+    } catch (notifyErr) {
+      console.error('[Orders API Notification Error]:', notifyErr);
+    }
 
     return NextResponse.json({
       success: true,

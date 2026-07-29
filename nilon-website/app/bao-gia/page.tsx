@@ -55,7 +55,9 @@ export default function QuotePage() {
         }),
       });
 
-      if (res.ok) {
+      const resData = await res.json().catch(() => ({}));
+
+      if (res.ok && resData.success !== false) {
         toast.success("Yêu cầu của bạn đã được gửi!", {
           duration: 4000,
           style: {
@@ -66,10 +68,11 @@ export default function QuotePage() {
         clearCart();
         router.push("/");
       } else {
-        throw new Error("Lỗi khi gửi yêu cầu");
+        throw new Error(resData.message || resData.error || "Lỗi khi gửi yêu cầu");
       }
-    } catch {
-      toast.error("Có lỗi xảy ra, vui lòng thử lại sau hoặc liên hệ Zalo.");
+    } catch (err: unknown) {
+      const errMsg = err instanceof Error ? err.message : "Có lỗi xảy ra, vui lòng thử lại sau hoặc liên hệ Zalo.";
+      toast.error(errMsg);
     } finally {
       setIsSubmitting(false);
     }
@@ -117,18 +120,24 @@ export default function QuotePage() {
               <div className="divide-y divide-gray-100">
                 {items.map((item) => (
                   <div key={item.id} className="p-6 flex flex-col sm:flex-row gap-6 hover:bg-gray-50 transition-colors">
-                    <div className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 relative">
+                    <Link 
+                      href={`/san-pham/${item.productId || item.id}`} 
+                      className="w-24 h-24 bg-gray-100 rounded-lg overflow-hidden shrink-0 border border-gray-200 relative group cursor-pointer block"
+                      title="Xem chi tiết sản phẩm"
+                    >
                       <Image 
                         src={item.image} 
                         alt={item.name} 
                         fill
-                        className="object-cover mix-blend-multiply" 
+                        className="object-cover mix-blend-multiply group-hover:scale-105 transition-transform" 
                       />
-                    </div>
+                    </Link>
                     
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
-                        <h3 className="font-bold text-lg text-gray-900">{item.name}</h3>
+                        <Link href={`/san-pham/${item.productId || item.id}`} className="hover:text-[#2b6cb0] transition-colors">
+                          <h3 className="font-bold text-lg text-gray-900 hover:underline">{item.name}</h3>
+                        </Link>
                         <button 
                           onClick={() => removeItem(item.id)}
                           className="text-gray-400 hover:text-red-500 transition-colors p-1"

@@ -34,9 +34,11 @@ ${escapeHTML(message || '')}
     await sendTelegramMessage(telegramMsg);
 
     // 3. Send Email Notification to Admin
-    Promise.resolve().then(async () => {
+    try {
       await MailService.sendContactNotification({ name, phone, email, company, need, content: message });
-    });
+    } catch (mailErr) {
+      console.error('[Contact API Email Error]:', mailErr);
+    }
 
     return NextResponse.json({
       success: true,

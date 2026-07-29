@@ -29,20 +29,20 @@ interface CustomerInfo {
 // Input validation schema
 const QuoteSchema = z.object({
   customer: z.object({
-    name: z.string().min(2).max(100),
-    phone: z.string().min(1),
-    email: z.string().email().max(100).optional(),
-    address: z.string().max(500).optional(),
-    note: z.string().max(1000).optional(),
+    name: z.string().min(1, 'Vui lòng nhập họ và tên').max(100),
+    phone: z.string().min(1, 'Vui lòng nhập số điện thoại'),
+    email: z.string().optional().nullable().or(z.literal('')),
+    address: z.string().optional().nullable().or(z.literal('')),
+    note: z.string().optional().nullable().or(z.literal('')),
   }),
   items: z.array(z.object({
     id: z.string().max(100),
     name: z.string().min(1).max(200),
-    thickness: z.string().max(50),
-    size: z.string().max(50),
+    thickness: z.string().optional().nullable().transform(v => v || 'Tiêu chuẩn'),
+    size: z.string().optional().nullable().transform(v => v || 'Tiêu chuẩn'),
     quantity: z.number().int().positive().max(10000),
     price: z.number().nonnegative().max(1000000000).optional(),
-  })).min(1).max(100),
+  })).min(1, 'Danh sách chọn phải có ít nhất 1 sản phẩm').max(100),
   totalAmount: z.number().nonnegative().max(10000000000).optional(),
 });
 
@@ -199,8 +199,8 @@ ${escapeHTML(itemsList)}
 📝 <b>Ghi chú:</b> ${escapeHTML(customer.note || 'Không có')}
 ⏰ <b>Thời gian:</b> ${now}`;
 
-    Promise.resolve().then(async () => {
-      // Send Telegram Quote Notification
+    // 4. Send Telegram Notification & Sync to Printer App
+    try {
       await sendTelegramMessage(telegramMsg);
       
       // Trigger Printer Spooler Sync via PostgreSQL NOTIFY
@@ -216,23 +216,27 @@ ${escapeHTML(itemsList)}
           email: customer.email,
           phone: phoneClean,
           address: customer.address || 'N/A',
-          note: customer.note,
+          note: customer.note || undefined,
         };
         await MailService.sendInvoiceEmail(order.orderCode, customerWithEmail, items, totalAmount || 0);
       }
-    });
-    
+    } catch (bgErr) {
+      console.error('[Quote API Background Task Error]:', bgErr);
+    }
+
     return NextResponse.json({ success: true, orderCode: order.orderCode });
   } catch (error) {
     console.error('Lỗi API Quote:', error);
     if (error instanceof z.ZodError) {
+      const issueMsg = error.issues[0]?.message || 'Dữ liệu không hợp lệ';
       return NextResponse.json(
-        { success: false, error: 'Dữ liệu không hợp lệ', details: error.issues },
+        { success: false, message: issueMsg, error: issueMsg, details: error.issues },
         { status: 400 }
       );
     }
+    const errMsg = error instanceof Error ? error.message : 'Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại.';
     return NextResponse.json(
-      { success: false, error: 'Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại.' },
+      { success: false, message: errMsg, error: errMsg },
       { status: 500 }
     );
   }

@@ -261,7 +261,7 @@ Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình*
 📄 <b>Mã Báo Giá:</b> ${quoteCode}
 ⏰ <i>Cần nhân viên Sales liên hệ xác nhận đơn hàng!</i>`;
 
-        sendTelegramMessage(telegramText).catch(e => console.error('[Telegram] Error:', e));
+        await sendTelegramMessage(telegramText);
 
         return NextResponse.json({
           role: 'assistant',

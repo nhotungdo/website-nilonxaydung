@@ -6,7 +6,7 @@ import ProductDetailActions from '@/components/ProductDetailActions';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = products.find((p) => p.slug === resolvedParams.slug);
+  const product = products.find((p) => p.slug === resolvedParams.slug || p.id === resolvedParams.slug);
   
   if (!product) return {};
 
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = products.find((p) => p.slug === resolvedParams.slug);
+  const product = products.find((p) => p.slug === resolvedParams.slug || p.id === resolvedParams.slug);
 
   if (!product) {
     notFound();

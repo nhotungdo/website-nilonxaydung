@@ -47,7 +47,9 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
         }),
       });
 
-      if (response.ok) {
+      const resData = await response.json().catch(() => ({}));
+
+      if (response.ok && resData.success !== false) {
         toast.success('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ sớm nhất.', {
           duration: 5000,
           style: {
@@ -58,10 +60,11 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
         });
         onClose();
       } else {
-        throw new Error('Failed to submit');
+        throw new Error(resData.message || resData.error || 'Lỗi khi gửi yêu cầu báo giá');
       }
-    } catch (error) {
-      toast.error('Có lỗi xảy ra. Vui lòng thử lại sau.');
+    } catch (error: unknown) {
+      const errMsg = error instanceof Error ? error.message : 'Có lỗi xảy ra. Vui lòng thử lại sau.';
+      toast.error(errMsg);
       console.error(error);
     } finally {
       setIsSubmitting(false);
