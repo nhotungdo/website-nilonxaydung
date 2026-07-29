@@ -14,6 +14,17 @@ export default defineConfig({
     },
   },
   plugins: [
+    {
+      name: 'serve-renderer-index',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url === '/' || req.url === '/index.html') {
+            req.url = '/src/renderer/index.html';
+          }
+          next();
+        });
+      },
+    },
     react(),
     electron([
       {

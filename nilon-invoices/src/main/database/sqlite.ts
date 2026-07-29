@@ -138,16 +138,6 @@ export const initDatabase = () => {
       stmt.run('is_online', 'true');
     })();
   }
-
-  // Seed a default Virtual Printer for debugging if no printer exists
-  const hasPrinters = db.prepare('SELECT count(*) as count FROM printers').get() as { count: number };
-  if (hasPrinters.count === 0) {
-    console.log('[Database] Seeding default virtual printer...');
-    db.prepare(`
-      INSERT INTO printers (id, name, connection_type, paper_size, is_default, status) 
-      VALUES (?, ?, ?, ?, ?, ?)
-    `).run('default_thermal_id', 'Xprinter XP-80C (Default)', 'USB', 'K80', 1, 'ONLINE');
-  }
 };
 
 export default db;

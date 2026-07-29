@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 import { IPrinter } from '../../shared/types';
-import { mockPrinters } from '../mock/data';
 
 interface PrinterState {
   printers: IPrinter[];
@@ -15,7 +14,7 @@ interface PrinterState {
 }
 
 export const usePrinterStore = create<PrinterState>((set, get) => ({
-  printers: mockPrinters,
+  printers: [],
   isLoading: false,
 
   fetchPrinters: async () => {
@@ -23,15 +22,13 @@ export const usePrinterStore = create<PrinterState>((set, get) => ({
     try {
       if (window.electronAPI?.printers?.getList) {
         const printers = await window.electronAPI.printers.getList();
-        set({ printers, isLoading: false });
+        set({ printers: printers || [], isLoading: false });
       } else {
-        // Fallback to mock data with a slight realistic latency
-        await new Promise((resolve) => setTimeout(resolve, 300));
-        set({ printers: get().printers, isLoading: false });
+        set({ printers: [], isLoading: false });
       }
     } catch (err) {
       console.error('Failed to fetch printers:', err);
-      set({ isLoading: false });
+      set({ printers: [], isLoading: false });
     }
   },
 

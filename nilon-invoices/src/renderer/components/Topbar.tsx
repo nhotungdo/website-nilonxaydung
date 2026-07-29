@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import { Bell, Search, ChevronDown, User } from 'lucide-react';
+import { Bell, Search } from 'lucide-react';
 import { useQueueStore } from '../stores/queueStore';
+import { useAuthStore } from '../stores/authStore';
 
 export const Topbar: React.FC = () => {
   const location = useLocation();
   const { pauseQueue, resumeQueue } = useQueueStore();
+  const user = useAuthStore((s) => s.user);
   
   const [isPaused, setIsPaused] = useState(false);
   const [currentDateText, setCurrentDateText] = useState('');
@@ -99,12 +101,19 @@ export const Topbar: React.FC = () => {
           </button>
         </div>
 
-        {/* User Profile Avatar with dropdown arrow */}
-        <div className="flex items-center gap-1.5 pl-2 border-l border-slate-200">
-          <div className="h-8 w-8 rounded-full border border-slate-300 bg-slate-100 overflow-hidden flex items-center justify-center cursor-pointer hover:bg-slate-200 transition-colors">
-            <User className="h-4 w-4 text-slate-650" />
+        {/* User Profile Avatar with role badge */}
+        <div className="flex items-center gap-2 pl-3 border-l border-slate-200">
+          <div className="h-8 w-8 rounded-full border border-[#005B52]/20 bg-[#005B52]/10 flex items-center justify-center text-[#005B52] font-bold text-xs shadow-xs">
+            {user?.username ? user.username.charAt(0).toUpperCase() : 'U'}
           </div>
-          <ChevronDown className="h-3.5 w-3.5 text-slate-400 cursor-pointer hover:text-slate-600" />
+          <div className="hidden sm:flex flex-col text-left">
+            <span className="text-[12px] font-bold text-slate-800 leading-tight">
+              {user?.username || 'Admin'}
+            </span>
+            <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-slate-100 text-slate-500 uppercase tracking-wider w-fit">
+              {user?.role === 'staff' ? 'Nhân viên' : 'Quản trị viên'}
+            </span>
+          </div>
         </div>
 
       </div>

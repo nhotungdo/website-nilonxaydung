@@ -1,12 +1,13 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Printer, Eye, HeartHandshake, FileText, Bell, CheckCircle, AlertTriangle, Trash2 } from 'lucide-react';
+import { Printer, Eye, HeartHandshake, FileText, Bell, CheckCircle, AlertTriangle, Trash2, Plus } from 'lucide-react';
 import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { EmptyState } from '../../components/EmptyState';
 import { ConfirmModal } from '../../components/ConfirmModal';
+import { CreateOrderModal } from '../../components/CreateOrderModal';
 import { useOrderStore } from '../../stores/orderStore';
 import { useQueueStore } from '../../stores/queueStore';
 import { useTranslation } from '../../locales';
@@ -51,6 +52,7 @@ export const RealtimeOrdersPage: React.FC = () => {
   
   const [activeTab, setActiveTab] = React.useState<'waiting' | 'printed' | 'cancelled'>('waiting');
   const [deleteTargetId, setDeleteTargetId] = React.useState<string | null>(null);
+  const [showCreateModal, setShowCreateModal] = React.useState(false);
   
   const isFirstLoad = React.useRef(true);
   const knownOrderIdsRef = React.useRef<Set<string>>(new Set());
@@ -151,6 +153,15 @@ export const RealtimeOrdersPage: React.FC = () => {
       <PageHeader
         title={t('orders.title')}
         subtitle={t('orders.subtitle')}
+        actions={
+          <button
+            onClick={() => setShowCreateModal(true)}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold bg-[#005B52] hover:bg-[#00473F] text-white transition-all shadow-md shadow-[#005B52]/10 active:scale-[0.98]"
+          >
+            <Plus className="h-4 w-4" />
+            Tạo đơn hàng mới
+          </button>
+        }
       />
 
       {/* Modern Tabs Bar */}
@@ -366,6 +377,12 @@ export const RealtimeOrdersPage: React.FC = () => {
         type="danger"
         confirmText="Xóa vĩnh viễn"
         cancelText="Hủy bỏ"
+      />
+
+      <CreateOrderModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={fetchOrders}
       />
     </div>
   );

@@ -11,10 +11,13 @@ import { GlassCard } from '../../components/GlassCard';
 import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { usePrinterStore } from '../../stores/printerStore';
+import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from '../../locales';
 
 export const PrintersPage: React.FC = () => {
   const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const { 
     printers, 
     addPrinter, 
@@ -74,13 +77,19 @@ export const PrintersPage: React.FC = () => {
         title={t('printers.title')}
         subtitle={t('printers.subtitle')}
         actions={
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-md shadow-blue-500/10 active:scale-[0.98]"
-          >
-            <Plus className="h-4 w-4" />
-            {t('printers.addPrinter')}
-          </button>
+          isAdmin ? (
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white transition-all shadow-md shadow-blue-500/10 active:scale-[0.98]"
+            >
+              <Plus className="h-4 w-4" />
+              {t('printers.addPrinter')}
+            </button>
+          ) : (
+            <span className="px-3 py-1.5 rounded-lg text-xs font-bold bg-amber-500/10 border border-amber-500/20 text-amber-400">
+              Chế độ Nhân viên (Chỉ xem trạng thái & in thử)
+            </span>
+          )
         }
       />
 
@@ -131,14 +140,14 @@ export const PrintersPage: React.FC = () => {
                         <Check className="h-4.5 w-4.5 text-emerald-400" />
                         {t('printers.default')}
                       </span>
-                    ) : (
+                    ) : isAdmin ? (
                       <button
                         onClick={() => setDefaultPrinter(printer.id)}
                         className="text-xs text-slate-500 hover:text-white hover:underline transition-colors opacity-0 group-hover:opacity-100"
                       >
                         {t('printers.setDefault')}
                       </button>
-                    )}
+                    ) : null}
                   </td>
 
                   <td className="py-4 px-6 text-right space-x-2">
@@ -158,13 +167,15 @@ export const PrintersPage: React.FC = () => {
                       )}
                     </button>
 
-                    {/* Delete Printer */}
-                    <button
-                      onClick={() => deletePrinter(printer.id)}
-                      className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {/* Delete Printer (Admin only) */}
+                    {isAdmin && (
+                      <button
+                        onClick={() => deletePrinter(printer.id)}
+                        className="p-1.5 rounded-lg text-slate-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

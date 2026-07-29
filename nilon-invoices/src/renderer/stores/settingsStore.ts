@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import { IAppSettings, ISystemLog } from '../../shared/types';
-import { mockSettings } from '../mock/data';
+const defaultSettings: IAppSettings = {
+  api_url: 'http://localhost:3000',
+  branch_id: '',
+  api_key: '',
+  auto_print: true,
+  sound_alert: true,
+  run_on_startup: false,
+  is_online: false,
+};
 
 interface SettingsState {
   settings: IAppSettings;
@@ -16,9 +24,9 @@ interface SettingsState {
 
 export const useSettingsStore = create<SettingsState>((set, get) => {
   return {
-    settings: mockSettings,
+    settings: defaultSettings,
     logs: [],
-    socketStatus: 'CONNECTED',
+    socketStatus: 'DISCONNECTED',
 
     fetchSettings: async () => {
       try {

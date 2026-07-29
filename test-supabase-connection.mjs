@@ -14,7 +14,7 @@
 // ============================================================
 const SUPABASE_URL = 'https://wtezillfvsdkjfctrimi.supabase.co';
 const SUPABASE_ANON_KEY = 'sb_publishable_cAJhDWxpKcVlsP-OlQALbQ_YXBGIRw1';
-const DB_PASSWORD = '[YOUR-DB-PASSWORD]';               // Dán DB password vào đây
+const DB_PASSWORD = 'Donhotung2004';
 // ============================================================
 
 const colors = {

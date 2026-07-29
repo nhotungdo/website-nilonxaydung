@@ -36,7 +36,7 @@ export default function CloudCursorTrail() {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let particles: CloudParticle[] = [];
+    const particles: CloudParticle[] = [];
     const MAX_PARTICLES = 45;
 
     // Mouse tracking state with lerp

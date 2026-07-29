@@ -27,9 +27,11 @@ const SESSION_TIMEOUT_MS = 8 * 60 * 60 * 1000; // 8 hours
 
 export const useAuthStore = create<AuthState>((set, get) => {
   const storedUser = localStorage.getItem('nilon_user');
-  const parsedUser = storedUser ? JSON.parse(storedUser) : null;
   const storedRemember = localStorage.getItem('nilon_remember') === 'true';
   const storedAuth = localStorage.getItem('nilon_is_auth') === 'true';
+  const parsedUser: User | null = storedUser 
+    ? JSON.parse(storedUser) 
+    : (storedAuth ? { username: 'Admin', role: 'admin' } : null);
   const storedActivity = localStorage.getItem('nilon_last_activity');
   const lastActivity = storedActivity ? parseInt(storedActivity, 10) : Date.now();
 
@@ -57,14 +59,13 @@ export const useAuthStore = create<AuthState>((set, get) => {
         });
 
         localStorage.setItem('nilon_last_activity', Date.now().toString());
+        localStorage.setItem('nilon_is_auth', 'true');
+        localStorage.setItem('nilon_user', JSON.stringify(response.user));
 
         if (rememberMe) {
-          localStorage.setItem('nilon_user', JSON.stringify(response.user));
           localStorage.setItem('nilon_remember', 'true');
-          localStorage.setItem('nilon_is_auth', 'true');
         } else {
-          localStorage.setItem('nilon_is_auth', 'true');
-          localStorage.removeItem('nilon_user'); 
+          localStorage.removeItem('nilon_remember');
         }
 
         return true;

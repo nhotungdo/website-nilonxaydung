@@ -28,8 +28,12 @@ const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) =
 const RoleRoute: React.FC<{ children: React.ReactNode; allowedRoles: ('admin' | 'staff')[] }> = ({ children, allowedRoles }) => {
   const user = useAuthStore((s) => s.user);
   
-  if (!user || !allowedRoles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />; // Both roles now have access to dashboard
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!allowedRoles.includes(user.role)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return <>{children}</>;
@@ -45,7 +49,7 @@ export const AppRouter: React.FC = () => {
         {/* Login Page */}
         <Route path="/login" element={<LoginPage />} />
         
-        {/* Protected Application Routes */}
+        {/* Application Routes - Shared for Admin & Staff */}
         <Route
           path="/"
           element={
@@ -54,17 +58,14 @@ export const AppRouter: React.FC = () => {
             </ProtectedRoute>
           }
         >
-          {/* Admin Only Routes */}
-          <Route path="printers" element={<RoleRoute allowedRoles={['admin']}><PrintersPage /></RoleRoute>} />
-          <Route path="settings" element={<RoleRoute allowedRoles={['admin']}><SettingsPage /></RoleRoute>} />
-          <Route path="support" element={<RoleRoute allowedRoles={['admin']}><SupportPage /></RoleRoute>} />
-          
-          {/* Shared Routes (Admin & Staff) */}
           <Route path="dashboard" element={<RoleRoute allowedRoles={['admin', 'staff']}><DashboardPage /></RoleRoute>} />
           <Route path="orders" element={<RoleRoute allowedRoles={['admin', 'staff']}><RealtimeOrdersPage /></RoleRoute>} />
           <Route path="queue" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintQueuePage /></RoleRoute>} />
-          <Route path="preview" element={<RoleRoute allowedRoles={['admin', 'staff']}><InvoicePreviewPage /></RoleRoute>} />
+          <Route path="printers" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintersPage /></RoleRoute>} />
           <Route path="history" element={<RoleRoute allowedRoles={['admin', 'staff']}><OrderHistoryPage /></RoleRoute>} />
+          <Route path="preview" element={<RoleRoute allowedRoles={['admin', 'staff']}><InvoicePreviewPage /></RoleRoute>} />
+          <Route path="settings" element={<RoleRoute allowedRoles={['admin', 'staff']}><SettingsPage /></RoleRoute>} />
+          <Route path="support" element={<RoleRoute allowedRoles={['admin', 'staff']}><SupportPage /></RoleRoute>} />
         </Route>
 
         {/* Fallback Redirection */}

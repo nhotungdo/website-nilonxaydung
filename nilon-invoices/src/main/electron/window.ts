@@ -26,12 +26,8 @@ export const createMainWindow = (): BrowserWindow => {
 
   // Load appropriate React resource
   if (isDev) {
-    const devUrl = process.env.VITE_DEV_SERVER_URL;
-    if (devUrl) {
-      mainWindow.loadURL(`${devUrl}src/renderer/index.html`);
-    } else {
-      mainWindow.loadURL('http://localhost:5173/src/renderer/index.html');
-    }
+    const devUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173/';
+    mainWindow.loadURL(devUrl);
     mainWindow.webContents.openDevTools();
   } else {
     mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
