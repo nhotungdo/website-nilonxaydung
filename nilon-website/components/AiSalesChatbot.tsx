@@ -14,8 +14,7 @@ import {
   Building2, 
   Maximize2, 
   Minimize2, 
-  RefreshCw, 
-  Zap 
+  RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -50,10 +49,8 @@ export interface ChatMsg {
 }
 
 const QUICK_PROMPTS = [
-  { label: '💡 Tư vấn độ xé rách & ISO 9001', prompt: 'Công ty tư vấn giúp tôi độ xé rách ASTM và các chứng chỉ ISO 9001 của nilon lót móng.' },
-  { label: '📊 Hỏi giá sỉ 1,000 kg nilon 4zem', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình TPHCM.' },
-  { label: '🧪 Nhựa nguyên sinh vs tái sinh?', prompt: 'Phân biệt sự khác nhau giữa màng PE nguyên sinh và tái sinh Grade A?' },
-  { label: '📄 Xuất PDF Báo Giá Tạm Tính', prompt: 'Tôi muốn nhập thông tin để xuất File Báo Giá PDF Tạm Tính.' }
+  { label: '📊 Hỏi giá sỉ theo kg', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình TPHCM.' },
+  { label: '📄 Xuất PDF Báo Giá', prompt: 'Tôi muốn nhập thông tin để xuất File Báo Giá PDF Tạm Tính.' }
 ];
 
 export default function AiSalesChatbot() {
@@ -244,8 +241,8 @@ export default function AiSalesChatbot() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h3 className="font-bold text-white text-base">AI Sales Assistant</h3>
-                    <span className="bg-blue-500/20 text-blue-300 text-[10px] px-2 py-0.5 rounded-full border border-blue-500/30 flex items-center gap-1 font-medium">
-                      <Zap className="w-3 h-3 text-amber-400" /> Groq AI 24/7
+                    <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30 font-medium">
+                      24/7
                     </span>
                   </div>
                   <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
@@ -360,7 +357,7 @@ export default function AiSalesChatbot() {
                 <div className="flex justify-start">
                   <div className="bg-slate-900 border border-slate-800 rounded-2xl rounded-bl-none p-3.5 flex items-center gap-3 text-slate-400 text-xs">
                     <RefreshCw className="w-4 h-4 animate-spin text-blue-400" />
-                    <span>Groq AI đang phân tích dữ liệu & tính toán báo giá...</span>
+                    <span>Đang xử lý & tính toán báo giá...</span>
                   </div>
                 </div>
               )}

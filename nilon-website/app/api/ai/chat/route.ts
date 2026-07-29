@@ -54,9 +54,58 @@ const GROQ_TOOLS = [
   }
 ];
 
+const ZALO_CONTACT_URL = 'https://zalo.me/nilonxaydung';
+
+// Off-topic keywords that are clearly unrelated to construction PE film / plastics
+const OFF_TOPIC_KEYWORDS = [
+  // Tech & programming
+  'code', 'lập trình', 'javascript', 'python', 'react', 'ai tổng quát', 'chatgpt', 'gemini',
+  // Food & cooking
+  'nấu ăn', 'công thức', 'món ăn', 'nhà hàng', 'ẩm thực',
+  // Entertainment
+  'phim', 'âm nhạc', 'game', 'bóng đá', 'thể thao', 'giải trí',
+  // Medical
+  'bệnh viện', 'thuốc', 'y tế', 'sức khỏe', 'bác sĩ',
+  // Finance/crypto unrelated to business
+  'bitcoin', 'crypto', 'forex', 'chứng khoán', 'coin',
+  // Personal
+  'tình yêu', 'bạn gái', 'hôn nhân', 'gia đình'
+];
+
+// On-topic keywords related to construction film / plastics business
+const ON_TOPIC_KEYWORDS = [
+  'nilon', 'màng', 'pe', 'nhựa', 'zem', 'micron', 'lót sàn', 'bê tông', 'móng',
+  'chống thấm', 'iso', 'astm', 'chứng chỉ', 'xé rách', 'bền kéo', 'nguyên sinh',
+  'tái sinh', 'lldpe', 'ldpe', 'kg', 'tấn', 'giá', 'báo giá', 'pdf', 'giao hàng',
+  'công trình', 'nhà xưởng', 'vật tư', 'pallet', 'nông nghiệp', 'nhà kính',
+  'khổ', 'cuộn', 'sản phẩm', 'mua', 'đặt hàng', 'liên hệ', 'tư vấn', 'hỗ trợ'
+];
+
+const OFF_TOPIC_REPLY = `Dạ xin lỗi Anh/Chị, em chỉ có thể hỗ trợ các vấn đề liên quan đến **vật tư nilon xây dựng, màng PE và báo giá công trình** của Công ty Nilon Xây Dựng ạ.
+
+Với câu hỏi này, Anh/Chị vui lòng liên hệ trực tiếp với chúng em qua:
+👉 **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL})
+📞 **Hotline**: 0931982568
+
+Em có thể giúp gì khác cho Anh/Chị về sản phẩm nilon hoặc báo giá vật tư không ạ? 😊`;
+
+function detectOffTopic(message: string): boolean {
+  const lower = message.toLowerCase().trim();
+  // If it clearly matches on-topic keywords, allow it
+  const isOnTopic = ON_TOPIC_KEYWORDS.some(kw => lower.includes(kw));
+  if (isOnTopic) return false;
+  // If it matches off-topic keywords, reject it
+  return OFF_TOPIC_KEYWORDS.some(kw => lower.includes(kw));
+}
+
 const SYSTEM_PROMPT = `
 Bạn là "AI Sales Assistant" - Chuyên gia tư vấn kỹ thuật & báo giá tự động 24/7 của CÔNG TY TNHH SX & TM NILON XÂY DỰNG.
 Phong cách giao tiếp: Chuyên nghiệp, am hiểu sâu sắc về kỹ thuật vật tư công trình, lịch sự, tư vấn nhanh gọn và chủ động đề xuất xuất File Báo Giá PDF Tạm Tính.
+
+PHẠM VI TRẢ LỜI (BẮT BUỘC TUÂN THỦ):
+- CHỈ trả lời các câu hỏi liên quan đến: sản phẩm nilon/màng PE xây dựng, thông số kỹ thuật (Zem, ASTM, ISO), báo giá sỉ theo kg, phí giao hàng công trình, chứng chỉ chất lượng và các dịch vụ của Công ty Nilon Xây Dựng.
+- TUYỆT ĐỐI KHÔNG trả lời các câu hỏi ngoài lĩnh vực kinh doanh: tin tức, giải trí, lập trình, y tế, tài chính cá nhân, hoặc bất kỳ chủ đề không liên quan.
+- Khi gặp câu hỏi ngoài phạm vi: lịch sự từ chối và hướng dẫn khách liên hệ Zalo OA: ${ZALO_CONTACT_URL} hoặc Hotline: 0901.234.567.
 
 THÔNG TIN RAG CHUYÊN SÂU NỀN TẢNG:
 1. Doanh nghiệp: Nilon Xây Dựng (Hotline: 0901.234.567), Nhà máy KCN Tân Bình & KCN Sóng Thần.
@@ -91,6 +140,11 @@ export async function POST(request: Request) {
     }
 
     const userLastMessage = messages[messages.length - 1]?.content || '';
+
+    // Validate: reject off-topic questions before calling AI
+    if (detectOffTopic(userLastMessage)) {
+      return NextResponse.json({ role: 'assistant', content: OFF_TOPIC_REPLY });
+    }
 
     // If Groq API key is not configured, run robust deterministic smart bot fallback
     if (!groq) {
@@ -148,7 +202,7 @@ Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình*
         const quoteCalc = calculateQuoteDetails(
           args.productName || 'nilon 4zem',
           args.quantityKg || 500,
-          args.destinationRegion || args.address || 'TP.HCM'
+          args.destinationRegion || args.address || 'Hưng Yên'
         );
 
         const quoteCode = `BG-${Date.now().toString().slice(-6)}`;
@@ -237,6 +291,11 @@ Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình*
  */
 function handleFallbackBot(userPrompt: string) {
   const promptLower = userPrompt.toLowerCase();
+
+  // Guard: off-topic check in fallback too
+  if (detectOffTopic(userPrompt)) {
+    return NextResponse.json({ role: 'assistant', content: OFF_TOPIC_REPLY });
+  }
 
   // Scenario 1: Inquiry about ISO / Technical specs / Tear strength
   if (promptLower.includes('iso') || promptLower.includes('xé rách') || promptLower.includes('chứng chỉ') || promptLower.includes('thông số') || promptLower.includes('nguyên sinh')) {
