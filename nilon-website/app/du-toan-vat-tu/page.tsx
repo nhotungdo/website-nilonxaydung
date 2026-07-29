@@ -5,7 +5,7 @@ import { Sparkles, HelpCircle, CheckCircle2, ShieldCheck, Zap } from 'lucide-rea
 
 export const metadata: Metadata = {
   title: 'Công Cụ AI Dự Toán Vật Tư Nilon Lót Sàn & Màng PE Xây Dựng | NilonXayDung.vn',
-  description: 'Tính toán chính xác quy cách nilon lót sàn bê tông (2zem - 10zem), khối lượng kg, số cuộn và dự toán chi phí tự động bằng công nghệ AI Groq Llama-3.1 8B Instant.',
+  description: 'Tính toán chính xác quy cách nilon lót sàn bê tông (2zem - 10zem), khối lượng kg, số cuộn và dự toán chi phí tự động bằng công nghệ AI Định Mức Thông Minh.',
   keywords: ['ai dự toán nilon', 'tính nilon lót sàn bê tông', 'định mức màng PE', 'báo giá nilon lót sàn', 'nilon xây dựng'],
 };
 
@@ -45,7 +45,7 @@ export default function DuToanVatTuPage() {
             </div>
             <h3 className="text-lg font-bold text-[#1a365d] mb-2">Tính Toán Siêu Tốc</h3>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Mô hình AI Groq Llama-3.1 8B Instant phản hồi định mức công trình trong dưới 1 giây với độ chính xác cao.
+              Mô hình AI định mức thông minh phản hồi định mức công trình trong dưới 1 giây với độ chính xác cao.
             </p>
           </div>
 

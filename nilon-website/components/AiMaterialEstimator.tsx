@@ -15,7 +15,8 @@ import {
   Info, 
   Bot,
   Ruler,
-  TrendingDown
+  TrendingDown,
+  FileText
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
@@ -52,12 +53,19 @@ const USAGE_OPTIONS = [
     name: 'Màng PE quấn pallet & Bọc hàng hóa',
     icon: '📦',
     defaultZem: '2-3 zem'
+  },
+  {
+    id: 'khac-mo-ta-rieng',
+    name: 'Mục đích khác (Tự mô tả công trình bên dưới)',
+    icon: '✍️',
+    defaultZem: 'Tự động AI'
   }
 ];
 
 export default function AiMaterialEstimator() {
   const [areaSqM, setAreaSqM] = useState<string>('500');
   const [selectedUsage, setSelectedUsage] = useState<string>(USAGE_OPTIONS[0].id);
+  const [projectDescription, setProjectDescription] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [result, setResult] = useState<EstimateResult | null>(null);
@@ -81,6 +89,7 @@ export default function AiMaterialEstimator() {
           areaSqM: numArea,
           usageType: selectedUsage,
           usageTypeName: selectedOption?.name || selectedUsage,
+          projectDescription: projectDescription,
           notes: notes
         })
       });
@@ -94,7 +103,7 @@ export default function AiMaterialEstimator() {
       setResult(data);
       toast.success(
         data.isAiGenerated 
-          ? 'Groq AI đã phân tích & lập dự toán thành công!' 
+          ? 'Hệ thống AI đã phân tích & lập dự toán thành công!' 
           : 'Đã hoàn tất tính toán định mức chuẩn vật lý PE!', 
         { icon: '🤖' }
       );
@@ -120,7 +129,7 @@ export default function AiMaterialEstimator() {
       <div className="relative z-10 text-center max-w-2xl mx-auto mb-8 sm:mb-12">
         <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-bold uppercase tracking-wider mb-4 shadow-sm">
           <Sparkles className="w-4 h-4 text-amber-500 animate-pulse" />
-          <span>Công Nghệ AI Groq Llama-3.1 8B Instant</span>
+          <span>Công Nghệ AI Định Mức Thông Minh</span>
         </div>
         <h2 className="text-3xl sm:text-4xl font-black text-[#1a365d] font-heading tracking-tight mb-3">
           AI Dự Toán Vật Tư <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-amber-600 bg-clip-text text-transparent">Nilon & Màng PE</span>
@@ -206,6 +215,21 @@ export default function AiMaterialEstimator() {
                   </button>
                 ))}
               </div>
+
+              {/* Detailed Project Description Input for Customer */}
+              <div className="mt-3.5 bg-blue-50/50 p-3.5 rounded-xl border border-blue-100">
+                <label className="block text-xs font-bold text-[#1a365d] mb-1.5 flex items-center gap-1.5">
+                  <FileText className="w-3.5 h-3.5 text-blue-600" />
+                  Mô tả cụ thể công trình của bạn (Giúp AI phân tích chính xác hơn)
+                </label>
+                <textarea
+                  rows={2}
+                  value={projectDescription}
+                  onChange={(e) => setProjectDescription(e.target.value)}
+                  placeholder="Ví dụ: Công trình móng nhà xưởng 1.500m² tại KCN, đổ bê tông đá 1x2 tươi, cần nilon dẻo dai chống xé rách..."
+                  className="w-full bg-white border border-slate-300 focus:border-blue-500 rounded-lg p-2.5 text-xs text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all shadow-sm resize-none"
+                />
+              </div>
             </div>
 
             {/* Notes */}
@@ -232,7 +256,7 @@ export default function AiMaterialEstimator() {
               {loading ? (
                 <>
                   <RefreshCw className="w-5 h-5 animate-spin text-white" />
-                  <span>AI Groq đang phân tích định mức...</span>
+                  <span>Hệ thống AI đang phân tích định mức...</span>
                 </>
               ) : (
                 <>

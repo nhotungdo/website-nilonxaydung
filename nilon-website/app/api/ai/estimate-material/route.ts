@@ -6,6 +6,7 @@ interface EstimateRequest {
   usageType: string; // e.g. 'lot-san-be-tong' | 'chong-tham' | 'mang-nong-nghiep' | 'quan-pallet' | 'khac'
   usageTypeName?: string;
   notes?: string;
+  projectDescription?: string;
 }
 
 export interface EstimateResult {
@@ -98,7 +99,7 @@ function calculateDeterministicEstimate(areaSqM: number, usageType: string): Est
 export async function POST(request: Request) {
   try {
     const body: EstimateRequest = await request.json();
-    const { areaSqM, usageType, usageTypeName, notes } = body;
+    const { areaSqM, usageType, usageTypeName, notes, projectDescription } = body;
 
     if (!areaSqM || areaSqM <= 0) {
       return NextResponse.json(
@@ -152,6 +153,7 @@ YÊU CẦU TRẢ VỀ JSON DUY NHẤT VỚI CÁC TRƯỜNG:
       const userPrompt = `Hãy dự toán vật tư nilon cho công trình:
 - Diện tích thi công: ${areaSqM} m²
 - Hạng mục / Mục đích: ${usageTypeName || usageType}
+- Mô tả chi tiết công trình của khách: ${projectDescription || 'Không có'}
 - Ghi chú / Yêu cầu thêm: ${notes || 'Không có'}`;
 
       const chatCompletion = await groq.chat.completions.create({

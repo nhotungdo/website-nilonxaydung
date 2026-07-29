@@ -4,7 +4,6 @@ import "@/styles/globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ButtonCall from "@/components/ButtonCall";
-import ZaloButton from "@/components/ZaloButton";
 import AiSalesChatbot from "@/components/AiSalesChatbot";
 import { Toaster } from "react-hot-toast";
 import { generateSEO } from "@/lib/seo";
@@ -31,7 +30,6 @@ export default function RootLayout({
         </main>
         <Footer />
         <ButtonCall />
-        <ZaloButton />
         <AiSalesChatbot />
         <Toaster position="top-right" />
       </body>
