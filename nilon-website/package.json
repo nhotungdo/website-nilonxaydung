@@ -10,7 +10,9 @@
     "retry-printer": "tsx scripts/retry-printer.ts",
     "security:audit": "npm audit",
     "security:audit:fix": "npm audit fix",
-    "security:check": "npm outdated && npm audit"
+    "security:check": "npm outdated && npm audit",
+    "deploy": "vercel",
+    "deploy:prod": "vercel --prod"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -43,6 +45,7 @@
     "eslint-config-next": "16.2.4",
     "tailwindcss": "^4",
     "tsx": "^4.22.0",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vercel": "^58.1.0"
   }
 }
