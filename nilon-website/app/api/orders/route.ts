@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { TelegramService } from '@/services/telegram.service';
 import { PrinterService } from '@/services/printer.service';
@@ -71,7 +72,7 @@ export async function POST(req: NextRequest) {
     const orderCode = `DH-${Date.now()}`;
 
     // 1. Transaction to save customer, order, items
-    const order = await prisma.$transaction(async (tx) => {
+    const order = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Find or create customer
       let dbCustomer = await tx.customer.findUnique({
         where: { phone: validatedData.phone }
