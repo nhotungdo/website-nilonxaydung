@@ -11,8 +11,9 @@ export async function POST(req: Request) {
     const result = contactSchema.safeParse(body);
     
     if (!result.success) {
+      const issueMsg = result.error.issues[0]?.message || "Dữ liệu không hợp lệ";
       return NextResponse.json(
-        { success: false, message: "Dữ liệu không hợp lệ", errors: result.error.format() },
+        { success: false, message: issueMsg, error: issueMsg, errors: result.error.format() },
         { status: 400 }
       );
     }
@@ -35,7 +36,14 @@ ${escapeHTML(message || '')}
 
     // 3. Send Email Notification to Admin
     try {
-      await MailService.sendContactNotification({ name, phone, email, company, need, content: message });
+      await MailService.sendContactNotification({ 
+        name, 
+        phone, 
+        email: email || undefined, 
+        company: company || undefined, 
+        need: need || undefined, 
+        content: message || undefined 
+      });
     } catch (mailErr) {
       console.error('[Contact API Email Error]:', mailErr);
     }

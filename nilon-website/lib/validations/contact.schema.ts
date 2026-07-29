@@ -8,10 +8,10 @@ export const contactSchema = z.object({
     .min(1, "Số điện thoại là bắt buộc")
     .transform((v) => v.trim().replace(/\s/g, ""))
     .refine((v) => VN_PHONE_REGEX.test(v), VN_PHONE_ERROR_MSG),
-  email: z.string().email("Email không hợp lệ").or(z.literal("")),
-  company: z.string().optional(),
-  need: z.string().optional(),
-  message: z.string().optional().or(z.literal("")),
+  email: z.string().optional().nullable().or(z.literal("")),
+  company: z.string().optional().nullable().or(z.literal("")),
+  need: z.string().optional().nullable().or(z.literal("")),
+  message: z.string().optional().nullable().or(z.literal("")),
 });
 
 export type ContactInput = z.infer<typeof contactSchema>;

@@ -82,55 +82,49 @@ ${escapeHTML(message)}
   }
 }
 
-// SECURITY: Remove or protect this debug endpoint in production
 export async function GET() {
-  // Only allow in development
-  if (process.env.NODE_ENV === 'production') {
-    return NextResponse.json({ 
-      success: false, 
-      error: 'Endpoint not available' 
-    }, { status: 404 });
-  }
+  const botToken = process.env.TELEGRAM_BOT_TOKEN?.trim().replace(/^["']|["']$/g, '');
+  const chatId = process.env.TELEGRAM_CHAT_ID?.trim().replace(/^["']|["']$/g, '');
 
-  try {
-    const botToken = process.env.TELEGRAM_BOT_TOKEN;
-    const chatId = process.env.TELEGRAM_CHAT_ID;
+  const hasBotToken = Boolean(botToken && botToken.length > 10);
+  const hasChatId = Boolean(chatId && chatId.length > 3);
 
-    if (!botToken || !chatId) {
-      return NextResponse.json({ 
-        success: false, 
-        error: 'Missing Env Variables' 
-      }, { status: 500 });
-    }
+  const maskedToken = botToken 
+    ? `${botToken.slice(0, 5)}...${botToken.slice(-4)}` 
+    : 'MISSING';
+  const maskedChat = chatId 
+    ? `${chatId.slice(0, 5)}...${chatId.slice(-4)}` 
+    : 'MISSING';
 
-    const testMessage = `🤖 <b>TEST MESSAGE</b>\nSystem is working properly at ${new Date().toISOString()}`;
-    const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-    
-    const response = await fetch(telegramUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        chat_id: chatId,
-        text: testMessage,
-        parse_mode: 'HTML',
-      }),
-    });
-
-    const data = await response.json();
-
-    // SECURITY: Don't expose tokens in response
+  if (!hasBotToken || !hasChatId) {
     return NextResponse.json({
-      success: response.ok,
-      message: data.ok ? 'Test message sent successfully' : 'Failed to send test message',
-    });
-  } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-    return NextResponse.json({
-      success: false,
-      error: errorMessage
+      status: 'ERROR',
+      message: 'Thiếu biến môi trường TELEGRAM_BOT_TOKEN hoặc TELEGRAM_CHAT_ID trên Vercel.',
+      diagnostics: {
+        hasBotToken,
+        hasChatId,
+        maskedToken,
+        maskedChat,
+      }
     }, { status: 500 });
   }
+
+  const testMessage = `🤖 <b>TEST DIAGNOSTIC MESSAGE</b>\nHệ thống thông báo Telegram Nilon Xây Dựng kết nối thành công lúc: ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}`;
+  
+  const testResult = await sendTelegramMessage(testMessage);
+
+  return NextResponse.json({
+    status: testResult.success ? 'OK' : 'TELEGRAM_FAILED',
+    message: testResult.success 
+      ? 'Gửi tin nhắn thử nghiệm tới Telegram thành công! Bot hoạt động bình thường.' 
+      : `Không thể gửi tin nhắn tới Telegram. Lỗi: ${testResult.error}`,
+    diagnostics: {
+      hasBotToken,
+      hasChatId,
+      maskedToken,
+      maskedChat,
+      testResult
+    }
+  });
 }
 

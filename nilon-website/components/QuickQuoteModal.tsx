@@ -42,7 +42,9 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
         body: JSON.stringify({
           name: formData.name,
           phone: formData.phone,
+          email: '',
           company: formData.company,
+          need: 'Nhận báo giá nhanh',
           message: formData.content
         }),
       });
