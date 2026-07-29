@@ -5,6 +5,9 @@ import { prisma } from '@/lib/prisma';
 import { PrinterService } from '@/services/printer.service';
 import { TelegramService } from '@/services/telegram.service';
 import { MailService } from '@/services/mail.service';
+import { VN_PHONE_REGEX, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
+import { rateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/ratelimit';
+import { z } from 'zod';
 
 interface QuoteItem {
   id: string;
@@ -15,10 +18,65 @@ interface QuoteItem {
   price?: number;
 }
 
+interface CustomerInfo {
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  note?: string;
+}
+
+// Input validation schema
+const QuoteSchema = z.object({
+  customer: z.object({
+    name: z.string().min(2).max(100),
+    phone: z.string().min(1),
+    email: z.string().email().max(100).optional(),
+    address: z.string().max(500).optional(),
+    note: z.string().max(1000).optional(),
+  }),
+  items: z.array(z.object({
+    id: z.string().max(100),
+    name: z.string().min(1).max(200),
+    thickness: z.string().max(50),
+    size: z.string().max(50),
+    quantity: z.number().int().positive().max(10000),
+    price: z.number().nonnegative().max(1000000000).optional(),
+  })).min(1).max(100),
+  totalAmount: z.number().nonnegative().max(10000000000).optional(),
+});
+
 export async function POST(req: Request) {
   try {
+    // Rate limiting
+    const identifier = getClientIdentifier(req);
+    const rateLimitResult = await rateLimit(identifier, rateLimitConfigs.quotes);
+    
+    if (!rateLimitResult.success) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: 'Quá nhiều yêu cầu. Vui lòng thử lại sau.',
+          retryAfter: rateLimitResult.reset 
+        },
+        { status: 429 }
+      );
+    }
+
     const data = await req.json();
-    const { customer, items, totalAmount } = data;
+    
+    // Validate input
+    const validatedData = QuoteSchema.parse(data);
+    const { customer, items, totalAmount } = validatedData;
+
+    // Validate số điện thoại Việt Nam
+    const phoneClean = customer.phone.trim().replace(/\s/g, '');
+    if (!VN_PHONE_REGEX.test(phoneClean)) {
+      return NextResponse.json(
+        { success: false, message: VN_PHONE_ERROR_MSG },
+        { status: 400 }
+      );
+    }
 
     // 1. Generate unique order code for the quote request
     const orderCode = `BG-${Date.now()}`;
@@ -27,14 +85,14 @@ export async function POST(req: Request) {
     const order = await prisma.$transaction(async (tx) => {
       // Find or create customer based on phone
       let dbCustomer = await tx.customer.findUnique({
-        where: { phone: customer.phone }
+        where: { phone: phoneClean }
       });
 
       if (!dbCustomer) {
         dbCustomer = await tx.customer.create({
           data: {
             fullName: customer.name,
-            phone: customer.phone,
+            phone: phoneClean,
             address: customer.address || 'N/A',
           }
         });
@@ -129,7 +187,7 @@ export async function POST(req: Request) {
     const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
     const telegramMsg = `🛒 <b>ĐƠN YÊU CẦU BÁO GIÁ MỚI (#${orderCode})</b>
 👤 <b>Khách hàng:</b> ${escapeHTML(customer.name)}
-📱 <b>Số điện thoại:</b> ${escapeHTML(customer.phone)}
+📱 <b>Số điện thoại:</b> ${escapeHTML(phoneClean)}
 📧 <b>Email:</b> ${escapeHTML(customer.email || 'N/A')}
 📍 <b>Địa chỉ:</b> ${escapeHTML(customer.address || 'N/A')}
 
@@ -153,16 +211,30 @@ ${escapeHTML(itemsList)}
 
       // Send Email Invoice to Customer
       if (customer.email) {
-        await MailService.sendInvoiceEmail(order.orderCode, customer, items, totalAmount);
+        const customerWithEmail: CustomerInfo = {
+          name: customer.name,
+          email: customer.email,
+          phone: phoneClean,
+          address: customer.address || 'N/A',
+          note: customer.note,
+        };
+        await MailService.sendInvoiceEmail(order.orderCode, customerWithEmail, items, totalAmount || 0);
       }
     });
     
     return NextResponse.json({ success: true, orderCode: order.orderCode });
   } catch (error) {
     console.error('Lỗi API Quote:', error);
+    if (error instanceof z.ZodError) {
+      return NextResponse.json(
+        { success: false, error: 'Dữ liệu không hợp lệ', details: error.issues },
+        { status: 400 }
+      );
+    }
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { success: false, error: 'Đã xảy ra lỗi khi xử lý yêu cầu. Vui lòng thử lại.' },
       { status: 500 }
     );
   }
 }
+

@@ -5,51 +5,53 @@ import Link from "next/link";
 import { staggerContainer, slideUp } from "@/lib/animations";
 import { useState } from "react";
 import AddToCartModal from "@/components/AddToCartModal";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, ArrowRight } from "lucide-react";
 
 export default function FeaturedProducts() {
   const products = [
     {
       title: 'Nilon Lót Sàn 2zem',
-      badge: 'PHỔ BIẾN',
-      badgeColor: 'bg-primary text-white',
-      desc: 'Độ dày tiết kiệm, phù hợp cho lót nền đổ bê tông dân dụng, ngăn thấm nước bề mặt sàn.',
+      badge: 'PHỔ BIẾN DÂN DỤNG',
+      badgeColor: 'bg-[#1a365d] text-white',
+      desc: 'Độ dày tiết kiệm, phù hợp cho lót nền đổ bê tông dân dụng, lót chống thấm nền móng công trình.',
       prices: [
         { label: 'Dưới 10 cuộn', value: '850.000đ/c' },
         { label: '10 - 50 cuộn', value: '790.000đ/c' },
         { label: 'Trên 50 cuộn', value: 'Liên hệ ngay', highlight: true }
       ],
       btnText: 'Xem chi tiết',
-      btnClass: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
+      btnClass: 'border border-slate-200 text-slate-700 hover:bg-[#f4f9fc]',
       image: 'https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop',
       price: 850000
     },
     {
       title: 'Nilon Lót Sàn 4zem',
-      badge: 'BÁN CHẠY NHẤT',
-      badgeColor: 'bg-secondary-container text-white',
+      badge: 'BÁN CHẠY NHẤT DỰ ÁN',
+      badgeColor: 'bg-[#2b6cb0] text-white',
       featured: true,
-      desc: 'Độ bền cao, chịu lực xé tốt. Chuyên dùng cho các công trình hạ tầng, nhà xưởng quy mô lớn.',
+      desc: 'Độ bền cao, chịu lực xé tốt. Chuyên dùng cho các dự án hạ tầng, đường giao thông, nhà xưởng quy mô lớn.',
       prices: [
         { label: 'Dưới 10 cuộn', value: '1.150.000đ/c' },
         { label: '10 - 50 cuộn', value: '1.080.000đ/c' },
         { label: 'Trên 50 cuộn', value: 'Chiết khấu 15%', highlight: true }
       ],
       btnText: 'Đặt hàng ngay',
-      btnClass: 'bg-primary text-white hover:bg-primary-container',
+      btnClass: 'bg-[#1a365d] text-white hover:bg-[#2b6cb0]',
       image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop',
       price: 1150000
     },
     {
       title: 'Nilon Lót Sàn 6zem',
-      desc: 'Độ dày vượt trội, chống thấm tuyệt đối và chống rách cực tốt. Dùng cho công trình đặc thù.',
+      badge: 'CHUYÊN CÔNG TRÌNH NẶNG',
+      badgeColor: 'bg-slate-800 text-white',
+      desc: 'Độ dày vượt trội, chống thấm tuyệt đối và chống xé rách cực tốt. Dùng cho công trình đặc thù cao cấp.',
       prices: [
         { label: 'Dưới 10 cuộn', value: '1.650.000đ/c' },
         { label: '10 - 50 cuộn', value: '1.550.000đ/c' },
         { label: 'Trên 50 cuộn', value: 'Giá sỉ tận gốc', highlight: true }
       ],
       btnText: 'Xem chi tiết',
-      btnClass: 'border border-gray-300 text-gray-700 hover:bg-gray-50',
+      btnClass: 'border border-slate-200 text-slate-700 hover:bg-[#f4f9fc]',
       image: 'https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop',
       price: 1650000
     }
@@ -69,11 +71,12 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <section className="py-20 bg-surface">
+    <section className="py-20 bg-[#f4f9fc] border-b border-slate-100">
       <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-[32px] font-extrabold text-primary mb-4">Chi tiết bảng giá nilon lót sàn</h2>
-          <div className="w-16 h-1 bg-[#fc6c29] mx-auto rounded"></div>
+          <span className="text-xs font-semibold text-[#2b6cb0] uppercase tracking-widest block mb-2 font-heading">QUY CÁCH TIÊU CHUẨN</span>
+          <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 mb-4 font-heading leading-[1.2]">Bảng Giá Nilon Lót Sàn Bê Tông</h2>
+          <div className="w-16 h-1 bg-[#2b6cb0] mx-auto rounded-full"></div>
         </div>
 
         <motion.div
@@ -87,31 +90,31 @@ export default function FeaturedProducts() {
             <motion.div
               key={index}
               variants={slideUp}
-              className={`bg-white rounded-xl shadow-sm border ${product.featured ? 'border-secondary-container shadow-lg relative lg:scale-105 z-10' : 'border-gray-200'} overflow-hidden flex flex-col group hover:shadow-xl transition-shadow duration-300`}
+              className={`bg-white rounded-[12px] shadow-1 border ${product.featured ? 'border-[#2b6cb0] shadow-2 relative lg:-translate-y-2 z-10' : 'border-slate-200'} overflow-hidden flex flex-col group hover:shadow-2 transition-all duration-instant`}
             >
-              <div className="relative h-48 bg-gray-100">
+              <div className="relative h-52 bg-slate-100 overflow-hidden">
                 <Image 
                   src={product.image} 
                   alt={product.title} 
                   fill
-                  className="w-full h-full object-cover" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
                 />
                 {product.badge && (
-                  <div className={`absolute top-4 ${product.featured ? 'right-0 rounded-l-md' : 'left-4 rounded-md'} px-3 py-1 text-xs font-bold ${product.badgeColor}`}>
+                  <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-semibold rounded-[12px] tracking-wider uppercase backdrop-blur-md shadow-1 ${product.badgeColor}`}>
                     {product.badge}
                   </div>
                 )}
               </div>
 
               <div className="p-6 flex-grow flex flex-col">
-                <h3 className="text-2xl font-bold text-primary mb-3">{product.title}</h3>
-                <p className="text-gray-600 text-sm mb-6 flex-grow">{product.desc}</p>
+                <h3 className="text-xl font-semibold text-slate-900 mb-2 font-heading leading-[1.2]">{product.title}</h3>
+                <p className="text-slate-600 text-base mb-6 flex-grow leading-[1.6]">{product.desc}</p>
 
-                <div className="space-y-4 mb-8">
+                <div className="space-y-3 mb-8 bg-[#f4f9fc] p-4 rounded-[12px] border border-slate-100">
                   {product.prices.map((price, i) => (
-                    <div key={i} className="flex justify-between items-center border-b border-gray-100 pb-2 last:border-0 last:pb-0">
-                      <span className="text-gray-500 text-sm">{price.label}</span>
-                      <span className={`font-bold ${price.highlight ? 'text-secondary underline decoration-1 underline-offset-2 cursor-pointer' : 'text-gray-900'}`}>
+                    <div key={i} className="flex justify-between items-center text-sm">
+                      <span className="text-slate-500 font-medium">{price.label}</span>
+                      <span className={`font-semibold font-mono ${price.highlight ? 'text-[#2b6cb0]' : 'text-slate-900'}`}>
                         {price.value}
                       </span>
                     </div>
@@ -120,20 +123,21 @@ export default function FeaturedProducts() {
 
                 <div className="flex gap-3">
                   <motion.button
-                    whileHover={{ scale: 1.03 }}
-                    whileTap={{ scale: 0.95 }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
                     onClick={() => handleOpenModal(product)}
-                    className="flex-1 py-3 bg-[#fc6c29] text-white rounded-md font-bold text-sm transition-colors hover:bg-[#e65a1f] flex items-center justify-center gap-2"
+                    className="flex-1 min-h-[44px] py-2.5 px-4 bg-[#2b6cb0] text-white rounded-[12px] font-semibold text-base transition-all hover:bg-[#3182ce] flex items-center justify-center gap-2 shadow-1 leading-none"
                   >
                     <ShoppingCart className="w-4 h-4" /> Báo giá
                   </motion.button>
                   <Link href="/danh-muc/nilon-lot-san-be-tong" className="flex-1">
                     <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.95 }}
-                      className={`w-full py-3 rounded-md font-bold text-sm transition-colors ${product.btnClass}`}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`w-full min-h-[44px] py-2.5 px-4 rounded-[12px] font-semibold text-base transition-all flex items-center justify-center gap-1.5 leading-none ${product.btnClass}`}
                     >
-                      {product.btnText}
+                      <span>{product.btnText}</span>
+                      <ArrowRight className="w-4 h-4" />
                     </motion.button>
                   </Link>
                 </div>

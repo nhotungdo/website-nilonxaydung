@@ -1,6 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
+import { Mail, Phone, MapPin, Send, ArrowRight, ShieldCheck } from 'lucide-react';
 import QuickQuoteModal from './QuickQuoteModal';
 
 export default function Footer() {
@@ -9,23 +10,34 @@ export default function Footer() {
   return (
     <>
       {/* Action Banner */}
-      <div className="bg-[#003876] text-white py-12">
+      <div className="bg-[#1a365d] text-white py-12 border-t border-[#2b6cb0]/30">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-gradient-to-r from-[#1a365d] to-[#0f2847] p-8 rounded-[12px] border border-[#63b3ed]/30 shadow-2">
             <div>
-              <h2 className="text-2xl md:text-3xl font-extrabold mb-2">Bạn cần tư vấn kỹ thuật trực tiếp?</h2>
-              <p className="text-blue-200">Đội ngũ kỹ sư của chúng tôi sẵn sàng hỗ trợ bạn lựa chọn độ dày phù hợp nhất.</p>
+              <div className="flex items-center gap-2 text-[#63b3ed] text-sm font-semibold uppercase tracking-wider mb-2">
+                <ShieldCheck className="w-4 h-4 text-[#63b3ed]" /> TƯ VẤN KỸ THUẬT CÔNG TRÌNH
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 font-heading leading-[1.2]">
+                Bạn cần báo giá & tư vấn quy cách nilon?
+              </h2>
+              <p className="text-slate-300 text-base max-w-xl leading-[1.6]">
+                Đội ngũ kỹ sư của chúng tôi sẵn sàng hỗ trợ bạn lựa chọn độ dày 2zem, 4zem, 6zem tối ưu chi phí nhất.
+              </p>
             </div>
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-3 shrink-0">
               <button 
                 onClick={() => setIsQuoteModalOpen(true)}
-                className="bg-[#a63b00] hover:bg-[#fc6c29] text-white font-bold py-3 px-6 rounded-md transition-colors flex items-center shadow-lg"
+                className="min-h-[44px] bg-[#2b6cb0] hover:bg-[#3182ce] text-white font-semibold text-base py-3 px-6 rounded-[12px] transition-all flex items-center justify-center gap-2 shadow-1 border border-[#63b3ed]/30 leading-none"
               >
-                <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
-                Nhận báo giá ngay
+                <Send className="w-4 h-4" />
+                <span>Nhận báo giá ngay</span>
               </button>
-              <Link href="/danh-muc/bao-ho-lao-dong" className="bg-white text-primary font-bold py-3 px-6 rounded-md hover:bg-gray-100 transition-colors inline-block text-center shadow-sm">
-                Xem sản phẩm
+              <Link 
+                href="/danh-muc/bao-ho-lao-dong" 
+                className="min-h-[44px] bg-white/10 hover:bg-white/20 text-white font-semibold text-base py-3 px-6 rounded-[12px] transition-all flex items-center justify-center gap-2 border border-white/20 leading-none"
+              >
+                <span>Xem sản phẩm</span>
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>
@@ -39,21 +51,28 @@ export default function Footer() {
       />
 
       {/* Main Footer */}
-      <footer className="bg-primary text-white pt-16 pb-8 border-t border-blue-900">
+      <footer className="bg-[#0f172a] text-slate-300 pt-16 pb-8 border-t border-slate-800">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
 
             {/* Column 1 */}
             <div>
-              <h3 className="text-lg font-bold mb-6 tracking-wide">VẬT LIỆU XÂY DỰNG</h3>
-              <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                Đơn vị cung cấp giải pháp vật liệu xây dựng và nilon lót sàn hàng đầu Việt Nam. Chất lượng khẳng định thương hiệu.
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-8 h-8 rounded-[12px] bg-[#2b6cb0] flex items-center justify-center font-black text-white text-lg">
+                  N
+                </div>
+                <span className="text-lg font-black text-white tracking-tight uppercase font-heading">
+                  NILON <span className="text-[#63b3ed]">LÓT SÀN</span>
+                </span>
+              </div>
+              <p className="text-slate-400 text-sm leading-relaxed mb-6">
+                Đơn vị cung cấp giải pháp vật liệu xây dựng và nilon lót sàn bê tông hàng đầu Việt Nam. Đảm bảo chất lượng, giao hàng tận công trình.
               </p>
-              <div className="flex space-x-4">
-                <a href="#" className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+              <div className="flex space-x-3">
+                <a href="#" className="w-9 h-9 rounded-[12px] bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-[#2b6cb0] hover:text-white hover:border-[#2b6cb0] transition-colors text-slate-300 font-bold">
                   f
                 </a>
-                <a href="#" className="w-8 h-8 rounded-full border border-gray-600 flex items-center justify-center hover:bg-white hover:text-primary transition-colors">
+                <a href="#" className="w-9 h-9 rounded-[12px] bg-slate-800 border border-slate-700 flex items-center justify-center hover:bg-[#2b6cb0] hover:text-white hover:border-[#2b6cb0] transition-colors text-slate-300 font-bold">
                   in
                 </a>
               </div>
@@ -61,49 +80,50 @@ export default function Footer() {
 
             {/* Column 2 */}
             <div>
-              <h3 className="text-sm font-bold text-orange-500 mb-6 uppercase">SẢN PHẨM CHÍNH</h3>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li><Link href="#" className="hover:text-white transition-colors">Nilon lót nền bê tông</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Nilon chống thấm PE</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Màng phủ nông nghiệp</Link></li>
-                <li><Link href="#" className="hover:text-white transition-colors">Vật liệu bảo hộ</Link></li>
+              <h3 className="text-xs font-bold text-[#63b3ed] mb-6 uppercase tracking-widest font-heading">SẢN PHẨM CHÍNH</h3>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li><Link href="/danh-muc/nilon-lot-san-be-tong" className="hover:text-[#63b3ed] transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Nilon lót nền bê tông 2zem-6zem</Link></li>
+                <li><Link href="/danh-muc/nilon-lot-san-be-tong" className="hover:text-[#63b3ed] transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Nilon chống thấm PE công trình</Link></li>
+                <li><Link href="/danh-muc/nilon-lot-san-be-tong" className="hover:text-[#63b3ed] transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Màng phủ nông nghiệp & nhà kính</Link></li>
+                <li><Link href="/danh-muc/bao-ho-lao-dong" className="hover:text-[#63b3ed] transition-colors flex items-center gap-2"><ArrowRight className="w-3 h-3 text-slate-500" /> Trang thiết bị bảo hộ lao động</Link></li>
               </ul>
             </div>
 
             {/* Column 3 */}
             <div>
-              <h3 className="text-sm font-bold text-orange-500 mb-6 uppercase">CHÍNH SÁCH</h3>
-              <ul className="space-y-3 text-sm text-gray-300">
-                <li><Link href="/ve-chung-toi" className="hover:text-white transition-colors">Về chúng tôi</Link></li>
-                <li><Link href="/chinh-sach-bao-mat" className="hover:text-white transition-colors">Chính sách bảo mật</Link></li>
-                <li><Link href="/chung-chi-iso" className="hover:text-white transition-colors">Chứng chỉ ISO</Link></li>
+              <h3 className="text-xs font-bold text-[#63b3ed] mb-6 uppercase tracking-widest font-heading">CHÍNH SÁCH & THÔNG TIN</h3>
+              <ul className="space-y-3 text-sm text-slate-300">
+                <li><Link href="/ve-chung-toi" className="hover:text-[#63b3ed] transition-colors">Về chúng tôi</Link></li>
+                <li><Link href="/chinh-sach-bao-mat" className="hover:text-[#63b3ed] transition-colors">Chính sách bảo mật</Link></li>
+                <li><Link href="/dich-vu" className="hover:text-[#63b3ed] transition-colors">Dịch vụ & Vận chuyển</Link></li>
+                <li><Link href="/bao-gia" className="hover:text-[#63b3ed] transition-colors">Bảng báo giá tổng hợp</Link></li>
               </ul>
             </div>
 
             {/* Column 4 */}
             <div>
-              <h3 className="text-sm font-bold text-orange-500 mb-6 uppercase">LIÊN HỆ</h3>
-              <ul className="space-y-4 text-sm text-gray-300">
-                <li className="flex items-start">
-                  <svg className="w-5 h-5 mr-3 text-orange-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" /></svg>
-                  <a href="https://maps.app.goo.gl/yfYGDKv1KsiDEbSQ7" target="_blank" rel="noopener noreferrer" className="hover:text-orange-500 transition-colors">
+              <h3 className="text-xs font-bold text-[#63b3ed] mb-6 uppercase tracking-widest font-heading">THÔNG TIN LIÊN HỆ</h3>
+              <ul className="space-y-3.5 text-sm text-slate-300">
+                <li className="flex items-start gap-3">
+                  <MapPin className="w-5 h-5 text-[#63b3ed] shrink-0 mt-0.5" />
+                  <a href="https://maps.app.goo.gl/yfYGDKv1KsiDEbSQ7" target="_blank" rel="noopener noreferrer" className="hover:text-[#63b3ed] transition-colors">
                     Châu Ninh, Khoái Châu, Hưng Yên, Việt Nam
                   </a>
                 </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 mr-3 text-orange-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" /></svg>
-                  <span>0931.982.568</span>
+                <li className="flex items-center gap-3">
+                  <Phone className="w-5 h-5 text-[#63b3ed] shrink-0" />
+                  <span className="font-semibold text-white">0931.982.568</span>
                 </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 mr-3 text-orange-500 shrink-0" fill="currentColor" viewBox="0 0 20 20"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" /><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg>
+                <li className="flex items-center gap-3">
+                  <Mail className="w-5 h-5 text-[#63b3ed] shrink-0" />
                   <span>contact@vatlieuxaydung.vn</span>
                 </li>
               </ul>
               
-              <div className="mt-6 rounded-lg overflow-hidden border border-gray-700 shadow-sm opacity-90 hover:opacity-100 transition-opacity">
+              <div className="mt-5 rounded-[12px] overflow-hidden border border-slate-700 shadow-1 opacity-90 hover:opacity-100 transition-opacity">
                 <iframe 
                   width="100%" 
-                  height="160" 
+                  height="140" 
                   style={{ border: 0 }} 
                   loading="lazy" 
                   allowFullScreen 
@@ -115,8 +135,8 @@ export default function Footer() {
 
           </div>
 
-          <div className="border-t border-blue-900 pt-8 text-center text-sm text-blue-200">
-            <p>&copy; 2026 Nilon lót sàn Việt Nam. Bảo lưu mọi quyền.</p>
+          <div className="border-t border-slate-800 pt-8 text-center text-xs text-slate-500">
+            <p>&copy; 2026 NILON LÓT SÀN VIỆT NAM. Tất cả các quyền được bảo lưu. Tokenized DesignUI Architecture.</p>
           </div>
         </div>
       </footer>

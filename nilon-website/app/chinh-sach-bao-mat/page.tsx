@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer } from "@/lib/animations";
@@ -40,7 +40,7 @@ export default function PrivacyPolicyPage() {
             <motion.h1 variants={slideUp} className="text-3xl md:text-5xl font-extrabold text-white mb-4">
               Chính Sách Bảo Mật
             </motion.h1>
-            <motion.p variants={slideUp} className="text-blue-100 text-lg">
+            <motion.p variants={slideUp} className="text-stone-200 text-lg">
               Cập nhật lần cuối: 01/01/2026
             </motion.p>
           </motion.div>
@@ -93,3 +93,4 @@ export default function PrivacyPolicyPage() {
     </div>
   );
 }
+

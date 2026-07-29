@@ -14,8 +14,8 @@ async function main() {
 
     const products = await prisma.product.findMany();
     console.log(`[CHECK] Products count: ${products.length}`);
-  } catch (err: any) {
-    console.error('[CHECK] Error:', err.message);
+  } catch (err: unknown) {
+    console.error('[CHECK] Error:', err instanceof Error ? err.message : err);
   } finally {
     await prisma.$disconnect();
   }

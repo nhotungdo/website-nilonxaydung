@@ -30,7 +30,7 @@ export default function DichVuPage() {
     { icon: <Truck className="text-[#fc6c29] w-6 h-6" />, title: "Giao hàng tận nơi", desc: "Hệ thống xe vận tải 24/7, cam kết có mặt tại công trường trong vòng 2-4 tiếng nội thành." },
     { icon: <Scissors className="text-[#fc6c29] w-6 h-6" />, title: "Cắt theo yêu cầu", desc: "Gia công cắt cuộn, khổ nilon theo kích thước chính xác của hạng mục, giảm thiểu lãng phí vật tư." },
     { icon: <Headset className="text-[#fc6c29] w-6 h-6" />, title: "Hỗ trợ kỹ thuật", desc: "Hướng dẫn trải lót đúng tiêu chuẩn kỹ thuật để đảm bảo hiệu quả chống thấm cao nhất cho sàn." },
-    { icon: <PackageCheck className="text-[#fc6c29] w-6 h-6" />, title: "Cung cấp bao tải", desc: "Vật tư phụ cho công trường: bao bì, bao tải dứa, bao PE tải trọng lớn đạt chuẩn ISO." },
+    { icon: <PackageCheck className="text-[#fc6c29] w-6 h-6" />, title: "Cung cấp bao tải", desc: "Vật tư phụ cho công trường: bao bì, bao tải dứa, bao PE tải trọng lớn đạt chuẩn chất lượng." },
   ];
 
   const steps = [
@@ -81,7 +81,7 @@ export default function DichVuPage() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="text-blue-100 text-lg mb-8 leading-relaxed"
+              className="text-stone-200 text-lg mb-8 leading-relaxed"
             >
               Giải pháp cung ứng nilon lót sàn và vật tư xây dựng chuyên nghiệp. Đồng hành cùng các nhà thầu kiến tạo những công trình bền vững với tiêu chuẩn kỹ thuật khắt khe nhất.
             </motion.p>
@@ -128,7 +128,7 @@ export default function DichVuPage() {
                   />
                 </div>
                 <div className="p-8">
-                  <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                  <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center mb-6">
                     <Layers className="text-primary w-6 h-6" />
                   </div>
                   <h3 className="text-2xl font-bold text-primary mb-4">Cung cấp nilon đủ độ dày</h3>
@@ -185,11 +185,11 @@ export default function DichVuPage() {
       <section className="bg-primary text-white pt-24 pb-48 relative">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-[32px] font-extrabold mb-4 uppercase">Quy trình làm việc</h2>
-          <p className="text-blue-100 mb-16">Chuyên nghiệp - Nhanh chóng - Tin cậy</p>
+          <p className="text-stone-200 mb-16">Chuyên nghiệp - Nhanh chóng - Tin cậy</p>
 
           <div className="hidden md:block relative max-w-5xl mx-auto mb-16">
             {/* Connecting line */}
-            <div className="absolute top-8 left-12 right-12 h-0.5 bg-blue-800"></div>
+            <div className="absolute top-8 left-12 right-12 h-0.5 bg-stone-800"></div>
 
             <div className="grid grid-cols-5 gap-4 relative z-10">
               {steps.map((step, idx) => (
@@ -198,7 +198,7 @@ export default function DichVuPage() {
                     {step.icon}
                   </div>
                   <h4 className="font-bold mb-2">{step.title}</h4>
-                  <p className="text-blue-100 text-xs px-2">{step.desc}</p>
+                  <p className="text-stone-200 text-xs px-2">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -207,13 +207,13 @@ export default function DichVuPage() {
           {/* Mobile steps */}
           <div className="md:hidden space-y-6">
             {steps.map((step, idx) => (
-              <div key={idx} className="flex items-center text-left bg-blue-900/30 p-4 rounded-xl">
+              <div key={idx} className="flex items-center text-left bg-stone-900/30 p-4 rounded-xl">
                 <div className={`w-12 h-12 shrink-0 rounded-lg flex items-center justify-center mr-4 ${idx === 0 ? 'bg-[#fc6c29]' : 'bg-white text-primary'}`}>
                   {step.icon}
                 </div>
                 <div>
                   <h4 className="font-bold">{step.title}</h4>
-                  <p className="text-blue-100 text-xs">{step.desc}</p>
+                  <p className="text-stone-200 text-xs">{step.desc}</p>
                 </div>
               </div>
             ))}
@@ -283,12 +283,12 @@ export default function DichVuPage() {
                     fill
                     className="absolute inset-0 w-full h-full object-cover opacity-30 grayscale"
                   />
-                  <div className="bg-white/90 backdrop-blur-sm p-6 rounded-xl shadow-lg relative z-10 text-center border border-gray-100">
-                    <div className="w-12 h-12 bg-orange-100 text-[#fc6c29] rounded-full flex items-center justify-center mx-auto mb-3">
+                  <div className="bg-white/90 backdrop-blur-sm p-6 rounded-[12px] shadow-1 relative z-10 text-center border border-slate-200">
+                    <div className="w-12 h-12 bg-[#f4f9fc] text-[#2b6cb0] rounded-full flex items-center justify-center mx-auto mb-3">
                       <MapPin />
                     </div>
-                    <div className="font-bold text-primary text-xl">Phục vụ toàn Miền Bắc</div>
-                    <div className="text-sm text-gray-500 mt-1">Nhanh chóng & Linh hoạt</div>
+                    <div className="font-bold text-[#1a365d] text-xl font-heading">Phục vụ toàn Miền Bắc</div>
+                    <div className="text-sm text-slate-500 mt-1">Nhanh chóng & Linh hoạt</div>
                   </div>
                 </div>
               </div>
@@ -298,22 +298,22 @@ export default function DichVuPage() {
       </section>
 
       {/* CTA Footer */}
-      <section className="py-24 bg-primary text-center">
+      <section className="py-24 bg-[#1a365d] text-center border-b border-[#2b6cb0]/30">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Liên hệ ngay để được tư vấn</h2>
-          <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6 font-heading">Liên hệ ngay để được tư vấn</h2>
+          <p className="text-slate-300 text-lg mb-10 max-w-2xl mx-auto">
             Đội ngũ chuyên gia của chúng tôi luôn sẵn sàng hỗ trợ bạn 24/7.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="tel:0931982568" className="bg-white text-primary hover:bg-gray-100 px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
-              <Phone className="w-5 h-5 text-orange-500" /> Gọi: 0931 982 568
+            <a href="tel:0931982568" className="bg-white text-slate-900 hover:bg-[#f4f9fc] px-8 py-4 rounded-[12px] font-bold transition-colors flex items-center justify-center gap-2 shadow-1">
+              <Phone className="w-5 h-5 text-[#2b6cb0]" /> Gọi: 0931 982 568
             </a>
-            <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2">
+            <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-[#2b6cb0] hover:bg-[#3182ce] text-white px-8 py-4 rounded-[12px] font-bold transition-colors flex items-center justify-center gap-2 shadow-1 border border-[#63b3ed]/40">
               <MessageCircle className="w-5 h-5" /> Nhắn Zalo
             </a>
             <Link
               href="/bao-gia"
-              className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center justify-center gap-2"
+              className="bg-[#2b6cb0] hover:bg-[#3182ce] text-white px-8 py-4 rounded-[12px] font-bold transition-colors flex items-center justify-center gap-2 shadow-1"
             >
               <FileText className="w-5 h-5" /> Nhận báo giá ngay
             </Link>
@@ -332,3 +332,4 @@ export default function DichVuPage() {
     </div>
   );
 }
+

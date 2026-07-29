@@ -6,10 +6,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import toast from 'react-hot-toast';
 import { Loader2, Send } from 'lucide-react';
+import { VN_PHONE_REGEX, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full name is required'),
-  phone: z.string().min(1, 'Phone number is required'),
+  phone: z
+    .string()
+    .min(1, 'Số điện thoại là bắt buộc')
+    .transform((v) => v.trim().replace(/\s/g, ''))
+    .refine((v) => VN_PHONE_REGEX.test(v), VN_PHONE_ERROR_MSG),
   email: z.string().min(1, 'Email is required').email('Invalid email format'),
   company: z.string().optional(),
   product: z.string().min(1, 'Interested product is required'),
@@ -79,8 +84,8 @@ export default function QuoteForm() {
             id="fullName"
             type="text"
             {...register('fullName')}
-            className={`w-full px-5 py-3.5 rounded-full border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white ${
-              errors.fullName ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+            className={`w-full px-5 py-3.5 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white ${
+              errors.fullName ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
             }`}
             placeholder="Nguyen Van A"
           />
@@ -95,8 +100,8 @@ export default function QuoteForm() {
             id="phone"
             type="tel"
             {...register('phone')}
-            className={`w-full px-5 py-3.5 rounded-full border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white ${
-              errors.phone ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+            className={`w-full px-5 py-3.5 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white ${
+              errors.phone ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
             }`}
             placeholder="0909123456"
           />
@@ -113,8 +118,8 @@ export default function QuoteForm() {
             id="email"
             type="email"
             {...register('email')}
-            className={`w-full px-5 py-3.5 rounded-full border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white ${
-              errors.email ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+            className={`w-full px-5 py-3.5 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white ${
+              errors.email ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
             }`}
             placeholder="example@gmail.com"
           />
@@ -129,7 +134,7 @@ export default function QuoteForm() {
             id="company"
             type="text"
             {...register('company')}
-            className="w-full px-5 py-3.5 rounded-full border border-gray-200 bg-gray-50/50 hover:border-blue-400 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:border-blue-500 focus:bg-white"
+            className="w-full px-5 py-3.5 rounded-[12px] border border-slate-200 bg-[#f4f9fc] hover:border-[#2b6cb0] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:border-[#2b6cb0] focus:bg-white"
             placeholder="ABC Company (Optional)"
           />
         </div>
@@ -144,8 +149,8 @@ export default function QuoteForm() {
             id="product"
             type="text"
             {...register('product')}
-            className={`w-full px-5 py-3.5 rounded-full border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white ${
-              errors.product ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+            className={`w-full px-5 py-3.5 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white ${
+              errors.product ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
             }`}
             placeholder="Concrete floor lining plastic"
           />
@@ -160,8 +165,8 @@ export default function QuoteForm() {
             id="quantity"
             type="text"
             {...register('quantity')}
-            className={`w-full px-5 py-3.5 rounded-full border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white ${
-              errors.quantity ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+            className={`w-full px-5 py-3.5 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white ${
+              errors.quantity ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
             }`}
             placeholder="200 rolls"
           />
@@ -177,8 +182,8 @@ export default function QuoteForm() {
           id="message"
           rows={4}
           {...register('message')}
-          className={`w-full px-5 py-4 rounded-3xl border bg-gray-50/50 transition-all focus:outline-none focus:ring-2 focus:ring-blue-500/50 focus:bg-white resize-none ${
-            errors.message ? 'border-red-400 focus:border-red-500' : 'border-gray-200 hover:border-blue-400 focus:border-blue-500'
+          className={`w-full px-5 py-4 rounded-[12px] border bg-[#f4f9fc] transition-all focus:outline-none focus:ring-2 focus:ring-[#2b6cb0]/50 focus:bg-white resize-none ${
+            errors.message ? 'border-red-400 focus:border-red-500' : 'border-slate-200 hover:border-[#2b6cb0] focus:border-[#2b6cb0]'
           }`}
           placeholder="Need an urgent quote for a project in Hanoi."
         />
@@ -188,7 +193,7 @@ export default function QuoteForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-8 rounded-full transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-[0_4px_14px_0_rgb(37,99,235,0.39)] hover:shadow-[0_6px_20px_rgb(37,99,235,0.23)] hover:-translate-y-0.5 active:translate-y-0"
+        className="w-full flex items-center justify-center gap-2 bg-[#2b6cb0] hover:bg-[#3182ce] text-white font-semibold py-4 px-8 rounded-[12px] transition-all disabled:opacity-70 disabled:cursor-not-allowed shadow-1 hover:-translate-y-0.5 active:translate-y-0"
       >
         {isSubmitting ? (
           <>
@@ -205,3 +210,4 @@ export default function QuoteForm() {
     </form>
   );
 }
+

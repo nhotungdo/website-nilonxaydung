@@ -15,7 +15,7 @@ export default function AboutPage() {
   ];
 
   const values = [
-    { icon: <Shield className="w-8 h-8 text-white" />, title: "Chất lượng hàng đầu", desc: "Cam kết sản phẩm đạt tiêu chuẩn ISO, độ bền cao, đáp ứng mọi yêu cầu khắt khe nhất của công trình." },
+    { icon: <Shield className="w-8 h-8 text-white" />, title: "Chất lượng hàng đầu", desc: "Cam kết sản phẩm đạt tiêu chuẩn chất lượng cao, độ bền cao, đáp ứng mọi yêu cầu khắt khe nhất của công trình." },
     { icon: <Target className="w-8 h-8 text-white" />, title: "Giá cả cạnh tranh", desc: "Là nhà sản xuất trực tiếp, chúng tôi mang đến mức giá gốc tốt nhất cho các nhà thầu và đại lý." },
     { icon: <TrendingUp className="w-8 h-8 text-white" />, title: "Cải tiến liên tục", desc: "Không ngừng đầu tư công nghệ, máy móc hiện đại để nâng cao năng suất và chất lượng sản phẩm." },
     { icon: <Users className="w-8 h-8 text-white" />, title: "Phục vụ tận tâm", desc: "Đội ngũ tư vấn chuyên nghiệp, sẵn sàng hỗ trợ 24/7. Giao hàng nhanh chóng đến tận chân công trình." },
@@ -140,7 +140,7 @@ export default function AboutPage() {
                   {val.icon}
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{val.title}</h3>
-                <p className="text-blue-100 leading-relaxed text-sm">{val.desc}</p>
+                <p className="text-stone-200 leading-relaxed text-sm">{val.desc}</p>
               </motion.div>
             ))}
           </div>
@@ -160,3 +160,4 @@ export default function AboutPage() {
     </div>
   );
 }
+

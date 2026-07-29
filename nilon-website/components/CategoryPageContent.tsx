@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { 
   Search, 
   ShoppingCart, 
@@ -10,6 +10,7 @@ import {
   ShieldCheck, 
   ArrowRight, 
   ChevronRight,
+  ChevronDown,
   HardHat,
   Hand,
   Footprints,
@@ -18,13 +19,13 @@ import {
   Wrench,
   Paintbrush,
   LifeBuoy,
-  Shield
+  Shield,
+  Filter
 } from "lucide-react";
 
-// Helper to map icon names to components
 import Image from "next/image";
 import Link from "next/link";
-import { CATEGORIES, PRODUCTS, Product, Category } from "@/data/products";
+import { CATEGORIES, PRODUCTS, Product } from "@/data/products";
 import { useCartStore } from "@/store/cartStore";
 import toast from "react-hot-toast";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -50,8 +51,17 @@ const CategoryIcon = ({ id, className }: { id: string, className?: string }) => 
 export default function CategoryPageContent() {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
+  const [showAllCategories, setShowAllCategories] = useState(false);
   const [isQuoteModalOpen, setIsQuoteModalOpen] = useState(false);
   const addItem = useCartStore((state) => state.addItem);
+
+  // Split categories for compact vs expanded view
+  const INITIAL_CATEGORY_COUNT = 5;
+  const visibleCategories = useMemo(() => {
+    return showAllCategories ? CATEGORIES : CATEGORIES.slice(0, INITIAL_CATEGORY_COUNT);
+  }, [showAllCategories]);
+
+  const hiddenCategoryCount = CATEGORIES.length - INITIAL_CATEGORY_COUNT;
 
   // Filter products based on search term and active category
   const filteredProducts = useMemo(() => {
@@ -72,7 +82,6 @@ export default function CategoryPageContent() {
 
   // Priority categories (Vật tư che chắn)
   const priorityCategories = categoriesWithProducts.filter(cat => cat.priority);
-  const otherCategories = categoriesWithProducts.filter(cat => !cat.priority);
 
   const handleAddToCart = (product: Product) => {
     addItem({
@@ -89,107 +98,120 @@ export default function CategoryPageContent() {
     toast.success(`Đã thêm ${product.name} vào giỏ hàng!`, {
       icon: '🛒',
       style: {
-        borderRadius: '10px',
+        borderRadius: '12px',
         background: '#fff',
-        color: '#0B2147',
+        color: '#1E3A8A',
         fontWeight: 'bold'
       },
     });
   };
 
   return (
-    <div className="bg-[#fcfcfc] min-h-screen pb-20 pt-8">
-      {/* Category Navigation Hub */}
-      <section className="relative z-20 mb-12">
-        <div className="container max-w-[1280px] mx-auto px-4">
-          <div className="mb-6">
-            <Breadcrumbs items={[{ label: "Bảo hộ lao động" }]} />
-          </div>
-          <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 p-6 lg:p-8 border border-gray-100">
-            <div className="flex flex-col lg:flex-row gap-8">
-              {/* Left: Search & Title */}
-              <div className="lg:w-1/3 space-y-6 lg:border-r lg:border-gray-100 lg:pr-8">
-                <div>
-                  <h3 className="text-xl font-bold text-[#0B2147] mb-2 flex items-center gap-2">
-                    <Search className="w-5 h-5 text-orange-600" />
-                    Tìm kiếm nhanh
-                  </h3>
-                  <div className="relative">
-                    <input 
-                      type="text" 
-                      placeholder="Tên sản phẩm bảo hộ..."
-                      className="w-full pl-4 pr-10 py-3.5 rounded-xl border border-gray-200 focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all outline-none bg-gray-50"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 bg-[#0B2147] text-white p-1.5 rounded-lg">
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="hidden lg:block">
-                  <div className="p-4 bg-orange-50 rounded-2xl border border-orange-100">
-                    <div className="flex items-center gap-3 mb-2">
-                      <ShieldCheck className="w-5 h-5 text-orange-600" />
-                      <span className="font-bold text-orange-900 text-sm">Chất lượng cam kết</span>
-                    </div>
-                    <p className="text-xs text-orange-800 leading-relaxed">Tất cả sản phẩm đều đạt chứng chỉ an toàn lao động, độ bền cao cho môi trường xây dựng.</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Right: Category Grid */}
-              <div className="lg:w-2/3">
-                <div className="flex items-center justify-between mb-4">
-                  <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Danh mục sản phẩm</h3>
-                  <button 
-                    onClick={() => setActiveCategory("all")}
-                    className={`text-sm font-bold transition-colors ${activeCategory === "all" ? 'text-orange-600' : 'text-gray-400 hover:text-[#0B2147]'}`}
-                  >
-                    Xem tất cả
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
-                  {CATEGORIES.map(cat => (
-                    <button 
-                      key={cat.id}
-                      onClick={() => setActiveCategory(cat.id)}
-                      className={`flex flex-col items-center justify-center p-4 rounded-2xl transition-all border-2 text-center group ${
-                        activeCategory === cat.id 
-                        ? 'border-orange-600 bg-orange-50 text-orange-700 shadow-md shadow-orange-100' 
-                        : 'border-gray-50 bg-gray-50 text-gray-600 hover:border-blue-100 hover:bg-white hover:shadow-lg'
-                      }`}
-                    >
-                      <div className={`p-2.5 rounded-xl mb-3 transition-colors ${
-                        activeCategory === cat.id ? 'bg-orange-600 text-white' : 'bg-white text-gray-400 group-hover:text-blue-600 group-hover:bg-blue-50'
-                      }`}>
-                        <CategoryIcon id={cat.id} className="w-5 h-5" />
-                      </div>
-                      <span className="text-[11px] font-bold uppercase leading-tight tracking-wide">{cat.title}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
+    <div className="bg-[#f4f9fc]/50 min-h-screen pb-20 pt-6">
+      <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Breadcrumb */}
+        <div className="mb-4">
+          <Breadcrumbs items={[{ label: "Bảo hộ lao động & Vật tư" }]} />
         </div>
-      </section>
 
-      <div className="container max-w-[1280px] mx-auto px-4 py-12">
-        {/* Featured Products Section */}
+        {/* Compact Header & Category Control Bar */}
+        <section className="bg-white rounded-[12px] p-5 border border-slate-200 shadow-1 mb-8">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+            
+            {/* Search Input Bar */}
+            <div className="relative flex-grow max-w-md">
+              <input 
+                type="text" 
+                placeholder="Tìm sản phẩm bảo hộ, nilon lót sàn..."
+                className="w-full pl-11 pr-4 py-3 min-h-[44px] rounded-[12px] border border-slate-300 focus:ring-2 focus:ring-[#2b6cb0] focus:border-[#2b6cb0] transition-all outline-none bg-[#f4f9fc] text-base placeholder:text-sm leading-[1.5]"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            </div>
+
+            <div className="hidden lg:flex items-center gap-2 px-4 py-2.5 bg-[#f4f9fc] rounded-[12px] border border-[#2b6cb0]/20 text-[#1a365d]">
+              <ShieldCheck className="w-5 h-5 text-[#2b6cb0] shrink-0" />
+              <span className="text-sm font-medium">Cam kết chất lượng - Giao hàng tận nơi</span>
+            </div>
+          </div>
+
+          {/* Compact Category Chips with Show More toggle */}
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-[#2b6cb0]" />
+                <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider font-heading">Lọc theo nhóm sản phẩm</span>
+              </div>
+              <button 
+                onClick={() => setActiveCategory("all")}
+                className={`text-xs font-semibold uppercase tracking-wider transition-colors ${activeCategory === "all" ? 'text-[#2b6cb0] font-bold' : 'text-slate-500 hover:text-[#1a365d]'}`}
+              >
+                Tất cả ({PRODUCTS.length})
+              </button>
+            </div>
+
+            {/* Category Chips Container */}
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                onClick={() => setActiveCategory("all")}
+                className={`px-4 py-2 min-h-[40px] rounded-[12px] text-sm font-medium transition-all flex items-center gap-2 ${
+                  activeCategory === "all"
+                    ? 'bg-[#2b6cb0] text-white shadow-1 font-semibold'
+                    : 'bg-[#f4f9fc] text-slate-700 hover:bg-slate-200/80 border border-slate-200'
+                }`}
+              >
+                <Package className="w-4 h-4" />
+                <span>Tất cả sản phẩm</span>
+              </button>
+
+              {visibleCategories.map(cat => (
+                <button 
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`px-4 py-2 min-h-[40px] rounded-[12px] text-sm font-medium transition-all flex items-center gap-2 ${
+                    activeCategory === cat.id 
+                    ? 'bg-[#2b6cb0] text-white shadow-1 font-semibold' 
+                    : 'bg-white text-slate-700 hover:bg-[#f4f9fc] border border-slate-200'
+                  }`}
+                >
+                  <CategoryIcon id={cat.id} className={`w-4 h-4 ${activeCategory === cat.id ? 'text-white' : 'text-[#2b6cb0]'}`} />
+                  <span>{cat.title}</span>
+                </button>
+              ))}
+
+              {/* Show More / Show Less Toggle Button */}
+              {hiddenCategoryCount > 0 && (
+                <button
+                  onClick={() => setShowAllCategories(!showAllCategories)}
+                  className="px-3.5 py-2 min-h-[40px] rounded-[12px] text-sm font-semibold text-[#2b6cb0] bg-[#f4f9fc] hover:bg-blue-100/60 border border-[#2b6cb0]/30 transition-all flex items-center gap-1.5"
+                >
+                  <span>{showAllCategories ? "Thu gọn" : `+ Xem thêm (${hiddenCategoryCount})`}</span>
+                  <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${showAllCategories ? 'rotate-180' : ''}`} />
+                </button>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Above-The-Fold Main Products Display */}
         {searchTerm === "" && activeCategory === "all" && (
-          <section className="mb-20">
-            <div className="flex items-center justify-between mb-8">
+          <section className="mb-12">
+            <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="bg-blue-100 p-2 rounded-lg">
-                  <TrendingUp className="text-blue-600 w-6 h-6" />
+                <div className="bg-[#2b6cb0]/10 p-2.5 rounded-[12px] text-[#2b6cb0]">
+                  <TrendingUp className="w-6 h-6" />
                 </div>
-                <h2 className="text-2xl font-bold text-[#0B2147] uppercase tracking-wide">Sản phẩm nổi bật</h2>
+                <div>
+                  <h2 className="text-2xl font-bold text-slate-900 font-heading leading-[1.2]">Sản Phẩm Bán Chạy Nhất</h2>
+                  <p className="text-slate-500 text-sm">Các mặt hàng bảo hộ và nilon lót sàn được nhà thầu tin dùng nhiều nhất.</p>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 lg:gap-6">
+
+            {/* Responsive Grid: 5 cols Desktop, 3 Tablet, 2 Mobile */}
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
               {PRODUCTS.filter(p => p.isBestSeller).slice(0, 5).map(product => (
                 <ProductItem key={`featured-${product.id}`} product={product} onAddToCart={handleAddToCart} />
               ))}
@@ -197,17 +219,20 @@ export default function CategoryPageContent() {
           </section>
         )}
 
-        {/* Priority Section */}
+        {/* Priority Categories Section */}
         {priorityCategories.length > 0 && (
-          <div className="mb-20">
-            <div className="flex items-center gap-3 mb-8">
-              <div className="bg-orange-100 p-2 rounded-lg">
-                <ShieldCheck className="text-orange-600 w-6 h-6" />
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="bg-[#1a365d]/10 p-2.5 rounded-[12px] text-[#1a365d]">
+                <ShieldCheck className="w-6 h-6" />
               </div>
-              <h2 className="text-2xl font-bold text-[#0B2147] uppercase tracking-wide">Giải pháp che chắn & bảo vệ công trình toàn diện</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-slate-900 font-heading leading-[1.2]">Giải Pháp Che Chắn Công Trình</h2>
+                <p className="text-slate-500 text-sm">Vật tư nilon lót sàn bê tông và bạt phủ chất lượng cao.</p>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-12">
+            <div className="grid grid-cols-1 gap-10">
               {priorityCategories.map(cat => (
                 <CategorySection 
                   key={cat.id} 
@@ -221,100 +246,97 @@ export default function CategoryPageContent() {
           </div>
         )}
 
-        {/* Other Categories */}
-        <div className="grid grid-cols-1 gap-16">
-          {otherCategories.map(cat => (
-            <CategorySection 
-              key={cat.id} 
-              category={cat} 
-              products={cat.products} 
-              onAddToCart={handleAddToCart} 
-            />
-          ))}
-        </div>
-
-        {/* Empty State */}
-        {filteredProducts.length === 0 && (
-          <div className="text-center py-20">
-            <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-600">Không tìm thấy sản phẩm phù hợp</h3>
-            <p className="text-gray-400">Vui lòng thử lại với từ khóa khác.</p>
+        {/* Other Categories Sections */}
+        {categoriesWithProducts.filter(cat => !cat.priority).length > 0 && (
+          <div className="space-y-10">
+            {categoriesWithProducts.filter(cat => !cat.priority).map(cat => (
+              <CategorySection 
+                key={cat.id} 
+                category={cat} 
+                products={cat.products} 
+                onAddToCart={handleAddToCart} 
+              />
+            ))}
           </div>
         )}
 
-        {/* Highlight Section: Khách hàng thường mua cùng */}
-        <section className="mt-24 bg-white rounded-2xl p-8 lg:p-12 border border-gray-100 shadow-sm">
-          <div className="flex flex-col lg:flex-row justify-between items-end gap-6 mb-10">
+        {/* Empty Search State */}
+        {filteredProducts.length === 0 && (
+          <div className="text-center py-16 bg-white rounded-[12px] border border-slate-200 shadow-1">
+            <Package className="w-16 h-16 text-slate-300 mx-auto mb-4 stroke-1" />
+            <h3 className="text-xl font-bold text-slate-800 font-heading">Không tìm thấy sản phẩm nào</h3>
+            <p className="text-slate-500 text-base mt-2">Vui lòng thử lại với từ khóa hoặc danh mục khác.</p>
+            <button 
+              onClick={() => { setSearchTerm(""); setActiveCategory("all"); }}
+              className="mt-6 min-h-[44px] px-6 py-2.5 bg-[#2b6cb0] text-white font-semibold text-base rounded-[12px] hover:bg-[#3182ce] transition-all shadow-1"
+            >
+              Xem tất cả sản phẩm
+            </button>
+          </div>
+        )}
+
+        {/* Combo Savings Section */}
+        <section className="mt-16 bg-white rounded-[12px] p-6 lg:p-10 border border-slate-200 shadow-1">
+          <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-8">
             <div>
-              <h2 className="text-2xl font-bold text-[#0B2147] mb-2 uppercase tracking-wide">Khách hàng thường mua cùng</h2>
-              <p className="text-gray-500">Các gói combo vật tư tiết kiệm và đồng bộ cho công trình.</p>
+              <span className="text-xs font-semibold text-[#2b6cb0] uppercase tracking-widest block mb-1 font-heading">GÓI VẬT TƯ TIẾT KIỆM</span>
+              <h2 className="text-2xl font-bold text-slate-900 font-heading leading-[1.2]">Combo Vật Tư Thi Công Trọn Gói</h2>
+              <p className="text-slate-500 text-sm mt-1">Giải pháp kết hợp tiết kiệm chi phí tối đa cho nhà thầu.</p>
             </div>
-            <Link href="/lien-he" className="text-orange-600 font-bold flex items-center gap-1 hover:gap-2 transition-all">
-              Tư vấn combo <ArrowRight className="w-5 h-5" />
+            <Link href="/lien-he" className="min-h-[44px] bg-[#f4f9fc] hover:bg-slate-100 text-[#2b6cb0] px-5 py-2.5 rounded-[12px] font-semibold text-base transition-all flex items-center gap-2 border border-[#2b6cb0]/20">
+              <span>Tư vấn gói combo</span> <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-[#f8fafc] p-6 rounded-xl border border-blue-50">
-              <ShieldCheck className="w-10 h-10 text-blue-600 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Combo An Toàn Cơ Bản</h3>
-              <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                <li>• Mũ bảo hộ công trình (10 cái)</li>
-                <li>• Găng tay sợi phủ sơn (50 đôi)</li>
-                <li>• Áo phản quang kỹ sư (5 cái)</li>
-              </ul>
-              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full py-2.5 bg-blue-600 text-white rounded-lg font-bold hover:bg-blue-700 transition-colors">Nhận báo giá combo</button>
+            <div className="bg-[#f4f9fc] p-6 rounded-[12px] border border-slate-200 shadow-1 flex flex-col justify-between">
+              <div>
+                <ShieldCheck className="w-8 h-8 text-[#2b6cb0] mb-3" />
+                <h3 className="font-semibold text-lg text-slate-900 mb-2 font-heading leading-[1.2]">Combo An Toàn Cơ Bản</h3>
+                <ul className="text-sm text-slate-600 space-y-2 mb-6 leading-[1.6]">
+                  <li>• Mũ bảo hộ công trình (10 cái)</li>
+                  <li>• Găng tay sợi phủ sơn (50 đôi)</li>
+                  <li>• Áo phản quang kỹ sư (5 cái)</li>
+                </ul>
+              </div>
+              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full min-h-[44px] bg-[#2b6cb0] text-white rounded-[12px] font-semibold text-base hover:bg-[#3182ce] transition-colors shadow-1 leading-none">
+                Nhận báo giá combo
+              </button>
             </div>
-            <div className="bg-[#fcf8f6] p-6 rounded-xl border border-orange-50">
-              <TrendingUp className="w-10 h-10 text-orange-600 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Combo Che Chắn Sàn</h3>
-              <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                <li>• Cuộn Nilon lót sàn (5 cuộn)</li>
-                <li>• Băng keo dán nền (10 cuộn)</li>
-                <li>• Bạt che công trình (2 tấm)</li>
-              </ul>
-              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full py-2.5 bg-orange-600 text-white rounded-lg font-bold hover:bg-orange-700 transition-colors">Nhận báo giá combo</button>
+
+            <div className="bg-[#f4f9fc] p-6 rounded-[12px] border border-[#2b6cb0]/40 shadow-2 flex flex-col justify-between relative">
+              <div className="absolute top-3 right-3 bg-[#2b6cb0] text-white text-xs font-semibold px-2.5 py-1 rounded-[12px] uppercase">Bán chạy</div>
+              <div>
+                <TrendingUp className="w-8 h-8 text-[#2b6cb0] mb-3" />
+                <h3 className="font-semibold text-lg text-slate-900 mb-2 font-heading leading-[1.2]">Combo Che Chắn Sàn</h3>
+                <ul className="text-sm text-slate-600 space-y-2 mb-6 leading-[1.6]">
+                  <li>• Cuộn Nilon lót sàn (5 cuộn)</li>
+                  <li>• Băng keo dán nền (10 cuộn)</li>
+                  <li>• Bạt che công trình (2 tấm)</li>
+                </ul>
+              </div>
+              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full min-h-[44px] bg-[#1a365d] text-white rounded-[12px] font-semibold text-base hover:bg-[#2b6cb0] transition-colors shadow-1 leading-none">
+                Nhận báo giá combo
+              </button>
             </div>
-            <div className="bg-[#f8fcf8] p-6 rounded-xl border border-green-50">
-              <ShieldCheck className="w-10 h-10 text-green-600 mb-4" />
-              <h3 className="font-bold text-lg mb-2">Combo Hoàn Thiện Nội Thất</h3>
-              <ul className="text-sm text-gray-600 space-y-2 mb-6">
-                <li>• Nilon che nội thất (10 cuộn)</li>
-                <li>• Băng keo giấy che sơn (10 cuộn)</li>
-                <li>• Khăn lau công nghiệp (5kg)</li>
-              </ul>
-              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full py-2.5 bg-green-600 text-white rounded-lg font-bold hover:bg-green-700 transition-colors">Nhận báo giá combo</button>
+
+            <div className="bg-[#f4f9fc] p-6 rounded-[12px] border border-slate-200 shadow-1 flex flex-col justify-between">
+              <div>
+                <ShieldCheck className="w-8 h-8 text-[#2b6cb0] mb-3" />
+                <h3 className="font-semibold text-lg text-slate-900 mb-2 font-heading leading-[1.2]">Combo Hoàn Thiện Nội Thất</h3>
+                <ul className="text-sm text-slate-600 space-y-2 mb-6 leading-[1.6]">
+                  <li>• Nilon che nội thất (10 cuộn)</li>
+                  <li>• Băng keo giấy che sơn (10 cuộn)</li>
+                  <li>• Khăn lau công nghiệp (5kg)</li>
+                </ul>
+              </div>
+              <button onClick={() => setIsQuoteModalOpen(true)} className="w-full min-h-[44px] bg-[#2b6cb0] text-white rounded-[12px] font-semibold text-base hover:bg-[#3182ce] transition-colors shadow-1 leading-none">
+                Nhận báo giá combo
+              </button>
             </div>
           </div>
         </section>
 
-        {/* Final CTA */}
-        <motion.section 
-          initial={{ opacity: 0, scale: 0.98 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          className="mt-20 bg-[#0B2147] rounded-3xl overflow-hidden relative"
-        >
-          <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1541888946425-d81bb19480c5?q=80&w=2000')] bg-cover bg-center opacity-10"></div>
-          <div className="relative z-10 px-8 py-16 lg:py-20 text-center">
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">Liên hệ ngay để nhận báo giá vật tư & bảo hộ công trình</h2>
-            <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">Chúng tôi hỗ trợ chiết khấu tốt nhất cho các dự án và nhà thầu xây dựng. Giao hàng nhanh chóng tận nơi.</p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button 
-                onClick={() => setIsQuoteModalOpen(true)}
-                className="px-10 py-4 bg-orange-600 text-white rounded-full font-bold text-lg hover:bg-orange-700 shadow-xl shadow-orange-900/20 transition-all hover:-translate-y-1"
-              >
-                Nhận báo giá ngay
-              </button>
-              <Link 
-                href="/lien-he"
-                className="px-10 py-4 bg-white/10 text-white border border-white/20 rounded-full font-bold text-lg hover:bg-white/20 backdrop-blur-sm transition-all"
-              >
-                Tư vấn kỹ thuật
-              </Link>
-            </div>
-          </div>
-        </motion.section>
       </div>
 
       <QuickQuoteModal 
@@ -325,34 +347,46 @@ export default function CategoryPageContent() {
   );
 }
 
-function CategorySection({ category, products, onAddToCart, isPriority = false }: { category: Category, products: Product[], onAddToCart: (p: Product) => void, isPriority?: boolean }) {
+function CategorySection({ 
+  category, 
+  products, 
+  onAddToCart,
+  isPriority = false 
+}: { 
+  category: typeof CATEGORIES[0], 
+  products: Product[], 
+  onAddToCart: (p: Product) => void,
+  isPriority?: boolean
+}) {
   return (
     <motion.div 
-      initial={{ opacity: 0, y: 30 }}
+      id={category.id} 
+      initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      id={category.id}
-      className={`relative scroll-mt-24 ${isPriority ? 'bg-white p-6 lg:p-10 rounded-3xl shadow-sm border border-orange-100' : ''}`}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4 }}
+      className="scroll-mt-24"
     >
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="flex items-start gap-4">
-          <div className={`p-3 rounded-2xl shrink-0 ${isPriority ? 'bg-orange-600 text-white shadow-lg shadow-orange-200' : 'bg-[#0B2147] text-white'}`}>
-            <Package className="w-6 h-6" />
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-3">
+          <div className={`p-2.5 rounded-[12px] shrink-0 ${isPriority ? 'bg-[#2b6cb0] text-white shadow-1' : 'bg-[#1a365d] text-white'}`}>
+            <Package className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center gap-3 mb-2 flex-wrap">
-              <h2 className="text-2xl font-bold text-[#0B2147] uppercase tracking-tight">{category.title}</h2>
-              {isPriority && <span className="bg-orange-100 text-orange-700 text-[11px] font-extrabold px-3 py-1 rounded-full border border-orange-200">BÁN CHẠY NHẤT</span>}
+            <div className="flex items-center gap-3 flex-wrap">
+              <h2 className="text-xl font-bold text-slate-900 uppercase tracking-tight font-heading leading-[1.2]">{category.title}</h2>
+              {isPriority && <span className="bg-[#f4f9fc] text-[#2b6cb0] text-xs font-semibold px-2.5 py-0.5 rounded-[12px] border border-[#2b6cb0]/20 font-heading">ƯU TIÊN</span>}
             </div>
-            <p className="text-gray-500 max-w-2xl text-sm md:text-base leading-relaxed">{category.description}</p>
+            <p className="text-slate-500 text-sm mt-0.5">{category.description}</p>
           </div>
         </div>
-        <Link href={`/lien-he`} className="hidden md:flex items-center gap-2 text-sm font-bold text-[#0B2147] hover:text-orange-600 transition-colors uppercase tracking-wider">
-          Tư vấn nhóm này <ArrowRight className="w-4 h-4" />
+        <Link href={`/lien-he`} className="hidden md:flex items-center gap-1.5 text-sm font-semibold text-[#2b6cb0] hover:text-[#1a365d] transition-colors uppercase tracking-wider">
+          <span>Tư vấn nhóm này</span> <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 lg:gap-8">
+      {/* Grid: 5 cols on Desktop, 3 on Tablet, 2 on Mobile */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
         {products.map((product) => (
           <ProductItem key={product.id} product={product} onAddToCart={onAddToCart} />
         ))}
@@ -364,59 +398,51 @@ function CategorySection({ category, products, onAddToCart, isPriority = false }
 function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: (p: Product) => void }) {
   return (
     <motion.div 
-      whileHover={{ y: -8 }}
-      className="group bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-orange-100 transition-all duration-300 flex flex-col h-full"
+      whileHover={{ y: -4 }}
+      transition={{ duration: 0.2 }}
+      className="group bg-white rounded-[12px] border border-slate-200/80 overflow-hidden shadow-1 hover:shadow-2 hover:border-[#2b6cb0]/40 transition-all duration-instant flex flex-col h-full"
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-gray-50">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[#f4f9fc] border-b border-slate-100">
         <Image 
           src={product.image} 
           alt={product.name} 
           fill 
-          className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+          className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
         
         {product.isBestSeller && (
-          <div className="absolute top-3 left-3 bg-orange-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5 backdrop-blur-sm">
+          <div className="absolute top-2.5 left-2.5 bg-[#2b6cb0] text-white text-[11px] font-semibold px-2 py-0.5 rounded-[12px] shadow-1 flex items-center gap-1 uppercase tracking-wider font-heading">
             <TrendingUp className="w-3 h-3" />
-            <span>BÁN CHẠY</span>
+            <span>Bán chạy</span>
           </div>
         )}
-        
-        <div className="absolute bottom-3 left-3 right-3 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
-          <button 
-            onClick={() => onAddToCart(product)}
-            className="w-full py-2.5 bg-white text-[#0B2147] rounded-xl font-bold text-sm shadow-xl hover:bg-orange-600 hover:text-white transition-colors flex items-center justify-center gap-2"
-          >
-            <ShoppingCart className="w-4 h-4" />
-            Thêm vào giỏ hàng
-          </button>
-        </div>
       </div>
       
-      <div className="p-5 flex flex-col flex-1">
-        <div className="flex-1">
-          <h3 className="font-bold text-[#0B2147] text-base mb-2 line-clamp-2 group-hover:text-orange-600 transition-colors leading-tight">
-            {product.name}
-          </h3>
-          <p className="text-xs text-gray-400 mb-4">{product.description || "Thiết bị bảo hộ đạt tiêu chuẩn chất lượng cao."}</p>
+      <div className="p-4 flex flex-col flex-1 justify-between">
+        <div>
+          <Link href={`/san-pham/${product.id}`}>
+            <h3 className="font-heading font-semibold text-slate-900 text-base mb-1.5 line-clamp-2 group-hover:text-[#2b6cb0] transition-colors leading-[1.2]">
+              {product.name}
+            </h3>
+          </Link>
+          <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">{product.description || "Vật tư đạt tiêu chuẩn chất lượng công trình."}</p>
         </div>
         
-        <div className="pt-4 border-t border-gray-50 flex items-center justify-between">
-          <div className="flex flex-col">
-            <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-0.5">Giá tham khảo</span>
-            <span className="text-orange-600 font-extrabold text-lg">
+        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2 mt-auto">
+          <div className="flex items-baseline justify-between">
+            <span className="text-xs text-slate-400 font-medium">Giá từ</span>
+            <span className="text-[#2b6cb0] font-bold text-lg font-mono">
               {product.price ? formatPrice(product.price) : "Liên hệ"}
             </span>
           </div>
           
-          <Link 
-            href={`/san-pham/${product.id}`}
-            className="w-10 h-10 bg-gray-50 text-gray-400 rounded-xl flex items-center justify-center hover:bg-[#0B2147] hover:text-white transition-all duration-300"
-            title="Xem chi tiết"
+          <button 
+            onClick={() => onAddToCart(product)}
+            className="w-full min-h-[44px] py-2.5 bg-[#2b6cb0] hover:bg-[#3182ce] text-white rounded-[12px] font-semibold text-base shadow-1 transition-colors flex items-center justify-center gap-2 leading-none"
           >
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+            <ShoppingCart className="w-4 h-4" />
+            <span>Thêm vào báo giá</span>
+          </button>
         </div>
       </div>
     </motion.div>

@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { ShieldCheck, Truck, Send, CheckCircle2, Zap } from 'lucide-react';
+import { isValidVnPhone, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
 
 export default function Hero() {
   const [formData, setFormData] = useState({
@@ -11,9 +13,18 @@ export default function Hero() {
     message: ''
   });
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate số điện thoại Việt Nam
+    if (!isValidVnPhone(formData.phone)) {
+      toast.error(VN_PHONE_ERROR_MSG);
+      return;
+    }
+
+    setIsSubmitting(true);
     setStatus('loading');
     
     try {
@@ -47,119 +58,135 @@ export default function Hero() {
     }
   };
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   return (
-    <section className="relative bg-[#001838] overflow-hidden py-20 lg:py-28">
-      {/* Background Image / Overlay */}
-      <div className="absolute inset-0 z-0 opacity-20">
-        <div className="absolute inset-0 bg-primary/80 mix-blend-multiply" />
-        <div
-          className="w-full h-full bg-cover bg-center"
+    <section className="relative bg-[#1a365d] text-white overflow-hidden py-16 lg:py-24 border-b border-[#2b6cb0]/30">
+      {/* Modern Industrial Grid & Image Overlay */}
+      <div className="absolute inset-0 z-0 opacity-15 pointer-events-none">
+        <div 
+          className="w-full h-full bg-cover bg-center mix-blend-overlay"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1541888086425-d81bb19240f5?q=80&w=2070&auto=format&fit=crop')" }}
         />
+        <div className="absolute inset-0 bg-[radial-gradient(#2b6cb0_1px,transparent_1px)] [background-size:24px_24px] opacity-40"></div>
       </div>
 
       <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-20">
+        <div className="flex flex-col lg:flex-row items-center gap-12 lg:gap-16">
 
           {/* Left Content */}
           <div className="w-full lg:w-[55%]">
-            <span className="inline-block px-4 py-1.5 bg-secondary-container text-white font-semibold text-sm rounded mb-6 uppercase tracking-wider">
-              Báo giá trực tiếp 2024
-            </span>
-            <h1 className="text-5xl md:text-6xl lg:text-[64px] font-semibold text-white mb-6 leading-[1.1] tracking-tight">
-              Bảng Giá Nilon Lót Sàn Công Trình
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#2b6cb0]/30 border border-[#63b3ed]/40 text-[#63b3ed] font-semibold text-sm rounded-[12px] mb-6 uppercase tracking-wider backdrop-blur-md">
+              <Zap className="w-4 h-4 text-[#63b3ed]" /> Nhà Máy Sản Xuất Nilon Công Trình
+            </div>
+            <h1 className="text-3xl sm:text-4xl lg:text-[40px] font-bold text-white mb-6 leading-[1.2] tracking-tight font-heading">
+              Bảng Giá Nilon Lót Sàn <span className="text-[#63b3ed]">Bê Tông</span> 2026
             </h1>
-            <p className="text-xl text-gray-300 mb-10 max-w-xl leading-relaxed">
-              Cung cấp nilon lót sàn đa dạng độ dày 2zem, 4zem, 6zem cho các dự án xây dựng, cầu đường và hạ tầng. Đảm bảo chất lượng tiêu chuẩn ISO, giao hàng tận công trình.
+            <p className="text-base sm:text-lg text-slate-300 mb-8 max-w-xl leading-[1.6] font-sans font-normal">
+              Cung cấp nilon lót sàn PE đa dạng độ dày <strong className="text-white font-semibold">2zem, 4zem, 6zem</strong> cho các dự án nhà xưởng, cầu đường và hạ tầng. Đảm bảo chất lượng tiêu chuẩn, giao hàng tận nơi.
             </p>
 
             <div className="flex flex-wrap gap-4">
-              <div className="flex items-center bg-[#00234e]/80 border border-blue-800/50 rounded-md px-5 py-3 backdrop-blur-sm">
-                <svg className="w-6 h-6 text-orange-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
-                <span className="text-white font-semibold text-base">Tiêu chuẩn ISO</span>
+              <div className="flex items-center bg-white/10 border border-white/15 rounded-[12px] px-5 py-3.5 backdrop-blur-md shadow-1">
+                <ShieldCheck className="w-6 h-6 text-[#63b3ed] mr-3 shrink-0" />
+                <div>
+                  <div className="text-white font-semibold text-sm font-heading">Cam kết chất lượng</div>
+                  <div className="text-slate-300 text-xs">Cam kết độ dày chuẩn 100%</div>
+                </div>
               </div>
-              <div className="flex items-center bg-[#00234e]/80 border border-blue-800/50 rounded-md px-5 py-3 backdrop-blur-sm">
-                <svg className="w-6 h-6 text-orange-500 mr-3" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" /><path d="M3 4a1 1 0 00-1 1v10a1 1 0 001 1h1.05a2.5 2.5 0 014.9 0H10a1 1 0 001-1v-5h2.968a2 2 0 011.536.721l2.4 3.2A2 2 0 0118 14.52V16a1 1 0 001-1v-2.28a4 4 0 00-1.233-2.88L15.34 7.42A2 2 0 0013.926 7H11V5a1 1 0 00-1-1H3z" /></svg>
-                <span className="text-white font-semibold text-base">Giao hàng 24/7</span>
+              <div className="flex items-center bg-white/10 border border-white/15 rounded-[12px] px-5 py-3.5 backdrop-blur-md shadow-1">
+                <Truck className="w-6 h-6 text-[#63b3ed] mr-3 shrink-0" />
+                <div>
+                  <div className="text-white font-semibold text-sm font-heading">Giao hàng 24/7</div>
+                  <div className="text-slate-300 text-xs">Vận chuyển tận công trình</div>
+                </div>
               </div>
             </div>
           </div>
 
           {/* Right Form Card */}
           <div className="w-full lg:w-[45%]">
-            <div className="bg-white rounded-xl shadow-2xl p-8 lg:p-10">
-              <h3 className="text-3xl font-semibold text-primary mb-6 text-center">Yêu cầu báo giá nhanh</h3>
+            <div className="bg-white text-slate-900 rounded-[12px] shadow-2 p-6 sm:p-8 border border-slate-200/80 relative">
+              <div className="text-center mb-6">
+                <span className="text-xs font-semibold text-[#2b6cb0] uppercase tracking-widest block mb-1">TƯ VẤN BÁO GIÁ NHANH</span>
+                <h3 className="text-2xl font-bold text-slate-900 font-heading leading-[1.2]">Yêu Cầu Báo Giá Tận Gốc</h3>
+              </div>
+
               {status === 'success' ? (
-                <div className="bg-green-50 text-green-700 p-6 rounded-lg border border-green-200 text-center">
-                  <h3 className="text-2xl font-semibold mb-2">Gửi thành công!</h3>
-                  <p className="text-base">Chúng tôi đã nhận được yêu cầu và sẽ liên hệ lại trong vòng 15 phút.</p>
-                  <button onClick={() => setStatus('idle')} className="mt-4 text-base text-green-600 font-semibold underline hover:text-green-800">Gửi yêu cầu khác</button>
+                <div className="bg-emerald-50 text-emerald-800 p-6 rounded-[12px] border border-emerald-200 text-center space-y-3">
+                  <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
+                  <h3 className="text-xl font-semibold font-heading">Gửi yêu cầu thành công!</h3>
+                  <p className="text-base leading-[1.6]">Chúng tôi đã nhận được thông tin và sẽ phản hồi báo giá trong vòng 15 phút.</p>
+                  <button 
+                    onClick={() => setStatus('idle')} 
+                    className="mt-2 text-sm text-emerald-700 font-semibold underline hover:text-emerald-900"
+                  >
+                    Gửi yêu cầu khác
+                  </button>
                 </div>
               ) : (
-                <form className="space-y-5" onSubmit={handleSubmit}>
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <div>
-                    <label className="block text-base font-semibold text-gray-700 mb-2">Họ và tên *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider">Họ và tên *</label>
                     <input 
                       type="text" 
-                      placeholder="Nhập họ và tên của bạn" 
+                      placeholder="Nhập họ tên của bạn" 
                       required
                       value={formData.name}
                       onChange={(e) => setFormData({...formData, name: e.target.value})}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                      className="w-full min-h-[44px] px-4 py-3 rounded-[12px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#2b6cb0] focus:border-[#2b6cb0] transition-all text-base placeholder:text-sm leading-[1.5]" 
                     />
                   </div>
                   <div>
-                    <label className="block text-base font-semibold text-gray-700 mb-2">Số điện thoại *</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider">Số điện thoại *</label>
                     <input 
                       type="tel" 
-                      placeholder="Ví dụ: 0912345678" 
+                      placeholder="Ví dụ: 0931982568" 
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                      className="w-full min-h-[44px] px-4 py-3 rounded-[12px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#2b6cb0] focus:border-[#2b6cb0] transition-all text-base placeholder:text-sm leading-[1.5]" 
                     />
                   </div>
                   <div>
-                    <label className="block text-base font-semibold text-gray-700 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider">Email (Không bắt buộc)</label>
                     <input 
                       type="email" 
                       placeholder="Ví dụ: email@example.com" 
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all" 
+                      className="w-full min-h-[44px] px-4 py-3 rounded-[12px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#2b6cb0] focus:border-[#2b6cb0] transition-all text-base placeholder:text-sm leading-[1.5]" 
                     />
                   </div>
                   <div>
-                    <label className="block text-base font-semibold text-gray-700 mb-2">Loại Nilon & Số lượng</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider">Loại Nilon & Số lượng cuộn</label>
                     <textarea 
-                      rows={3} 
-                      placeholder="Ví dụ: Nilon 4zem, số lượng 50 cuộn cho công trình Quận 2" 
+                      rows={2} 
+                      placeholder="Ví dụ: Nilon 4zem, số lượng 50 cuộn cho dự án Quận 2" 
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
-                      className="w-full px-4 py-3 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all resize-none"
+                      className="w-full min-h-[80px] px-4 py-3 rounded-[12px] border border-slate-300 focus:outline-none focus:ring-2 focus:ring-[#2b6cb0] focus:border-[#2b6cb0] transition-all text-base placeholder:text-sm resize-none leading-[1.5]"
                     ></textarea>
                   </div>
                   <button 
                     type="submit" 
                     disabled={isSubmitting}
-                    className="w-full bg-secondary-container hover:bg-[#e65a1f] text-white font-semibold text-xl py-4 rounded-md transition-colors shadow-lg shadow-orange-500/30 disabled:opacity-70 flex items-center justify-center"
+                    className="w-full min-h-[44px] bg-[#2b6cb0] hover:bg-[#3182ce] text-white font-semibold text-base py-3 px-6 rounded-[12px] transition-all shadow-1 disabled:opacity-70 flex items-center justify-center gap-2 leading-none"
                   >
                     {isSubmitting ? (
                       <>
-                        <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                        </svg>
-                        ĐANG GỬI...
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        <span>ĐANG GỬI...</span>
                       </>
-                    ) : 'NHẬN BÁO GIÁ NGAY'}
+                    ) : (
+                      <>
+                        <Send className="w-4 h-4" />
+                        <span>NHẬN BÁO GIÁ NGAY</span>
+                      </>
+                    )}
                   </button>
                   {status === 'error' && (
-                    <p className="text-red-500 text-sm text-center">Đã có lỗi xảy ra, vui lòng thử lại.</p>
+                    <p className="text-red-500 text-sm text-center font-medium">Đã có lỗi xảy ra, vui lòng kiểm tra lại.</p>
                   )}
-                  <p className="text-center text-sm text-gray-500 mt-4">Cam kết phản hồi trong vòng 15 phút làm việc</p>
+                  <p className="text-center text-xs text-slate-500 pt-1">Phản hồi nhanh trong 15 phút làm việc</p>
                 </form>
               )}
             </div>

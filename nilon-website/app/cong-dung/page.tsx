@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { motion } from "framer-motion";
 import { slideUp, staggerContainer, fadeIn } from "@/lib/animations";
@@ -170,7 +170,7 @@ export default function CongDungPage() {
                 variants={slideUp}
                 className="bg-white p-8 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
               >
-                <div className="w-14 h-14 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                <div className="w-14 h-14 bg-orange-50 rounded-lg flex items-center justify-center mb-6">
                   {feature.icon}
                 </div>
                 <h3 className="text-xl font-bold text-primary mb-3">{feature.title}</h3>
@@ -335,7 +335,7 @@ export default function CongDungPage() {
         <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px' }}></div>
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-6">Bạn cần báo giá nilon lót sàn ngay?</h2>
-          <p className="text-blue-100 text-lg mb-10 max-w-2xl mx-auto">
+          <p className="text-stone-200 text-lg mb-10 max-w-2xl mx-auto">
             Chúng tôi cung cấp đủ mọi kích cỡ, độ dày với mức giá cạnh tranh nhất thị trường. Hàng luôn có sẵn tại kho.
           </p>
           <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -367,3 +367,4 @@ export default function CongDungPage() {
     </div>
   );
 }
+

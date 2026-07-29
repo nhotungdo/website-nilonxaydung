@@ -199,7 +199,7 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 350000,
     unit: "Đôi",
-    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
   },
   {
     id: "ung-bao-ho",
@@ -211,7 +211,7 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 85000,
     unit: "Đôi",
-    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
   },
   {
     id: "giay-chong-tinh-dien",
@@ -223,7 +223,7 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 450000,
     unit: "Đôi",
-    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
   },
   {
     id: "giay-chong-dinh",
@@ -235,7 +235,7 @@ export const PRODUCTS: Product[] = [
     image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
     price: 550000,
     unit: "Đôi",
-    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"EN ISO 20345 / CE S3"}],
+    specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
   },
 
   // 4. Quần áo bảo hộ

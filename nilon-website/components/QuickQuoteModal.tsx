@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { X, Send, Phone, User, Mail, MessageSquare, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
+import { isValidVnPhone, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
 
 interface QuickQuoteModalProps {
   isOpen: boolean;
@@ -23,6 +24,13 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Validate số điện thoại Việt Nam
+    if (!isValidVnPhone(formData.phone)) {
+      toast.error(VN_PHONE_ERROR_MSG);
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -43,9 +51,9 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
         toast.success('Gửi yêu cầu thành công! Chúng tôi sẽ liên hệ sớm nhất.', {
           duration: 5000,
           style: {
-            background: '#0B2147',
+            background: '#292524',
             color: '#fff',
-            borderRadius: '10px',
+            borderRadius: '12px',
           }
         });
         onClose();
@@ -68,52 +76,53 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
-          className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+          className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
         />
         
         <motion.div 
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
-          className="relative bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+          className="relative bg-white rounded-[12px] shadow-2 w-full max-w-lg overflow-hidden"
         >
           {/* Header */}
-          <div className="bg-[#0B2147] p-6 text-white relative">
-            <h3 className="text-xl font-bold">Nhận báo giá nhanh</h3>
-            <p className="text-blue-100 text-sm mt-1">Vui lòng để lại thông tin, chúng tôi sẽ phản hồi sau 5-10 phút.</p>
+          <div className="bg-[#1a365d] p-6 text-white relative">
+            <span className="text-xs font-extrabold text-[#63b3ed] uppercase tracking-widest block mb-1 font-heading">TƯ VẤN NHANH</span>
+            <h3 className="text-xl font-bold font-heading">Nhận báo giá nhanh</h3>
+            <p className="text-slate-300 text-sm mt-1 font-sans">Vui lòng để lại thông tin, chúng tôi sẽ phản hồi sau 5-10 phút.</p>
             <button 
               onClick={onClose}
-              className="absolute right-6 top-6 text-blue-200 hover:text-white transition-colors"
+              className="absolute right-5 top-5 text-slate-300 hover:text-white transition-colors p-1.5 rounded-[12px] hover:bg-white/10"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Form */}
-          <div className="p-8">
+          <div className="p-6 sm:p-8">
             <form onSubmit={handleSubmit} className="space-y-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                    <User className="w-4 h-4 text-[#fc6c29]" /> Họ tên *
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                    <User className="w-4 h-4 text-[#2b6cb0]" /> Họ tên *
                   </label>
                   <input
                     required
                     type="text"
-                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all"
+                    className="w-full min-h-[44px] border border-slate-300 rounded-[12px] px-4 py-3 outline-none focus:border-[#2b6cb0] focus:ring-2 focus:ring-[#2b6cb0]/20 transition-all bg-white text-base placeholder:text-sm leading-[1.5]"
                     placeholder="Nguyễn Văn A"
                     value={formData.name}
                     onChange={(e) => setFormData({...formData, name: e.target.value})}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-[#fc6c29]" /> Số điện thoại *
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                    <Phone className="w-4 h-4 text-[#2b6cb0]" /> Số điện thoại *
                   </label>
                   <input
                     required
                     type="tel"
-                    className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all"
+                    className="w-full min-h-[44px] border border-slate-300 rounded-[12px] px-4 py-3 outline-none focus:border-[#2b6cb0] focus:ring-2 focus:ring-[#2b6cb0]/20 transition-all bg-white text-base placeholder:text-sm leading-[1.5]"
                     placeholder="09xx xxx xxx"
                     value={formData.phone}
                     onChange={(e) => setFormData({...formData, phone: e.target.value})}
@@ -122,12 +131,12 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                  <Mail className="w-4 h-4 text-[#fc6c29]" /> Công ty / Đơn vị
+                <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                  <Mail className="w-4 h-4 text-[#2b6cb0]" /> Công ty / Đơn vị
                 </label>
                 <input
                   type="text"
-                  className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all"
+                  className="w-full min-h-[44px] border border-slate-300 rounded-[12px] px-4 py-3 outline-none focus:border-[#2b6cb0] focus:ring-2 focus:ring-[#2b6cb0]/20 transition-all bg-white text-base placeholder:text-sm leading-[1.5]"
                   placeholder="Công ty xây dựng ABC..."
                   value={formData.company}
                   onChange={(e) => setFormData({...formData, company: e.target.value})}
@@ -135,13 +144,13 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
               </div>
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2 flex items-center gap-2">
-                  <MessageSquare className="w-4 h-4 text-[#fc6c29]" /> Nội dung cần tư vấn *
+                <label className="block text-sm font-medium text-slate-700 mb-1.5 uppercase tracking-wider flex items-center gap-1.5">
+                  <MessageSquare className="w-4 h-4 text-[#2b6cb0]" /> Nội dung cần tư vấn *
                 </label>
                 <textarea
                   required
                   rows={3}
-                  className="w-full border border-gray-300 rounded-lg p-3 outline-none focus:border-[#fc6c29] focus:ring-1 focus:ring-[#fc6c29] transition-all resize-none"
+                  className="w-full border border-slate-300 rounded-[12px] px-4 py-3 outline-none focus:border-[#2b6cb0] focus:ring-2 focus:ring-[#2b6cb0]/20 transition-all resize-none text-base placeholder:text-sm leading-[1.5]"
                   value={formData.content}
                   onChange={(e) => setFormData({...formData, content: e.target.value})}
                 />
@@ -150,12 +159,12 @@ export default function QuickQuoteModal({ isOpen, onClose, productName = "Nilon 
               <button
                 disabled={isSubmitting}
                 type="submit"
-                className="w-full bg-[#fc6c29] hover:bg-[#e65a1f] disabled:bg-gray-400 text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group"
+                className="w-full min-h-[44px] bg-[#2b6cb0] hover:bg-[#3182ce] disabled:bg-slate-300 text-white font-semibold text-base py-3 px-6 rounded-[12px] transition-all shadow-1 flex items-center justify-center gap-2 group leading-none"
               >
                 {isSubmitting ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  <Send className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                  <Send className="w-5 h-5 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
                 )}
                 Gửi yêu cầu ngay
               </button>

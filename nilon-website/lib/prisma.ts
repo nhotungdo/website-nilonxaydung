@@ -13,9 +13,9 @@ const createPrismaClient = () => {
   // Supabase uses pgbouncer (Transaction Pooler) — disable prepared statements
   const pool = new Pool({
     connectionString,
-    ssl: {
-      rejectUnauthorized: false, // Required for Supabase SSL connection
-    },
+    ssl: process.env.NODE_ENV === 'production' 
+      ? { rejectUnauthorized: true } // Secure SSL in production
+      : { rejectUnauthorized: false }, // Allow self-signed certs in development
     max: 1, // Serverless: limit pool size when using pgbouncer
   });
 

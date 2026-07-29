@@ -112,8 +112,8 @@ async function main() {
     console.log(`Order Code: ${order.orderCode}`);
     console.log('Saved to database successfully');
 
-  } catch (err: any) {
-    console.error('❌ Test transaction failed:', err.message);
+  } catch (err: unknown) {
+    console.error('❌ Test transaction failed:', err instanceof Error ? err.message : err);
   } finally {
     await prisma.$disconnect();
   }

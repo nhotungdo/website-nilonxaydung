@@ -1,10 +1,13 @@
 "use client";
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Phone, MessageSquare, Menu, X, ShieldCheck } from 'lucide-react';
+import { useState } from 'react';
 import CartWidget from './CartWidget';
 
 export default function Header() {
   const pathname = usePathname();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const navLinks = [
     { name: 'Trang chủ', href: '/' },
@@ -13,29 +16,41 @@ export default function Header() {
     { name: 'Công dụng', href: '/cong-dung' },
     { name: 'Liên hệ', href: '/lien-he' },
   ];
+
   return (
-    <header className="sticky top-0 z-50 bg-primary border-b border-primary-container shadow-md">
+    <header className="sticky top-0 z-50 bg-[#1a365d] text-white border-b border-[#2b6cb0]/30 shadow-1">
       <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
+          
           {/* Logo */}
-          <div className="flex-shrink-0 flex items-center -ml-4 lg:-ml-20 xl:-ml-32">
-            <Link href="/" className="text-xl font-extrabold text-white tracking-tight">
-              NILON lót sàn Việt
+          <div className="flex-shrink-0 flex items-center">
+            <Link href="/" className="flex items-center gap-2 group">
+              <div className="w-10 h-10 rounded-[12px] bg-[#2b6cb0] flex items-center justify-center font-black text-white text-xl shadow-1 group-hover:bg-[#3182ce] transition-colors">
+                N
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-black text-white tracking-tight leading-none uppercase font-heading">
+                  NILON <span className="text-[#63b3ed]">LÓT SÀN</span>
+                </span>
+                <span className="text-[10px] text-slate-300 uppercase tracking-widest font-semibold flex items-center gap-1 mt-0.5">
+                  <ShieldCheck className="w-3 h-3 text-[#63b3ed]" /> Cam kết chất lượng
+                </span>
+              </div>
             </Link>
           </div>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex gap-5 xl:gap-8 items-center">
+          <nav className="hidden md:flex gap-6 items-center">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (
                 <Link 
                   key={link.href}
                   href={link.href} 
-                  className={`px-2 py-2 text-sm transition-colors whitespace-nowrap ${
+                  className={`px-3 py-2 text-base font-medium transition-all rounded-[12px] ${
                     isActive 
-                      ? 'text-white font-bold border-b-2 border-secondary' 
-                      : 'text-white/80 font-semibold hover:text-white'
+                      ? 'bg-[#2b6cb0] text-white font-semibold shadow-1' 
+                      : 'text-slate-200 hover:bg-white/10 hover:text-white'
                   }`}
                 >
                   {link.name}
@@ -44,17 +59,23 @@ export default function Header() {
             })}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:flex items-center space-x-4">
-            <a href="tel:0931982568" className="bg-secondary hover:bg-secondary-container text-white px-5 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center shadow-sm">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" /></svg>
-              Gọi: 0931.982.568
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center space-x-3">
+            <a 
+              href="tel:0931982568" 
+              className="bg-[#2b6cb0] hover:bg-[#3182ce] text-white px-5 min-h-[44px] py-2.5 rounded-[12px] text-base font-semibold transition-all flex items-center gap-2 shadow-1 border border-[#63b3ed]/40"
+            >
+              <Phone className="w-4 h-4 text-blue-100" />
+              <span>0931.982.568</span>
             </a>
-            <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2.5 rounded-md text-sm font-bold transition-colors flex items-center gap-2 shadow-sm">
-              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12.047 3.01C7.82 3.01 4.388 5.432 4.388 8.42c0 1.636.945 3.093 2.417 4.103-.13.475-.465 1.705-.533 1.956-.1.353.116.34.243.257.1-.065 1.595-1.077 2.228-1.51.433.125.885.19 1.348.19 4.228 0 7.659-2.422 7.659-5.41 0-2.988-3.431-5.41-7.659-5.41l-.046-.006zm3.327 7.91l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002zm-3.327-1.53l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002zm-3.328 1.53l-1.396-1.53c-.11-.122-.16-.27-.14-.424l.115-.967c.02-.153.132-.284.286-.328.155-.044.318.006.425.122l1.396 1.53c.11.12.16.268.14.423l-.115.967c-.02.154-.132.285-.286.33-.153.04-.316-.01-.425-.125l-.015.002z" />
-              </svg>
-              Zalo
+            <a 
+              href="https://zalo.me/0931982568" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="bg-white/10 hover:bg-white/20 text-white px-5 min-h-[44px] py-2.5 rounded-[12px] text-base font-semibold transition-all flex items-center gap-2 border border-white/20"
+            >
+              <MessageSquare className="w-4 h-4 text-[#63b3ed]" />
+              <span>Zalo</span>
             </a>
             <div className="pl-2 border-l border-white/20">
               <CartWidget />
@@ -62,17 +83,49 @@ export default function Header() {
           </div>
 
           {/* Mobile menu button & Cart */}
-          <div className="flex items-center gap-4 md:hidden">
+          <div className="flex items-center gap-3 md:hidden">
             <CartWidget />
-            <button type="button" className="inline-flex items-center justify-center p-2 rounded-md text-white/80 hover:text-white hover:bg-white/10 focus:outline-none">
+            <button 
+              type="button" 
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2.5 rounded-[12px] text-slate-200 hover:text-white hover:bg-white/10 focus:outline-none border border-white/10"
+            >
               <span className="sr-only">Mở menu</span>
-              {/* Icon */}
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
+              {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
           </div>
         </div>
+
+        {/* Mobile Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden py-4 border-t border-slate-700/80 space-y-2">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={`block px-4 py-2.5 rounded-[12px] text-base font-semibold transition-all ${
+                    isActive ? 'bg-[#2b6cb0] text-white' : 'text-slate-200 hover:bg-white/10'
+                  }`}
+                >
+                  {link.name}
+                </Link>
+              );
+            })}
+            <div className="pt-2 flex flex-col gap-2 px-2">
+              <a 
+                href="tel:0931982568" 
+                className="w-full bg-[#2b6cb0] hover:bg-[#3182ce] text-white py-3 rounded-[12px] text-center font-bold text-sm flex items-center justify-center gap-2 shadow-1"
+              >
+                <Phone className="w-4 h-4" />
+                <span>Hotline: 0931.982.568</span>
+              </a>
+            </div>
+          </div>
+        )}
+
       </div>
     </header>
   );

@@ -45,13 +45,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           {/* Product Info */}
           <div className="w-full lg:w-1/2 flex flex-col justify-center">
             <div className="mb-2">
-              <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider">
+              <span className="text-sm font-medium text-[#2b6cb0] bg-[#f4f9fc] border border-[#2b6cb0]/20 px-3 py-1 rounded-[12px] uppercase tracking-wider">
                 {product.categorySlug === 'nilon-lot-san-be-tong' ? 'Nilon Lót Sàn' : 'Bảo Hộ'}
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
             
-            <div className="text-3xl font-bold text-orange-600 mb-6">
+            <div className="text-3xl font-bold text-[#2b6cb0] mb-6">
               {formatPrice(product.price)} <span className="text-lg font-normal text-gray-500">/{product.unit}</span>
             </div>
 

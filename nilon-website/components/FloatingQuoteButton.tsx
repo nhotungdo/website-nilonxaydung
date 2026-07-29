@@ -33,15 +33,15 @@ export default function FloatingQuoteButton() {
           >
             <button
               onClick={() => setIsOpen(true)}
-              className="group relative flex items-center gap-2 bg-[#fc6c29] hover:bg-[#e65a1f] text-white p-4 rounded-full shadow-2xl transition-all hover:pr-6"
+              className="group relative flex items-center gap-2 bg-[#1a365d] hover:bg-[#2b6cb0] text-white p-4 rounded-[12px] shadow-2 transition-all hover:pr-6 border border-[#2b6cb0]/40"
             >
-              <FileText className="w-6 h-6" />
-              <span className="max-w-0 overflow-hidden whitespace-nowrap font-bold text-sm transition-all group-hover:max-w-xs">
+              <FileText className="w-6 h-6 text-[#63b3ed]" />
+              <span className="max-w-0 overflow-hidden whitespace-nowrap font-bold text-sm transition-all group-hover:max-w-xs font-heading">
                 Nhận báo giá ngay
               </span>
               
               {/* Pulse effect */}
-              <span className="absolute inset-0 rounded-full bg-[#fc6c29] animate-ping opacity-20 -z-10"></span>
+              <span className="absolute inset-0 rounded-[12px] bg-[#2b6cb0] animate-ping opacity-20 -z-10"></span>
             </button>
           </motion.div>
         )}

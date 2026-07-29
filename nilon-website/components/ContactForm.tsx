@@ -64,24 +64,24 @@ const ContactForm = () => {
   };
 
   const inputClasses = (hasError?: boolean) => `
-    w-full pl-11 pr-4 py-3 bg-white border rounded-xl outline-none transition-all duration-200
+    w-full pl-11 pr-4 py-3 min-h-[44px] bg-white border rounded-[12px] outline-none transition-all duration-200 text-base placeholder:text-sm leading-[1.5]
     ${hasError 
       ? "border-red-500 focus:ring-2 focus:ring-red-100" 
-      : "border-gray-200 focus:border-primary focus:ring-4 focus:ring-primary/10"
+      : "border-slate-300 focus:border-[#2b6cb0] focus:ring-2 focus:ring-[#2b6cb0]/20"
     }
   `;
 
-  const labelClasses = "block text-sm font-semibold text-gray-700 mb-1.5 ml-1";
+  const labelClasses = "block text-sm font-medium text-slate-700 mb-1.5 ml-1";
 
   return (
-    <div className="w-full max-w-2xl mx-auto bg-white/80 backdrop-blur-sm p-6 md:p-10 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100">
+    <div className="w-full max-w-2xl mx-auto bg-white/80 backdrop-blur-sm p-6 md:p-10 rounded-[12px] shadow-1 border border-slate-100">
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Name Field */}
           <div className="space-y-1">
             <label className={labelClasses}>Họ và tên *</label>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b6cb0] transition-colors">
                 <User size={18} />
               </div>
               <input
@@ -92,7 +92,7 @@ const ContactForm = () => {
               />
             </div>
             {errors.name && (
-              <p className="text-xs text-red-500 mt-1 ml-1">{errors.name.message}</p>
+              <p className="text-sm text-red-500 mt-1 ml-1">{errors.name.message}</p>
             )}
           </div>
 
@@ -100,7 +100,7 @@ const ContactForm = () => {
           <div className="space-y-1">
             <label className={labelClasses}>Số điện thoại *</label>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b6cb0] transition-colors">
                 <Phone size={18} />
               </div>
               <input
@@ -111,7 +111,7 @@ const ContactForm = () => {
               />
             </div>
             {errors.phone && (
-              <p className="text-xs text-red-500 mt-1 ml-1">{errors.phone.message}</p>
+              <p className="text-sm text-red-500 mt-1 ml-1">{errors.phone.message}</p>
             )}
           </div>
         </div>
@@ -121,7 +121,7 @@ const ContactForm = () => {
           <div className="space-y-1">
             <label className={labelClasses}>Email</label>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b6cb0] transition-colors">
                 <Mail size={18} />
               </div>
               <input
@@ -132,7 +132,7 @@ const ContactForm = () => {
               />
             </div>
             {errors.email && (
-              <p className="text-xs text-red-500 mt-1 ml-1">{errors.email.message}</p>
+              <p className="text-sm text-red-500 mt-1 ml-1">{errors.email.message}</p>
             )}
           </div>
 
@@ -140,7 +140,7 @@ const ContactForm = () => {
           <div className="space-y-1">
             <label className={labelClasses}>Tên công ty</label>
             <div className="relative group">
-              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-primary transition-colors">
+              <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#2b6cb0] transition-colors">
                 <Building2 size={18} />
               </div>
               <input
@@ -157,7 +157,7 @@ const ContactForm = () => {
         <div className="space-y-1">
           <label className={labelClasses}>Nội dung cần tư vấn *</label>
           <div className="relative group">
-            <div className="absolute left-4 top-4 text-gray-400 group-focus-within:text-primary transition-colors">
+            <div className="absolute left-4 top-4 text-slate-400 group-focus-within:text-[#2b6cb0] transition-colors">
               <MessageSquare size={18} />
             </div>
             <textarea
@@ -168,7 +168,7 @@ const ContactForm = () => {
             />
           </div>
           {errors.message && (
-            <p className="text-xs text-red-500 mt-1 ml-1">{errors.message.message}</p>
+            <p className="text-sm text-red-500 mt-1 ml-1">{errors.message.message}</p>
           )}
         </div>
 
@@ -180,10 +180,10 @@ const ContactForm = () => {
             disabled={isSubmitting}
             type="submit"
             className={`
-              w-full py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 transition-all shadow-lg
+              w-full min-h-[44px] py-3.5 px-6 rounded-[12px] font-semibold text-base flex items-center justify-center gap-2 transition-all shadow-1 leading-none
               ${isSubmitting 
-                ? "bg-gray-400 cursor-not-allowed" 
-                : "bg-primary hover:bg-primary-dark text-white shadow-primary/20 hover:shadow-primary/40"
+                ? "bg-slate-300 cursor-not-allowed text-slate-600" 
+                : "bg-[#2b6cb0] hover:bg-[#3182ce] text-white"
               }
             `}
           >

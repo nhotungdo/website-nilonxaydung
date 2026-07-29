@@ -88,7 +88,7 @@ export default function ContactPage() {
                 transition={{ delay: 0.5 + idx * 0.1 }}
                 className="bg-white rounded-xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-shadow"
               >
-                <div className="w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center mb-6">
+                <div className="w-12 h-12 bg-orange-50 rounded-lg flex items-center justify-center mb-6">
                   {card.icon}
                 </div>
                 <h3 className="font-bold text-gray-900 text-lg mb-2">{card.title}</h3>
@@ -100,17 +100,17 @@ export default function ContactPage() {
       </section>
 
       {/* Form & Trust Section */}
-      <section id="form" className="py-16 bg-gray-50">
+      <section id="form" className="py-16 bg-[#f4f9fc]">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row gap-12 lg:gap-20">
             {/* Left: Form */}
             <motion.div 
-              className="lg:w-5/12 bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-10"
+              className="lg:w-5/12 bg-white rounded-[12px] shadow-1 border border-slate-200 p-8 sm:p-10"
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-2xl font-bold text-gray-900 mb-8">Yêu cầu tư vấn & báo giá</h2>
+              <h2 className="text-2xl font-bold text-slate-900 mb-8 font-heading">Yêu cầu tư vấn & báo giá</h2>
               <ContactForm />
             </motion.div>
 
@@ -121,7 +121,7 @@ export default function ContactPage() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <div className="rounded-2xl overflow-hidden mb-8 shadow-md">
+              <div className="rounded-[12px] overflow-hidden mb-8 shadow-1">
                 <Image 
                   src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?q=80&w=2064&auto=format&fit=crop" 
                   alt="Đội ngũ hỗ trợ" 
@@ -131,24 +131,24 @@ export default function ContactPage() {
                 />
               </div>
 
-              <div className="bg-orange-50 border-l-4 border-[#fc6c29] p-6 rounded-r-lg mb-8">
-                <h3 className="text-xl font-bold text-[#d45218] mb-2">Cam kết báo giá 5-10 phút</h3>
-                <p className="text-orange-800">Đội ngũ kinh doanh trực tuyến luôn sẵn sàng phản hồi mọi yêu cầu của khách hàng trong thời gian ngắn nhất.</p>
+              <div className="bg-[#f4f9fc] border-l-4 border-[#2b6cb0] p-6 rounded-r-[12px] mb-8 border border-slate-200">
+                <h3 className="text-xl font-bold text-[#1a365d] mb-2 font-heading">Cam kết báo giá 5-10 phút</h3>
+                <p className="text-slate-700">Đội ngũ kinh doanh trực tuyến luôn sẵn sàng phản hồi mọi yêu cầu của khách hàng trong thời gian ngắn nhất.</p>
               </div>
 
               <div className="grid sm:grid-cols-2 gap-6">
                 <div className="flex gap-4">
-                  <div className="mt-1"><ShieldCheck className="text-primary w-6 h-6" /></div>
+                  <div className="mt-1"><ShieldCheck className="text-[#2b6cb0] w-6 h-6" /></div>
                   <div>
-                    <h4 className="font-bold text-gray-900">Chất lượng ISO</h4>
-                    <p className="text-sm text-gray-600">Đạt tiêu chuẩn vật liệu xây dựng Việt Nam</p>
+                    <h4 className="font-bold text-slate-900 font-heading">Chất lượng đạt chuẩn</h4>
+                    <p className="text-sm text-slate-600">Đạt tiêu chuẩn vật liệu xây dựng Việt Nam</p>
                   </div>
                 </div>
                 <div className="flex gap-4">
-                  <div className="mt-1"><Truck className="text-primary w-6 h-6" /></div>
+                  <div className="mt-1"><Truck className="text-[#2b6cb0] w-6 h-6" /></div>
                   <div>
-                    <h4 className="font-bold text-gray-900">Giao hàng toàn quốc</h4>
-                    <p className="text-sm text-gray-600">Hệ thống vận chuyển tận chân công trình</p>
+                    <h4 className="font-bold text-slate-900 font-heading">Giao hàng toàn quốc</h4>
+                    <p className="text-sm text-slate-600">Hệ thống vận chuyển tận chân công trình</p>
                   </div>
                 </div>
               </div>
@@ -171,9 +171,9 @@ export default function ContactPage() {
       <section className="py-24 bg-white">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-extrabold text-gray-900 mb-4 inline-block relative">
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-4 inline-block relative font-heading">
               Tại sao nên chọn chúng tôi?
-              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-[#fc6c29]"></div>
+              <div className="absolute -bottom-2 left-0 right-0 h-1 bg-[#2b6cb0]"></div>
             </h2>
           </div>
 
@@ -186,11 +186,11 @@ export default function ContactPage() {
           >
             {reasons.map((item, idx) => (
               <motion.div key={idx} variants={slideUp} className="flex flex-col items-center">
-                <div className="w-20 h-20 bg-[#0b2149] rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-900/20 transform rotate-3 hover:rotate-0 transition-transform">
+                <div className="w-20 h-20 bg-[#1a365d] rounded-[12px] flex items-center justify-center mb-6 shadow-1 transform rotate-3 hover:rotate-0 transition-transform text-white">
                   {item.icon}
                 </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-4">{item.title}</h3>
-                <p className="text-gray-600 px-4 leading-relaxed">{item.desc}</p>
+                <h3 className="text-xl font-bold text-slate-900 mb-4 font-heading">{item.title}</h3>
+                <p className="text-slate-600 px-4 leading-relaxed">{item.desc}</p>
               </motion.div>
             ))}
           </motion.div>
@@ -198,19 +198,19 @@ export default function ContactPage() {
       </section>
 
       {/* Final CTA */}
-      <section className="bg-[#0b2149] py-12 border-b border-blue-800">
+      <section className="bg-[#1a365d] py-12 border-b border-[#2b6cb0]/30">
         <div className="container max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
             <div>
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2">Cần báo giá nhanh nhất?</h2>
-              <p className="text-blue-200">Gọi ngay hoặc nhắn tin Zalo để được hỗ trợ tức thì.</p>
+              <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 font-heading">Cần báo giá nhanh nhất?</h2>
+              <p className="text-slate-300">Gọi ngay hoặc nhắn tin Zalo để được hỗ trợ tức thì.</p>
             </div>
             <div className="flex flex-wrap gap-4">
-              <a href="tel:0931982568" className="bg-[#fc6c29] hover:bg-[#e65a1f] text-white px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
+              <a href="tel:0931982568" className="bg-[#2b6cb0] hover:bg-[#3182ce] text-white px-8 py-4 rounded-[12px] font-bold transition-colors flex items-center gap-2 shadow-1 border border-[#63b3ed]/40">
                 <Phone className="w-5 h-5" /> 0931.982.568
               </a>
-              <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-white hover:bg-gray-100 text-gray-900 px-8 py-4 rounded-md font-bold transition-colors flex items-center gap-2 shadow-lg">
-                <MessageCircle className="w-5 h-5 text-blue-500" /> Nhắn Zalo Ngay
+              <a href="https://zalo.me/0931982568" target="_blank" rel="noopener noreferrer" className="bg-white hover:bg-[#f4f9fc] text-slate-900 px-8 py-4 rounded-[12px] font-bold transition-colors flex items-center gap-2 shadow-1">
+                <MessageCircle className="w-5 h-5 text-[#2b6cb0]" /> Nhắn Zalo Ngay
               </a>
             </div>
           </div>
@@ -219,3 +219,4 @@ export default function ContactPage() {
     </div>
   );
 }
+

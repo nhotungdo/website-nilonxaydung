@@ -6,8 +6,8 @@ import Link from "next/link";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-
 import { formatPrice } from "@/lib/formatPrice";
+import { isValidVnPhone, VN_PHONE_ERROR_MSG } from "@/lib/validations/phone";
 
 export default function QuotePage() {
   const { items, removeItem, updateQuantity, clearCart } = useCartStore();
@@ -34,6 +34,12 @@ export default function QuotePage() {
     e.preventDefault();
     if (items.length === 0) {
       toast.error("Vui lòng chọn ít nhất 1 sản phẩm");
+      return;
+    }
+
+    // Validate số điện thoại Việt Nam
+    if (!isValidVnPhone(formData.phone)) {
+      toast.error(VN_PHONE_ERROR_MSG);
       return;
     }
 
@@ -81,7 +87,7 @@ export default function QuotePage() {
         <p className="text-gray-500 mb-8">Bạn chưa thêm sản phẩm nào vào danh sách yêu cầu báo giá.</p>
         <Link 
           href="/danh-muc/bao-ho-lao-dong"
-          className="bg-[#0B2147] hover:bg-blue-900 text-white font-bold py-3 px-8 rounded-lg transition-colors flex items-center gap-2"
+          className="bg-[#0B2147] hover:bg-stone-900 text-white font-bold py-3 px-8 rounded-lg transition-colors flex items-center gap-2"
         >
           <ArrowLeft className="w-5 h-5" /> Quay lại xem sản phẩm
         </Link>
@@ -134,16 +140,16 @@ export default function QuotePage() {
                       <div className="grid grid-cols-2 gap-y-2 text-sm text-gray-600 mb-4">
                         <div><span className="font-medium text-gray-800">Độ dày:</span> {item.thickness}</div>
                         <div><span className="font-medium text-gray-800">Kích thước:</span> {item.size}</div>
-                        {item.note && <div className="col-span-2 text-orange-600"><span className="font-medium text-gray-800">Ghi chú:</span> {item.note}</div>}
+                        {item.note && <div className="col-span-2 text-[#2b6cb0]"><span className="font-medium text-gray-800">Ghi chú:</span> {item.note}</div>}
                       </div>
 
                       <div className="flex items-center justify-between mt-4">
                         <div className="flex items-center gap-4">
                           <span className="font-bold text-gray-700 text-sm">Số lượng:</span>
-                          <div className="flex border border-gray-300 rounded-lg overflow-hidden h-9 w-32">
+                          <div className="flex border border-gray-300 rounded-[12px] overflow-hidden h-9 w-32">
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                              className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+                              className="w-10 flex items-center justify-center bg-[#f4f9fc] hover:bg-gray-100 text-gray-600 transition-colors"
                             >
                               -
                             </button>
@@ -156,7 +162,7 @@ export default function QuotePage() {
                             />
                             <button 
                               onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                              className="w-10 flex items-center justify-center bg-gray-50 hover:bg-gray-100 text-gray-600 transition-colors"
+                              className="w-10 flex items-center justify-center bg-[#f4f9fc] hover:bg-gray-100 text-gray-600 transition-colors"
                             >
                               +
                             </button>
@@ -165,7 +171,7 @@ export default function QuotePage() {
 
                         <div className="text-right">
                           <div className="text-xs text-gray-400 mb-1">Thành tiền</div>
-                          <div className="font-bold text-orange-600 text-lg">
+                          <div className="font-bold text-[#2b6cb0] text-lg font-mono">
                             {item.price ? formatPrice(item.price * item.quantity) : "Liên hệ"}
                           </div>
                         </div>
@@ -179,10 +185,10 @@ export default function QuotePage() {
 
           {/* Right: Summary & Form */}
           <div className="w-full lg:w-2/5">
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-8 sticky top-28 space-y-8">
+            <div className="bg-white rounded-[12px] shadow-1 border border-gray-100 p-6 lg:p-8 sticky top-28 space-y-8">
               {/* Price Summary */}
-              <div className="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                <h2 className="text-lg font-bold text-[#0B2147] mb-4">Tổng cộng đơn hàng</h2>
+              <div className="bg-[#f4f9fc] p-6 rounded-[12px] border border-gray-100">
+                <h2 className="text-lg font-bold text-[#1a365d] mb-4 font-heading">Tổng cộng đơn hàng</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between text-gray-600">
                     <span>Tạm tính ({items.length} sản phẩm)</span>
@@ -193,9 +199,9 @@ export default function QuotePage() {
                     <span className="text-sm italic">Liên hệ sau</span>
                   </div>
                   <div className="pt-3 border-t border-gray-200 flex justify-between items-end">
-                    <span className="font-bold text-[#0B2147]">Tổng thanh toán</span>
+                    <span className="font-bold text-[#1a365d] font-heading">Tổng thanh toán</span>
                     <div className="text-right">
-                      <div className="text-2xl font-extrabold text-orange-600 leading-none">
+                      <div className="text-2xl font-extrabold text-[#2b6cb0] leading-none font-mono">
                         {formatPrice(totalAmount)}
                       </div>
                       <div className="text-[10px] text-gray-400 mt-1 italic">(Giá đã bao gồm VAT nếu có)</div>
@@ -206,7 +212,7 @@ export default function QuotePage() {
 
               {/* Form Section */}
               <div>
-                <h2 className="text-xl font-bold text-[#0B2147] mb-6 flex items-center gap-2">
+                <h2 className="text-xl font-bold text-[#1a365d] mb-6 flex items-center gap-2 font-heading">
                   Thông tin liên hệ
                 </h2>
                 
@@ -300,3 +306,4 @@ export default function QuotePage() {
     </div>
   );
 }
+

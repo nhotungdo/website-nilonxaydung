@@ -9,7 +9,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/dich-vu',
     '/cong-dung',
     '/lien-he',
-    '/chung-chi-iso',
     '/chinh-sach-bao-mat',
     '/danh-muc/bao-ho-lao-dong',
   ].map((route) => ({
