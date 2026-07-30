@@ -25,6 +25,8 @@ export interface QuoteCalcResult {
     thicknessZem: string;
   };
   quantityKg: number;
+  unitLabel?: string;
+  isSafetyEquipment?: boolean;
   unitPriceBeforeDiscount: number;
   discountPercentage: number;
   unitPriceAfterDiscount: number;
@@ -40,16 +42,19 @@ export interface ChatMsg {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  timestamp: string;
   quoteData?: QuoteCalcResult;
   pdfData?: {
-    pdfBase64: string;
+    pdfDataUrl?: string;
+    pdfBase64?: string;
     filename: string;
+    quoteCode?: string;
   };
-  timestamp: string;
 }
 
 const QUICK_PROMPTS = [
-  { label: '📊 Hỏi giá sỉ theo kg', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình TPHCM.' },
+  { label: '📊 Hỏi giá sỉ Nilon 4zem/6zem', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình TPHCM.' },
+  { label: '⛑️ Hỏi giá Bảo hộ lao động', prompt: 'Tôi muốn tư vấn giá sỉ Mũ bảo hộ công trình, Găng tay chống cắt và Giày bảo hộ mũi thép.' },
   { label: '📄 Xuất PDF Báo Giá', prompt: 'Tôi muốn nhập thông tin để xuất File Báo Giá PDF Tạm Tính.' }
 ];
 
@@ -71,7 +76,7 @@ export default function AiSalesChatbot() {
     {
       id: 'welcome-msg',
       role: 'assistant',
-      content: 'Dạ xin chào Anh/Chị! Em là **AI Sales Assistant (Tư vấn 24/7)** của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 **Giải đáp kỹ thuật**: Độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001, tỷ lệ nhựa nguyên sinh/tái sinh.\n- 📊 **Tính giá sỉ theo kg & phí giao công trình**.\n- 📄 **Tự động xuất File Báo Giá PDF Tạm Tính** ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin gì cho công trình mình ạ?',
+      content: 'Dạ xin chào Anh/Chị! Em là **AI Sales Assistant (Tư vấn 24/7)** của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 **Tư vấn Nilon lót sàn & Màng PE**: 2zem - 10zem, độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001.\n- ⛑️ **Trang thiết bị Bảo hộ lao động**: Mũ bảo hộ công trình, Găng tay chống cắt, Giày mũi lót thép (CE S3), Áo phản quang, Bạt che công trình...\n- 📊 **Tính giá sỉ theo kg/cuộn/bộ & phí giao công trình**.\n- 📄 **Tự động xuất File Báo Giá PDF Tạm Tính** ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin hoặc báo giá vật tư nào cho công trình ạ?',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -310,20 +315,22 @@ export default function AiSalesChatbot() {
                       <div className="mt-3 p-3 bg-slate-950/80 rounded-xl border border-blue-500/30 text-xs space-y-1.5">
                         <div className="font-bold text-blue-400 flex items-center justify-between border-b border-slate-800 pb-1">
                           <span className="flex items-center gap-1">
-                            <Building2 className="w-3.5 h-3.5" /> Bảng tính Báo giá Tạm tính
+                            <Building2 className="w-3.5 h-3.5" /> Thông tin Đơn giá Niêm yết
                           </span>
-                          <span className="text-emerald-400 font-mono">Giảm {msg.quoteData.discountPercentage}%</span>
+                          <span className="text-emerald-400 font-mono">{msg.quoteData.isSafetyEquipment ? 'Bảo hộ lao động' : 'Nilon lót móng'}</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 text-slate-300 pt-1">
-                          <div>Sản phẩm: <strong className="text-white">{msg.quoteData.product.name}</strong></div>
-                          <div>Khối lượng: <strong className="text-white">{msg.quoteData.quantityKg} kg</strong></div>
-                          <div>Đơn giá sỉ: <strong className="text-emerald-400">{msg.quoteData.unitPriceAfterDiscount.toLocaleString('vi-VN')} đ/kg</strong></div>
-                          <div>Phí giao hàng: <strong className="text-amber-400">{msg.quoteData.shippingFee === 0 ? 'Miễn phí' : `${msg.quoteData.shippingFee.toLocaleString('vi-VN')} đ`}</strong></div>
-                        </div>
-                        <div className="pt-2 border-t border-slate-800 flex items-center justify-between font-bold text-sm">
-                          <span className="text-slate-200">Tổng tạm tính:</span>
-                          <span className="text-blue-400 font-mono text-base">{msg.quoteData.grandTotal.toLocaleString('vi-VN')} VNĐ</span>
-                        </div>
+                        {!msg.quoteData.isSafetyEquipment ? (
+                          <div className="space-y-1 text-slate-300 pt-1">
+                            <div>Sản phẩm: <strong className="text-white">{msg.quoteData.product.name}</strong></div>
+                            <div>Đơn giá theo 1 kg: <strong className="text-emerald-400 font-mono">{msg.quoteData.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / kg</strong></div>
+                            <div>Đơn giá 1 Cuộn (~50kg): <strong className="text-blue-400 font-mono">{(msg.quoteData.unitPriceBeforeDiscount * 50).toLocaleString('vi-VN')} VNĐ / cuộn</strong></div>
+                          </div>
+                        ) : (
+                          <div className="space-y-1 text-slate-300 pt-1">
+                            <div>Sản phẩm: <strong className="text-white">{msg.quoteData.product.name}</strong></div>
+                            <div>Đơn giá 1 sản phẩm: <strong className="text-emerald-400 font-mono text-sm">{msg.quoteData.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / {msg.quoteData.unitLabel || 'cái'}</strong></div>
+                          </div>
+                        )}
                       </div>
                     )}
 
@@ -342,7 +349,7 @@ export default function AiSalesChatbot() {
                           </div>
                         </div>
                         <button
-                          onClick={() => downloadPdfBlob(msg.pdfData!.pdfBase64, msg.pdfData!.filename)}
+                          onClick={() => downloadPdfBlob(msg.pdfData!.pdfBase64 || msg.pdfData!.pdfDataUrl || '', msg.pdfData!.filename)}
                           className="w-full mt-3 py-2 px-3 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-lg shadow flex items-center justify-center gap-2 transition-all"
                         >
                           <Download className="w-4 h-4" /> Tải File PDF Báo Giá Ngay
@@ -423,7 +430,7 @@ export default function AiSalesChatbot() {
 
                   <div className="grid grid-cols-2 gap-2 text-xs">
                     <div>
-                      <label className="block text-slate-400 mb-1">Loại Nilon</label>
+                      <label className="block text-slate-400 mb-1">Loại sản phẩm</label>
                       <select
                         value={leadProduct}
                         onChange={(e) => setLeadProduct(e.target.value)}
@@ -432,8 +439,11 @@ export default function AiSalesChatbot() {
                         <option value="Nilon lót sàn 4zem">Nilon lót sàn 4zem</option>
                         <option value="Nilon lót sàn 6zem">Nilon lót sàn 6zem</option>
                         <option value="Màng PE 10zem nguyên sinh">Màng PE 10zem nguyên sinh</option>
-                        <option value="Màng phủ nông nghiệp 7zem">Màng phủ nông nghiệp 7zem</option>
-                        <option value="Màng PE quấn pallet 2zem">Màng PE quấn pallet 2zem</option>
+                        <option value="Mũ bảo hộ công trình HDPE">Mũ bảo hộ công trình HDPE</option>
+                        <option value="Giày bảo hộ lao động CE S3">Giày bảo hộ lao động CE S3</option>
+                        <option value="Găng tay bảo hộ chống cắt">Găng tay bảo hộ chống cắt</option>
+                        <option value="Áo phản quang kỹ sư">Áo phản quang kỹ sư</option>
+                        <option value="Bạt che công trình xanh cam">Bạt che công trình xanh cam</option>
                       </select>
                     </div>
                     <div>

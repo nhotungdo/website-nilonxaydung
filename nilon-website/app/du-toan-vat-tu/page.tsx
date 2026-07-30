@@ -11,8 +11,7 @@ export const metadata: Metadata = {
 
 export default function DuToanVatTuPage() {
   const breadcrumbItems = [
-    { label: 'Trang chủ', href: '/' },
-    { label: 'Dự toán AI vật tư', href: '/du-toan-vat-tu' },
+    { label: 'Dự toán AI vật tư' },
   ];
 
   return (

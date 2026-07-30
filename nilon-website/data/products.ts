@@ -72,6 +72,64 @@ export const CATEGORIES: Category[] = [
 ];
 
 export const PRODUCTS: Product[] = [
+  // 0. Nilon Lót Sàn Bê Tông
+  {
+    id: "nilon-lot-san-2zem",
+    name: "Nilon Lót Sàn 2zem",
+    slug: "nilon-lot-san-2zem",
+    category: "nilon-lot-san-be-tong",
+    categorySlug: "nilon-lot-san-be-tong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop",
+    description: "Độ dày tiết kiệm, phù hợp cho lót nền đổ bê tông dân dụng, lót chống thấm nền móng công trình.",
+    price: 850000,
+    unit: "Cuộn",
+    isBestSeller: true,
+    specs: [
+      { label: "Độ dày", value: "2zem (0.02mm)" },
+      { label: "Quy cách", value: "Khổ 2m x 100m (hoặc theo yêu cầu)" },
+      { label: "Chất liệu", value: "Nhựa PE tái sinh chọn lọc / Nguyên sinh" },
+      { label: "Ứng dụng", value: "Lót bê tông lót móng dân dụng, chống mất nước xi măng" }
+    ]
+  },
+  {
+    id: "nilon-lot-san-4zem",
+    name: "Nilon Lót Sàn 4zem",
+    slug: "nilon-lot-san-4zem",
+    category: "nilon-lot-san-be-tong",
+    categorySlug: "nilon-lot-san-be-tong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop",
+    description: "Độ bền cao, chịu lực xé tốt. Chuyên dùng cho các dự án hạ tầng, đường giao thông, nhà xưởng quy mô lớn.",
+    price: 1150000,
+    unit: "Cuộn",
+    isBestSeller: true,
+    specs: [
+      { label: "Độ dày", value: "4zem (0.04mm)" },
+      { label: "Quy cách", value: "Khổ 2m (xòe 4m) x 100m" },
+      { label: "Chất liệu", value: "Nhựa PE tái sinh Grade A cao cấp" },
+      { label: "Ứng dụng", value: "Chống thấm móng nhà xưởng, lót đường bê tông nông thôn & hạ tầng KCN" }
+    ]
+  },
+  {
+    id: "nilon-lot-san-6zem",
+    name: "Nilon Lót Sàn 6zem",
+    slug: "nilon-lot-san-6zem",
+    category: "nilon-lot-san-be-tong",
+    categorySlug: "nilon-lot-san-be-tong",
+    subCategory: "vat-tu-che-chan",
+    image: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop",
+    description: "Độ dày vượt trội, chống thấm tuyệt đối và chống xé rách cực tốt. Dùng cho công trình đặc thù cao cấp.",
+    price: 1650000,
+    unit: "Cuộn",
+    isBestSeller: true,
+    specs: [
+      { label: "Độ dày", value: "6zem (0.06mm)" },
+      { label: "Quy cách", value: "Khổ 2m (xòe 4m) / Khổ 3m (xòe 6m)" },
+      { label: "Chất liệu", value: "Hỗn hợp PE nguyên sinh & tái sinh cao cấp" },
+      { label: "Ứng dụng", value: "Lót sàn bê tông chịu tải trọng lớn, công trình hạ tầng trọng điểm" }
+    ]
+  },
   // 1. Bảo hộ đầu
   {
     id: "mu-bao-ho-cong-trinh",

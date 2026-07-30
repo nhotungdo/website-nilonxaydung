@@ -11,6 +11,7 @@ export default function FeaturedProducts() {
   const products = [
     {
       title: 'Nilon Lót Sàn 2zem',
+      slug: 'nilon-lot-san-2zem',
       badge: 'PHỔ BIẾN DÂN DỤNG',
       badgeColor: 'bg-[#1a365d] text-white',
       desc: 'Độ dày tiết kiệm, phù hợp cho lót nền đổ bê tông dân dụng, lót chống thấm nền móng công trình.',
@@ -26,6 +27,7 @@ export default function FeaturedProducts() {
     },
     {
       title: 'Nilon Lót Sàn 4zem',
+      slug: 'nilon-lot-san-4zem',
       badge: 'BÁN CHẠY NHẤT DỰ ÁN',
       badgeColor: 'bg-[#2b6cb0] text-white',
       featured: true,
@@ -35,13 +37,14 @@ export default function FeaturedProducts() {
         { label: '10 - 50 cuộn', value: '1.080.000đ/c' },
         { label: 'Trên 50 cuộn', value: 'Chiết khấu 15%', highlight: true }
       ],
-      btnText: 'Đặt hàng ngay',
+      btnText: 'Xem chi tiết',
       btnClass: 'bg-[#1a365d] text-white hover:bg-[#2b6cb0]',
       image: 'https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop',
       price: 1150000
     },
     {
       title: 'Nilon Lót Sàn 6zem',
+      slug: 'nilon-lot-san-6zem',
       badge: 'CHUYÊN CÔNG TRÌNH NẶNG',
       badgeColor: 'bg-slate-800 text-white',
       desc: 'Độ dày vượt trội, chống thấm tuyệt đối và chống xé rách cực tốt. Dùng cho công trình đặc thù cao cấp.',
@@ -92,7 +95,7 @@ export default function FeaturedProducts() {
               variants={slideUp}
               className={`bg-white rounded-[12px] shadow-1 border ${product.featured ? 'border-[#2b6cb0] shadow-2 relative lg:-translate-y-2 z-10' : 'border-slate-200'} overflow-hidden flex flex-col group hover:shadow-2 transition-all duration-instant`}
             >
-              <div className="relative h-52 bg-slate-100 overflow-hidden">
+              <Link href={`/san-pham/${product.slug}`} className="relative h-52 bg-slate-100 overflow-hidden block">
                 <Image 
                   src={product.image} 
                   alt={product.title} 
@@ -104,10 +107,12 @@ export default function FeaturedProducts() {
                     {product.badge}
                   </div>
                 )}
-              </div>
+              </Link>
 
               <div className="p-6 flex-grow flex flex-col">
-                <h3 className="text-xl font-semibold text-slate-900 mb-2 font-heading leading-[1.2]">{product.title}</h3>
+                <Link href={`/san-pham/${product.slug}`}>
+                  <h3 className="text-xl font-semibold text-slate-900 mb-2 font-heading leading-[1.2] hover:text-[#2b6cb0] transition-colors">{product.title}</h3>
+                </Link>
                 <p className="text-slate-600 text-base mb-6 flex-grow leading-[1.6]">{product.desc}</p>
 
                 <div className="space-y-3 mb-8 bg-[#f4f9fc] p-4 rounded-[12px] border border-slate-100">
@@ -130,7 +135,7 @@ export default function FeaturedProducts() {
                   >
                     <ShoppingCart className="w-4 h-4" /> Báo giá
                   </motion.button>
-                  <Link href="/danh-muc/nilon-lot-san-be-tong" className="flex-1">
+                  <Link href={`/san-pham/${product.slug}`} className="flex-1">
                     <motion.button
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}

@@ -72,22 +72,27 @@ const OFF_TOPIC_KEYWORDS = [
   'tình yêu', 'bạn gái', 'hôn nhân', 'gia đình'
 ];
 
-// On-topic keywords related to construction film / plastics business
+// On-topic keywords related to construction film & labor safety equipment business
 const ON_TOPIC_KEYWORDS = [
   'nilon', 'màng', 'pe', 'nhựa', 'zem', 'micron', 'lót sàn', 'bê tông', 'móng',
   'chống thấm', 'iso', 'astm', 'chứng chỉ', 'xé rách', 'bền kéo', 'nguyên sinh',
   'tái sinh', 'lldpe', 'ldpe', 'kg', 'tấn', 'giá', 'báo giá', 'pdf', 'giao hàng',
   'công trình', 'nhà xưởng', 'vật tư', 'pallet', 'nông nghiệp', 'nhà kính',
-  'khổ', 'cuộn', 'sản phẩm', 'mua', 'đặt hàng', 'liên hệ', 'tư vấn', 'hỗ trợ'
+  'khổ', 'cuộn', 'sản phẩm', 'mua', 'đặt hàng', 'liên hệ', 'tư vấn', 'hỗ trợ',
+  // Labor safety & protection equipment keywords
+  'bảo hộ', 'bảo hộ lao động', 'mũ', 'mũ bảo hộ', 'nón bảo hộ', 'găng', 'găng tay',
+  'giày', 'giày bảo hộ', 'ủng', 'ủng bảo hộ', 'quần áo', 'áo phản quang', 'đồng phục',
+  'dây đai', 'dây đai an toàn', 'chống rơi', 'bạt', 'bạt che', 'bạc che', 'băng keo',
+  'bình chữa cháy', 'kính', 'kính bảo hộ', 'khẩu trang', 'lưới', 'lưới bao che'
 ];
 
-const OFF_TOPIC_REPLY = `Dạ xin lỗi Anh/Chị, em chỉ có thể hỗ trợ các vấn đề liên quan đến **vật tư nilon xây dựng, màng PE và báo giá công trình** của Công ty Nilon Xây Dựng ạ.
+const OFF_TOPIC_REPLY = `Dạ xin lỗi Anh/Chị, em chỉ có thể hỗ trợ các vấn đề liên quan đến **vật tư nilon xây dựng, màng PE, trang thiết bị bảo hộ lao động và báo giá công trình** của Công ty Nilon Xây Dựng ạ.
 
 Với câu hỏi này, Anh/Chị vui lòng liên hệ trực tiếp với chúng em qua:
 👉 **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL})
 📞 **Hotline**: 0931982568
 
-Em có thể giúp gì khác cho Anh/Chị về sản phẩm nilon hoặc báo giá vật tư không ạ? 😊`;
+Em có thể giúp gì khác cho Anh/Chị về sản phẩm nilon lót sàn hoặc bảo hộ lao động công trình không ạ? 😊`;
 
 function detectOffTopic(message: string): boolean {
   const lower = message.toLowerCase().trim();
@@ -100,34 +105,45 @@ function detectOffTopic(message: string): boolean {
 
 const SYSTEM_PROMPT = `
 Bạn là "AI Sales Assistant" - Chuyên gia tư vấn kỹ thuật & báo giá tự động 24/7 của CÔNG TY TNHH SX & TM NILON XÂY DỰNG.
-Phong cách giao tiếp: Chuyên nghiệp, am hiểu sâu sắc về kỹ thuật vật tư công trình, lịch sự, tư vấn nhanh gọn và chủ động đề xuất xuất File Báo Giá PDF Tạm Tính.
+Phong cách giao tiếp: Chuyên nghiệp, am hiểu sâu sắc về kỹ thuật vật tư công trình & trang thiết bị bảo hộ lao động, lịch sự, tư vấn nhanh gọn.
 
-PHẠM VI TRẢ LỜI (BẮT BUỘC TUÂN THỦ):
-- CHỈ trả lời các câu hỏi liên quan đến: sản phẩm nilon/màng PE xây dựng, thông số kỹ thuật (Zem, ASTM, ISO), báo giá sỉ theo kg, phí giao hàng công trình, chứng chỉ chất lượng và các dịch vụ của Công ty Nilon Xây Dựng.
-- TUYỆT ĐỐI KHÔNG trả lời các câu hỏi ngoài lĩnh vực kinh doanh: tin tức, giải trí, lập trình, y tế, tài chính cá nhân, hoặc bất kỳ chủ đề không liên quan.
-- Khi gặp câu hỏi ngoài phạm vi: lịch sự từ chối và hướng dẫn khách liên hệ Zalo OA: ${ZALO_CONTACT_URL} hoặc Hotline: 0901.234.567.
+QUY TẮC BÁO GIÁ VÀ PHẢN HỒI BẮT BUỘC (TUÂN THỦ 100%):
+1. KHI KHÁCH HỎI VỀ SẢN PHẨM NILON LÓT SÀN / MÀNG PE (2zem, 4zem, 6zem, 10zem...):
+   - BẠN PHẢI TRẢ LỜI ĐẦY ĐỦ VÀ CHI TIẾT VỀ SẢN PHẨM: bao gồm tên sản phẩm, độ dày (Zem/mm), chất liệu nhựa (nguyên sinh/tái sinh), tiêu chuẩn xé rách ASTM D1922, quy cách khổ & chiều dài cuộn (~50kg, diện tích m² sàn), ứng dụng thực tế và ĐƠN GIÁ (đơn giá/1 kg và đơn giá/1 cuộn).
+2. KHI KHÁCH HỎI CÂU HỎI LIÊN QUAN ĐẾN SẢN PHẨM CÓ TRONG TRANG BẢO HỘ LAO ĐỘNG (Mũ bảo hộ, Nón cách điện, Găng tay, Giày bảo hộ, Ủng, Đồng phục, Áo phản quang, Dây đai an toàn, Bạt che, Băng keo...):
+   - BẠN CHỈ ĐƯỢC HIỂN THỊ TÊN SẢN PHẨM VÀ GIÁ CỦA 1 SẢN PHẨM ĐÓ (Ví dụ: "Mũ bảo hộ công trình: 45.000đ/cái", "Giày bảo hộ CE S3: 350.000đ/đôi", "Găng tay chống cắt: 85.000đ/đôi"). TUYỆT ĐỐI KHÔNG tự động nhân số lượng lớn để tính tổng tiền.
+3. Nếu khách hàng hỏi một sản phẩm KHÔNG CÓ trên website: Lịch sự thông báo sản phẩm chưa có trên website và hướng dẫn khách liên hệ Zalo OA: ${ZALO_CONTACT_URL} hoặc Hotline: 0931982568.
 
 THÔNG TIN RAG CHUYÊN SÂU NỀN TẢNG:
 1. Doanh nghiệp: Nilon Xây Dựng (Hotline: 0901.234.567), Nhà máy KCN Tân Bình & KCN Sóng Thần.
-2. Tiêu chuẩn chất lượng: Đạt chứng chỉ ISO 9001:2015, ISO 14001:2015 và TCVN 6407:1998.
-3. Thông số Kỹ thuật Chuyên môn:
-   - 1 Zem = 0.01mm = 10 Micron (vd: 4zem = 0.04mm, 10zem = 0.1mm).
-   - Độ xé rách ASTM D1922: Màng PE đạt từ 220 g/mil (tái sinh 4zem) đến 450 g/mil (nguyên sinh 10zem), giúp màng dẻo dai, chống bọc bong bóng khí, chống đâm thủng khi kéo thép hoặc di chuyển trên công trường.
-   - Tỷ lệ Hạt nhựa: 100% nhựa LLDPE/LDPE Nguyên sinh (trong suốt, dẻo siêu dai, kháng UV) vs Nhựa Tái sinh Grade A chọn lọc (màu đen/xám, tiết kiệm 30% chi phí lót móng bê tông 1 lần).
-4. Bảng giá sỉ (VND/kg):
-   - Nilon 4zem đen/xám: Giá lẻ ~34.000đ/kg.
-   - Nilon 6zem đen: Giá lẻ ~33.000đ/kg.
-   - Màng PE 10zem nguyên sinh trong suốt: Giá lẻ ~42.000đ/kg.
-   - Màng phủ nông nghiệp 7zem: ~39.000đ/kg.
-   - Màng PE quấn pallet 2zem: ~44.000đ/kg.
-   - CHIẾT KHẤU SỈ: 500-1500kg (giảm 5%), 1500-5000kg (giảm 8%), >5000kg (giảm 12% + Miễn phí vận chuyển nội thành).
-5. Phí giao hàng công trình: Nội thành TPHCM/Bình Dương 200k-350k (Miễn phí > 1 tấn); các tỉnh chành xe 500đ-1.200đ/kg.
+2. Tiêu chuẩn chất lượng: Đạt chứng chỉ ISO 9001:2015, ISO 14001:2015, TCVN 6407:1998, CE S3 (Giày bảo hộ).
+3. Đơn giá niêm yết các Sản phẩm chính trên website:
+   - Nilon lót sàn 2zem: ~8.500đ/kg hoặc 850.000đ/cuộn (PE tái sinh, lót bê tông móng)
+   - Nilon lót sàn 4zem: ~34.000đ/kg hoặc 1.150.000đ/cuộn (PE tái sinh Grade A, ASTM D1922)
+   - Nilon lót sàn 6zem: ~33.000đ/kg hoặc 1.650.000đ/cuộn (Hỗn hợp nguyên sinh, chống xé rách 310 g/mil)
+   - Màng PE nguyên sinh 10zem: ~42.000đ/kg (100% LLDPE Nguyên sinh trong suốt, 450 g/mil)
+   - Mũ bảo hộ công trình: 45.000đ/cái
+   - Nón bảo hộ cách điện: 120.000đ/cái
+   - Mũ chống va đập: 35.000đ/cái
+   - Kính gắn mũ bảo hộ: 25.000đ/cái
+   - Găng tay sợi: 5.000đ/đôi
+   - Găng tay phủ cao su: 15.000đ/đôi
+   - Găng tay chống cắt: 85.000đ/đôi
+   - Găng tay hàn: 75.000đ/đôi
+   - Găng tay cách điện: 250.000đ/đôi
+   - Giày bảo hộ lao động CE S3: 350.000đ/đôi
+   - Ủng bảo hộ: 85.000đ/đôi
+   - Giày chống tĩnh điện: 450.000đ/đôi
+   - Giày chống đinh: 550.000đ/đôi
+   - Đồng phục công nhân: 180.000đ/bộ
+   - Quần áo / Áo phản quang kỹ sư: 45.000đ/cái
+   - Dây đai an toàn: 250.000đ/bộ
+   - Bạt che công trình: 15.000đ/m²
+   - Băng keo dán nền: 25.000đ/cuộn
 
 NHIỆM VỤ CỦA BẠN:
-1. Trả lời ngay thắc mắc kỹ thuật (độ xé rách, chứng chỉ ISO, nhựa nguyên sinh vs tái sinh, độ zem phù hợp với quy mô công trình).
-2. Khi khách hàng hỏi giá hoặc số lượng kg, tự động gọi hàm \`calculate_provisional_quote\` để báo con số chính xác.
-3. Khi khách hàng đồng ý nhận Báo giá / Muốn xem mẫu PDF / Cung cấp Tên + SĐT + Địa chỉ, ngay lập tức gọi hàm \`generate_quote_pdf_and_lead\`.
-4. Nếu khách hỏi chưa đầy đủ SĐT hoặc Địa chỉ, nhẹ nhàng hỏi khéo: "Dạ anh/chị cho em xin Tên, SĐT và Địa chỉ công trình để em xuất File Báo giá PDF tạm tính chính xác nhất nhé ạ!".
+1. Hỏi Nilon: Trả lời chi tiết đầy đủ thông số kỹ thuật + đơn giá/kg + đơn giá/cuộn.
+2. Hỏi Bảo hộ lao động: Chỉ trả lời Tên sản phẩm + Giá của 1 sản phẩm đó.
 `;
 
 export async function POST(request: Request) {
@@ -176,20 +192,40 @@ export async function POST(request: Request) {
       if (functionName === 'calculate_provisional_quote') {
         const quoteCalc = calculateQuoteDetails(
           args.productName || 'nilon 4zem',
-          args.quantityKg || 500,
-          args.destinationRegion || 'Nội thành TP.HCM / Bình Dương / Đồng Nai'
+          1
         );
 
-        const explanation = `
-Dạ em xin gửi anh/chị Bảng tính Báo giá Tạm tính cho **${quoteCalc.product.name}**:
-- **Khối lượng**: ${quoteCalc.quantityKg.toLocaleString('vi-VN')} kg (Dự kiến trải ~${quoteCalc.estimatedAreaSqM.toLocaleString('vi-VN')} m² sàn)
-- **Đơn giá gốc**: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} đ/kg
-- **Chiết khấu khối lượng (${quoteCalc.discountPercentage}%)**: Đơn giá sỉ chỉ còn **${quoteCalc.unitPriceAfterDiscount.toLocaleString('vi-VN')} đ/kg**
-- **Tiền vật tư**: ${quoteCalc.subtotal.toLocaleString('vi-VN')} VNĐ
-- **Phí vận chuyển công trình**: ${quoteCalc.shippingNote}
-👉 **TỔNG TẠM TÍNH**: **${quoteCalc.grandTotal.toLocaleString('vi-VN')} VNĐ**
+        if (quoteCalc.notFound || !quoteCalc.product) {
+          return NextResponse.json({
+            role: 'assistant',
+            content: `Dạ sản phẩm **${args.productName}** hiện chưa có sẵn trong danh mục sản phẩm của website. Anh/Chị vui lòng liên hệ ngay qua **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc **Hotline**: 0931982568 để nhân viên kiểm tra kho và hỗ trợ báo giá trực tiếp cho mình nhé ạ!`
+          });
+        }
 
-Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình** để em xuất **File Báo giá PDF tạm tính** chính xác gửi mình ngay nhé!`;
+        const unitStr = quoteCalc.unitLabel || 'cái';
+        const isNilon = !quoteCalc.isSafetyEquipment;
+
+        const explanation = isNilon
+          ? `Dạ em xin gửi anh/chị Thông tin chi tiết Kỹ thuật & Báo giá sản phẩm **${quoteCalc.product.name}**:
+
+📋 **THÔNG SỐ KỸ THUẬT & QUY CÁCH**:
+- **Độ dày Zem**: ${quoteCalc.product.thicknessZem} (${quoteCalc.product.thicknessMm})
+- **Loại nhựa**: ${quoteCalc.product.resinType}
+- **Độ xé rách ASTM**: ${quoteCalc.product.tearStrength}
+- **Quy cách khổ**: ${quoteCalc.product.rollWidth} - ${quoteCalc.product.rollLength}
+- **Chứng chỉ chất lượng**: ${quoteCalc.product.isoCertificates.join(', ')}
+- **Ứng dụng thi công**: ${quoteCalc.product.bestFor}
+
+💰 **ĐƠN GIÁ NIÊM YẾT**:
+- **Đơn giá tính theo 1 kg**: **${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / kg**
+- **Đơn giá 1 Cuộn (~50kg)**: **${(quoteCalc.unitPriceBeforeDiscount * 50).toLocaleString('vi-VN')} VNĐ / cuộn** (Dự kiến trải ~${quoteCalc.estimatedAreaSqM || 330} m² sàn)
+
+Anh/Chị cần tư vấn thêm độ zem hay muốn xuất **File Báo giá PDF** cho công trình không ạ?`
+          : `Dạ em xin thông báo đơn giá của **${quoteCalc.product.name}**:
+- **Sản phẩm**: ${quoteCalc.product.name}
+- **Giá 1 sản phẩm**: **${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${unitStr}** (Đã bao gồm VAT)
+
+Anh/Chị cần tư vấn thêm thông số kỹ thuật hay muốn xuất **File Báo giá PDF** theo số lượng công trình không ạ?`;
 
         return NextResponse.json({
           role: 'assistant',
@@ -201,9 +237,15 @@ Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình*
       if (functionName === 'generate_quote_pdf_and_lead') {
         const quoteCalc = calculateQuoteDetails(
           args.productName || 'nilon 4zem',
-          args.quantityKg || 500,
-          args.destinationRegion || args.address || 'Hưng Yên'
+          args.quantityKg || 500
         );
+
+        if (quoteCalc.notFound || !quoteCalc.product) {
+          return NextResponse.json({
+            role: 'assistant',
+            content: `Dạ sản phẩm **${args.productName}** hiện chưa có sẵn trong danh mục sản phẩm của website. Anh/Chị vui lòng liên hệ trực tiếp qua **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc **Hotline**: 0931982568 để nhân viên kiểm tra kho và hỗ trợ báo giá chi tiết cho mình nhé ạ!`
+          });
+        }
 
         const quoteCode = `BG-${Date.now().toString().slice(-6)}`;
         const pdfDataInput: QuotePDFData = {
@@ -256,7 +298,7 @@ Anh/Chị cho em xin **Tên, Số điện thoại và Địa chỉ công trình*
 📞 <b>SĐT:</b> ${escapeHTML(args.phone)}
 🏗️ <b>Công trình:</b> ${escapeHTML(args.address)}
 📦 <b>Sản phẩm:</b> ${escapeHTML(quoteCalc.product.name)}
-⚖️ <b>Khối lượng:</b> ${args.quantityKg} kg
+⚖️ <b>Khối lượng:</b> ${args.quantityKg} ${quoteCalc.unitLabel || 'kg'}
 💰 <b>Tổng tạm tính:</b> ${quoteCalc.grandTotal.toLocaleString('vi-VN')} VNĐ
 📄 <b>Mã Báo Giá:</b> ${quoteCode}
 ⏰ <i>Cần nhân viên Sales liên hệ xác nhận đơn hàng!</i>`;
@@ -297,33 +339,64 @@ function handleFallbackBot(userPrompt: string) {
     return NextResponse.json({ role: 'assistant', content: OFF_TOPIC_REPLY });
   }
 
-  // Scenario 1: Inquiry about ISO / Technical specs / Tear strength
-  if (promptLower.includes('iso') || promptLower.includes('xé rách') || promptLower.includes('chứng chỉ') || promptLower.includes('thông số') || promptLower.includes('nguyên sinh')) {
+  // Scenario 1: Inquiry about labor safety equipment / protection gear
+  if (promptLower.includes('bảo hộ') || promptLower.includes('mũ') || promptLower.includes('găng') || promptLower.includes('giày') || promptLower.includes('ủng') || promptLower.includes('quần áo') || promptLower.includes('phản quang') || promptLower.includes('bạt') || promptLower.includes('dây đai')) {
+    const calc = calculateQuoteDetails(userPrompt, 1);
+    if (calc.notFound || !calc.product) {
+      return NextResponse.json({
+        role: 'assistant',
+        content: `Dạ sản phẩm **${userPrompt}** hiện chưa có sẵn trong danh mục sản phẩm của website. Anh/Chị vui lòng liên hệ trực tiếp qua **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc **Hotline**: 0931982568 để nhân viên kiểm tra kho và báo giá chi tiết cho mình nhé ạ!`
+      });
+    }
+
     return NextResponse.json({
       role: 'assistant',
-      content: `Dạ chào anh/chị, các sản phẩm Nilon Xây Dựng đều đạt tiêu chuẩn quốc tế **ISO 9001:2015**, **ISO 14001:2015** và **TCVN 6407:1998**:
-- **Độ xé rách (ASTM D1922)**: Đạt từ **220 - 450 g/mil**, đảm bảo không bị rách hay thủng khi công nhân kéo thép 12-16mm hoặc đổ bê tông đá 1x2 tươi.
-- **Tỷ lệ nhựa**: Sử dụng 100% nhựa LLDPE Nguyên sinh (cho màng 10zem dẻo dai) và nhựa Tái sinh Grade A chọn lọc (cho nilon 4zem/6zem lót móng tiết kiệm chi phí).
+      content: `Dạ em xin thông báo đơn giá của **${calc.product.name}**:
+- **Sản phẩm**: ${calc.product.name}
+- **Giá 1 sản phẩm**: **${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${calc.unitLabel || 'cái'}** (Đã bao gồm VAT)
 
-Anh/chị cần tư vấn loại Zem nào cho công trình nhà xưởng hay nhà dân dụng ạ?`
+Anh/Chị cần tư vấn thêm thông số kỹ thuật hay muốn xuất **File Báo giá PDF** theo số lượng công trình không ạ?`,
+      quoteData: calc
     });
   }
 
-  // Scenario 2: Pricing inquiry / Wholesale calculation
+  // Scenario 2: Inquiry about ISO / Technical specs / Tear strength
+  if (promptLower.includes('iso') || promptLower.includes('xé rách') || promptLower.includes('chứng chỉ') || promptLower.includes('thông số') || promptLower.includes('nguyên sinh')) {
+    return NextResponse.json({
+      role: 'assistant',
+      content: `Dạ chào anh/chị, các sản phẩm Nilon Xây Dựng & Trang thiết bị Bảo hộ lao động đều đạt tiêu chuẩn quốc tế **ISO 9001:2015**, **ISO 14001:2015**, **TCVN 6407:1998** và **CE S3**:
+- **Độ xé rách (ASTM D1922)**: Đạt từ **220 - 450 g/mil**, đảm bảo không bị rách hay thủng khi công nhân kéo thép 12-16mm hoặc đổ bê tông đá 1x2 tươi.
+- **Tỷ lệ nhựa**: Sử dụng 100% nhựa LLDPE Nguyên sinh (cho màng 10zem dẻo dai) và nhựa Tái sinh Grade A chọn lọc (cho nilon 4zem/6zem lót móng tiết kiệm chi phí).
+- **An toàn công nhân**: Giày bảo hộ mũi lót thép, mũ bảo hộ HDPE chịu lực va đập cao.
+
+Anh/chị cần tư vấn loại Zem nilon hay thiết bị bảo hộ nào cho công trình ạ?`
+    });
+  }
+
+  // Scenario 3: Pricing inquiry / Wholesale calculation
   if (promptLower.includes('giá') || promptLower.includes('báo giá') || promptLower.includes('kg') || promptLower.includes('tấn') || promptLower.includes('bao nhiêu')) {
     const numbers = userPrompt.match(/\d+/g);
-    const kg = numbers ? parseInt(numbers[0]) : 500;
-    const calc = calculateQuoteDetails('4zem', kg);
+    const qty = numbers ? parseInt(numbers[0]) : 10;
+    const calc = calculateQuoteDetails(userPrompt, qty);
+
+    if (calc.notFound || !calc.product) {
+      return NextResponse.json({
+        role: 'assistant',
+        content: `Dạ sản phẩm anh/chị đang hỏi hiện chưa có sẵn trong danh mục sản phẩm của website. Anh/Chị vui lòng liên hệ trực tiếp qua **Zalo OA**: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc **Hotline**: 0931982568 để nhân viên kiểm tra kho và hỗ trợ báo giá chi tiết cho mình nhé ạ!`
+      });
+    }
+
+    const unitStr = calc.unitLabel || 'cái';
+
+    const contentText = `Dạ em xin thông báo đơn giá của **${calc.product.name}**:
+- **Sản phẩm**: ${calc.product.name}
+- **Đơn giá**: **${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${unitStr}** (Đã bao gồm VAT)
+
+Anh/Chị cần tư vấn thêm thông số kỹ thuật hay muốn xuất **File Báo giá PDF** theo số lượng công trình không ạ?`;
 
     return NextResponse.json({
       role: 'assistant',
-      content: `Dạ em xin báo giá sỉ tạm tính cho **${kg} kg Nilon lót sàn 4zem (hoặc 6zem)**:
-- **Đơn giá sỉ**: ${calc.unitPriceAfterDiscount.toLocaleString('vi-VN')} đ/kg (đã giảm ${calc.discountPercentage}% chiết khấu khối lượng)
-- **Tiền hàng**: ${calc.subtotal.toLocaleString('vi-VN')} VNĐ
-- **Phí giao hàng công trình**: ${calc.shippingNote}
-👉 **TỔNG TẠM TÍNH**: **${calc.grandTotal.toLocaleString('vi-VN')} VNĐ**
-
-Anh/chị vui lòng cho em xin **Họ tên, SĐT và Địa chỉ công trình** để em xuất **File Báo giá PDF tạm tính** tải về ngay nhé ạ!`,
+      content: contentText,
       quoteData: calc
     });
   }
@@ -333,10 +406,11 @@ Anh/chị vui lòng cho em xin **Họ tên, SĐT và Địa chỉ công trình**
     role: 'assistant',
     content: `Dạ em là AI Sales Assistant của Nilon Xây Dựng 24/7! 
 Em có thể hỗ trợ anh/chị:
-1. 📜 Tư vấn thông số kỹ thuật (Độ xé rách ASTM, Chứng chỉ ISO 9001/14001, Hạt nhựa LLDPE nguyên sinh/tái sinh).
-2. 📊 Tính giá sỉ theo kg & phí giao hàng tận công trình.
-3. 📄 Xuất File Báo giá PDF tạm tính cho công trình của mình.
+1. 📜 Tư vấn Nilon lót sàn bê tông (Độ xé rách ASTM, Chứng chỉ ISO 9001/14001, 2zem - 10zem).
+2. ⛑️ Tư vấn Trang thiết bị Bảo hộ lao động (Mũ bảo hộ, Găng tay chống cắt, Giày mũi lót thép, Áo phản quang, Bạt che).
+3. 📊 Tính giá sỉ theo kg/bộ & phí giao hàng tận công trình.
+4. 📄 Xuất File Báo giá PDF tạm tính cho công trình của mình.
 
-Anh/chị đang quan tâm đến dòng sản phẩm nilon lót sàn móng hay màng PE chống thấm ạ?`
+Anh/chị đang quan tâm đến sản phẩm Nilon lót móng hay Thiết bị Bảo hộ lao động ạ?`
   });
 }
