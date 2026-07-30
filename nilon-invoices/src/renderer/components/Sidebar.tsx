@@ -66,9 +66,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                 <span className="text-[17px] font-black text-[#005B52] tracking-tight leading-none">
                   Nilon Invoices
                 </span>
-                <span className="text-[10px] text-slate-400 font-semibold mt-1">
-                  v1.0.0
-                </span>
+                <div className="flex items-center gap-1.5 mt-1">
+                  <span className="text-[10px] text-slate-400 font-semibold">
+                    v1.0.0
+                  </span>
+                  <span className={`text-[9px] font-extrabold px-1.5 py-0.2 rounded ${
+                    currentRole === 'admin' ? 'bg-[#005B52]/10 text-[#005B52] border border-[#005B52]/20' : 'bg-amber-500/10 text-amber-700 border border-amber-500/20'
+                  }`}>
+                    {currentRole === 'admin' ? 'ADMIN' : 'STAFF'}
+                  </span>
+                </div>
               </motion.div>
             ) : (
               <div className="mx-auto flex h-8 w-8 items-center justify-center rounded-lg bg-[#005B52] font-bold text-white shadow-md">

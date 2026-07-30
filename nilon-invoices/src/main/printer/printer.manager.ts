@@ -1,7 +1,7 @@
 import { db } from '../database/sqlite';
 import { PrinterQueue } from './printer.queue';
 import { IPrinter, IPrintJob } from '../../shared/types';
-import { BrowserWindow } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import fs from 'fs';
 import path from 'path';
 
@@ -75,10 +75,10 @@ class PrinterManager {
     console.log(`[PrinterManager] Printing thermal diagnostic test page on ${printer.name}`);
 
     // Create a mock job
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = !app.isPackaged;
     const storageDir = isDev 
       ? path.resolve(__dirname, '../../../storage') 
-      : path.join(process.resourcesPath, 'storage'); // Fallback during packaging
+      : path.join(app.getPath('userData'), 'storage');
 
     const testPdfPath = path.join(storageDir, 'pdf', `test-receipt-${printer.paper_size}.pdf`);
     

@@ -5,7 +5,7 @@ import { app } from 'electron';
 
 // Determine database path. During dev, place inside project root. In production, place in userData path.
 const getDatabasePath = (): string => {
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = !app.isPackaged;
   let storageDir = '';
   
   if (isDev) {

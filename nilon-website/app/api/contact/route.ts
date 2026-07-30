@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations/contact.schema";
 import { sendTelegramMessage, escapeHTML } from "@/lib/telegram";
 import { MailService } from "@/services/mail.service";
+import { prisma } from "@/lib/prisma";
+import { PrinterService } from "@/services/printer.service";
 
 export async function POST(req: Request) {
   try {
@@ -19,12 +21,97 @@ export async function POST(req: Request) {
     }
 
     const { name, phone, email, need, message, company } = result.data;
+    const phoneClean = phone.trim().replace(/\s/g, '');
 
-    // 2. Send Telegram Notification
+    // 2. Save quote inquiry / order to database for nilon-invoices app
+    const orderCode = `BG-${Date.now()}`;
+    let createdOrderId: string | null = null;
+
+    try {
+      const order = await prisma.$transaction(async (tx) => {
+        // Find or create customer based on phone
+        let dbCustomer = await tx.customer.findUnique({
+          where: { phone: phoneClean }
+        });
+
+        if (!dbCustomer) {
+          dbCustomer = await tx.customer.create({
+            data: {
+              fullName: name,
+              phone: phoneClean,
+              address: company ? `Cty: ${company}` : 'Website User',
+            }
+          });
+        }
+
+        // Fallback product for contact / quick quote inquiry
+        const prodName = need || 'Yêu cầu tư vấn & báo giá';
+        let product = await tx.product.findFirst({
+          where: { name: prodName }
+        });
+
+        if (!product) {
+          const sku = `SKU-CONTACT-${Date.now()}`;
+          product = await tx.product.create({
+            data: {
+              name: prodName,
+              sku,
+              price: 0,
+              stock: 999,
+            }
+          });
+        }
+
+        const noteText = [
+          need ? `Nhu cầu: ${need}` : '',
+          company ? `Công ty: ${company}` : '',
+          message ? `Ghi chú: ${message}` : ''
+        ].filter(Boolean).join(' | ');
+
+        const newOrder = await tx.order.create({
+          data: {
+            orderCode,
+            customerId: dbCustomer.id,
+            subtotal: 0,
+            shippingFee: 0,
+            total: 0,
+            paymentMethod: 'COD',
+            paymentStatus: 'pending',
+            orderStatus: 'pending',
+            printStatus: 'waiting',
+            note: noteText,
+            items: {
+              create: [
+                {
+                  productId: product.id,
+                  productName: prodName,
+                  price: 0,
+                  quantity: 1,
+                  total: 0
+                }
+              ]
+            }
+          }
+        });
+
+        return newOrder;
+      });
+
+      createdOrderId = order.id;
+      console.log(`[DB] ✅ Saved contact quote request to database: ${order.orderCode}`);
+
+      if (createdOrderId) {
+        await PrinterService.sendToPrinter(createdOrderId);
+      }
+    } catch (dbErr) {
+      console.error('[DB Save Contact Error]:', dbErr);
+    }
+
+    // 3. Send Telegram Notification
     const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
-    const telegramMsg = `📞 <b>YÊU CẦU LIÊN HỆ MỚI</b>
+    const telegramMsg = `📞 <b>YÊU CẦU BÁO GIÁ / LIÊN HỆ MỚI (#${orderCode})</b>
 👤 <b>Họ tên:</b> ${escapeHTML(name)}
-📱 <b>Số điện thoại:</b> ${escapeHTML(phone)}
+📱 <b>Số điện thoại:</b> ${escapeHTML(phoneClean)}
 📧 <b>Email:</b> ${escapeHTML(email || 'Không có')}
 🏢 <b>Công ty:</b> ${escapeHTML(company || 'Không có')}
 🎯 <b>Nhu cầu:</b> ${escapeHTML(need || 'Liên hệ chung')}
@@ -34,11 +121,11 @@ ${escapeHTML(message || '')}
 
     await sendTelegramMessage(telegramMsg);
 
-    // 3. Send Email Notification to Admin
+    // 4. Send Email Notification to Admin
     try {
       await MailService.sendContactNotification({ 
         name, 
-        phone, 
+        phone: phoneClean, 
         email: email || undefined, 
         company: company || undefined, 
         need: need || undefined, 
@@ -50,6 +137,7 @@ ${escapeHTML(message || '')}
 
     return NextResponse.json({
       success: true,
+      orderCode,
       message: "Gửi liên hệ thành công. Chúng tôi sẽ phản hồi sớm nhất!",
     });
 
@@ -61,3 +149,4 @@ ${escapeHTML(message || '')}
     );
   }
 }
+

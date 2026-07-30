@@ -7,16 +7,20 @@ let trayInstance: Tray | null = null;
 
 export const createSystemTray = (): Tray | null => {
   if (trayInstance) return trayInstance;
-
-  const isDev = process.env.NODE_ENV !== 'production';
   
-  // Resolve system tray icon asset pathing
-  const iconPath = isDev
-    ? path.resolve(__dirname, '../../src/assets/icons/icon.png')
-    : path.join(process.resourcesPath, 'src/assets/icons/icon.png');
+  // Resolve system tray icon asset pathing cleanly
+  const candidates = [
+    path.resolve(__dirname, '../../src/assets/icons/icon.png'),
+    path.resolve(__dirname, '../src/assets/icons/icon.png'),
+    path.join(process.resourcesPath, 'src/assets/icons/icon.png'),
+    path.join(process.resourcesPath, 'app.asar/src/assets/icons/icon.png'),
+    path.resolve(__dirname, '../../build/icon.png')
+  ];
 
-  if (!fs.existsSync(iconPath)) {
-    console.warn(`[Tray] App icon not found at: ${iconPath}. Skipping system tray creation.`);
+  const iconPath = candidates.find(p => fs.existsSync(p));
+
+  if (!iconPath) {
+    console.warn('[Tray] App icon not found in candidate paths. Skipping system tray creation.');
     return null;
   }
 

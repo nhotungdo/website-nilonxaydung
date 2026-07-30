@@ -1,10 +1,10 @@
-import { BrowserWindow, shell } from 'electron';
+import { app, BrowserWindow, shell } from 'electron';
 import path from 'path';
 
 export let mainWindow: BrowserWindow | null = null;
 
 export const createMainWindow = (): BrowserWindow => {
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = !app.isPackaged;
 
   mainWindow = new BrowserWindow({
     width: 1280,
@@ -25,13 +25,23 @@ export const createMainWindow = (): BrowserWindow => {
   });
 
   // Load appropriate React resource
-  if (isDev) {
-    const devUrl = process.env.VITE_DEV_SERVER_URL || 'http://localhost:5173/';
-    mainWindow.loadURL(devUrl);
+  if (isDev && process.env.VITE_DEV_SERVER_URL) {
+    mainWindow.loadURL(process.env.VITE_DEV_SERVER_URL);
     mainWindow.webContents.openDevTools();
   } else {
-    mainWindow.loadFile(path.join(__dirname, '../renderer/index.html'));
+    const fs = require('fs');
+    const path1 = path.join(__dirname, '../renderer/index.html');
+    const path2 = path.join(__dirname, '../renderer/src/renderer/index.html');
+    
+    if (fs.existsSync(path1)) {
+      mainWindow.loadFile(path1);
+    } else if (fs.existsSync(path2)) {
+      mainWindow.loadFile(path2);
+    } else {
+      console.error('[Electron Window Error] Could not find index.html at:', path1, 'or', path2);
+    }
   }
+
 
   // Graceful visual fade-in
   mainWindow.once('ready-to-show', () => {

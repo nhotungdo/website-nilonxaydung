@@ -19,7 +19,7 @@ class InvoiceService {
     console.log(`[InvoiceService] Routing order ${order.orderCode} to printer: ${selectedPrinter.name} (${selectedPrinter.paper_size})`);
 
     // 2. Set local path to store physical PDF file
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = !app.isPackaged;
     const storageDir = isDev 
       ? path.resolve(__dirname, '../../../storage') 
       : path.join(app.getPath('userData'), 'storage');

@@ -3,6 +3,8 @@ import { z } from 'zod';
 import { sendTelegramMessage, escapeHTML } from "@/lib/telegram";
 import { VN_PHONE_REGEX, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
 import { rateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/ratelimit';
+import { prisma } from '@/lib/prisma';
+import { PrinterService } from '@/services/printer.service';
 
 const formSchema = z.object({
   fullName: z.string().min(1, 'Full Name is required').max(100),
@@ -48,11 +50,94 @@ export async function POST(req: Request) {
     }
     
     const { fullName, phone, email, company, product, quantity, message } = parsedData.data;
+    const phoneClean = phone.trim().replace(/\s/g, '');
     const now = new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' });
+    const orderCode = `BG-${Date.now()}`;
+    let createdOrderId: string | null = null;
 
-    const telegramMessage = `📦 <b>NEW QUOTE REQUEST</b>
+    // Save quote request to database for nilon-invoices app
+    try {
+      const order = await prisma.$transaction(async (tx) => {
+        let dbCustomer = await tx.customer.findUnique({
+          where: { phone: phoneClean }
+        });
+
+        if (!dbCustomer) {
+          dbCustomer = await tx.customer.create({
+            data: {
+              fullName,
+              phone: phoneClean,
+              address: company ? `Công ty: ${company}` : 'N/A',
+            }
+          });
+        }
+
+        const prodName = product || 'Nilon lót sàn xây dựng';
+        let dbProduct = await tx.product.findFirst({
+          where: { name: prodName }
+        });
+
+        if (!dbProduct) {
+          const sku = `SKU-QUOTE-${Date.now()}`;
+          dbProduct = await tx.product.create({
+            data: {
+              name: prodName,
+              sku,
+              price: 0,
+              stock: 999,
+            }
+          });
+        }
+
+        const qtyNum = parseInt(quantity.replace(/[^0-9]/g, ''), 10) || 1;
+        const noteText = [
+          company ? `Công ty: ${company}` : '',
+          quantity ? `Số lượng yêu cầu: ${quantity}` : '',
+          message ? `Ghi chú: ${message}` : ''
+        ].filter(Boolean).join(' | ');
+
+        const newOrder = await tx.order.create({
+          data: {
+            orderCode,
+            customerId: dbCustomer.id,
+            subtotal: 0,
+            shippingFee: 0,
+            total: 0,
+            paymentMethod: 'COD',
+            paymentStatus: 'pending',
+            orderStatus: 'pending',
+            printStatus: 'waiting',
+            note: noteText,
+            items: {
+              create: [
+                {
+                  productId: dbProduct.id,
+                  productName: `${prodName} (SL: ${quantity})`,
+                  price: 0,
+                  quantity: qtyNum,
+                  total: 0
+                }
+              ]
+            }
+          }
+        });
+
+        return newOrder;
+      });
+
+      createdOrderId = order.id;
+      console.log(`[DB] ✅ Saved quote request to database from QuoteForm: ${order.orderCode}`);
+
+      if (createdOrderId) {
+        await PrinterService.sendToPrinter(createdOrderId);
+      }
+    } catch (dbErr) {
+      console.error('[DB Save Quote Form Error]:', dbErr);
+    }
+
+    const telegramMessage = `📦 <b>NEW QUOTE REQUEST (#${orderCode})</b>
 👤 <b>Name:</b> ${escapeHTML(fullName)}
-📞 <b>Phone:</b> ${escapeHTML(phone)}
+📞 <b>Phone:</b> ${escapeHTML(phoneClean)}
 📧 <b>Email:</b> ${escapeHTML(email)}
 🏢 <b>Company:</b> ${escapeHTML(company || 'N/A')}
 🛒 <b>Product:</b> ${escapeHTML(product)}
@@ -72,7 +157,7 @@ ${escapeHTML(message)}
     }
 
     console.log('[Telegram API] 6. Success!');
-    return NextResponse.json({ success: true, message: 'Gửi thông tin thành công!' });
+    return NextResponse.json({ success: true, orderCode, message: 'Gửi thông tin thành công!' });
   } catch (error: unknown) {
     console.error('[Telegram API] Catch Error:', error);
     return NextResponse.json({ 

@@ -145,3 +145,13 @@ vite.config.ts.timestamp-*
 
 # Turbo
 .turbo/
+
+# Electron build & release outputs
+release/
+release-build/
+release-prod/
+dist/
+dist-test/
+*.exe
+*.blockmap
+

@@ -55,6 +55,9 @@ if (!isSingleInstance) {
     registerIpcHandlers();
     registerDatabaseIpcHandlers();
 
+    // 7. Setup Auto-Updater for automatic background updates
+    setupAutoUpdater();
+
     app.on('activate', () => {
       if (BrowserWindow.getAllWindows().length === 0) {
         createMainWindow();
@@ -62,6 +65,58 @@ if (!isSingleInstance) {
     });
   });
 }
+
+function setupAutoUpdater() {
+  if (!app.isPackaged) {
+    logger.info('[AutoUpdater] Skipped in development mode.');
+    return;
+  }
+
+  try {
+    const { autoUpdater } = require('electron-updater');
+    autoUpdater.logger = logger;
+    autoUpdater.autoDownload = true;
+    autoUpdater.autoInstallOnAppQuit = true;
+
+    autoUpdater.on('checking-for-update', () => {
+      logger.info('[AutoUpdater] Checking for updates...');
+    });
+
+    autoUpdater.on('update-available', (info: any) => {
+      logger.info(`[AutoUpdater] New update available: v${info.version}`);
+    });
+
+    autoUpdater.on('update-not-available', () => {
+      logger.info('[AutoUpdater] App is up to date.');
+    });
+
+    autoUpdater.on('error', (err: any) => {
+      logger.error(`[AutoUpdater] Error: ${err?.message || err}`);
+    });
+
+    autoUpdater.on('download-progress', (progressObj: any) => {
+      logger.info(`[AutoUpdater] Downloading: ${Math.round(progressObj.percent)}%`);
+    });
+
+    autoUpdater.on('update-downloaded', () => {
+      logger.info('[AutoUpdater] Update downloaded. Will install automatically on app restart.');
+    });
+
+    autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
+      logger.error('[AutoUpdater] Initial update check failed:', err?.message || err);
+    });
+
+    // Check for updates every 30 minutes
+    setInterval(() => {
+      autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
+        logger.error('[AutoUpdater] Periodic update check failed:', err?.message || err);
+      });
+    }, 30 * 60 * 1000);
+  } catch (err: any) {
+    logger.error('[AutoUpdater] Setup error:', err?.message || err);
+  }
+}
+
 
 // Windows auto-minimizing hooks
 app.on('window-all-closed', () => {

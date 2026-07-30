@@ -3,6 +3,7 @@ import path from 'path';
 import https from 'https';
 import http from 'http';
 import { URL } from 'url';
+import { app } from 'electron';
 
 class PdfService {
   constructor() {}
@@ -93,7 +94,7 @@ class PdfService {
       fs.mkdirSync(parentDir, { recursive: true });
     }
 
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = !app.isPackaged;
     const assetsDir = isDev
       ? path.resolve(__dirname, '../../../src/assets')
       : path.join(process.resourcesPath, 'src/assets');

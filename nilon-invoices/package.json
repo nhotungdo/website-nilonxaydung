@@ -63,6 +63,8 @@
     "files": [
       "dist/**/*",
       "storage/**/*",
+      "src/assets/**/*",
+      "build/**/*",
       "package.json"
     ],
     "asar": true,

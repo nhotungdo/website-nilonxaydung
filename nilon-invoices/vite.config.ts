@@ -5,6 +5,8 @@ import electron from 'vite-plugin-electron';
 import renderer from 'vite-plugin-electron-renderer';
 
 export default defineConfig({
+  root: path.resolve(__dirname, 'src/renderer'),
+  base: './',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -14,25 +16,14 @@ export default defineConfig({
     },
   },
   plugins: [
-    {
-      name: 'serve-renderer-index',
-      configureServer(server) {
-        server.middlewares.use((req, _res, next) => {
-          if (req.url === '/' || req.url === '/index.html') {
-            req.url = '/src/renderer/index.html';
-          }
-          next();
-        });
-      },
-    },
     react(),
     electron([
       {
         // Main process entry file of the Electron App.
-        entry: 'src/main/electron/main.ts',
+        entry: path.resolve(__dirname, 'src/main/electron/main.ts'),
         vite: {
           build: {
-            outDir: 'dist/main',
+            outDir: path.resolve(__dirname, 'dist/main'),
             minify: process.env.NODE_ENV === 'production',
             rollupOptions: {
               external: ['better-sqlite3', 'pdf-to-printer', 'bufferutil', 'utf-8-validate', 'pg', 'pg-native'],
@@ -44,14 +35,13 @@ export default defineConfig({
         },
       },
       {
-        entry: 'src/main/electron/preload.ts',
+        entry: path.resolve(__dirname, 'src/main/electron/preload.ts'),
         onstart(options) {
-          // Notify the Renderer-Process to reload the page when the Preload-Script build is complete.
           options.reload();
         },
         vite: {
           build: {
-            outDir: 'dist/main',
+            outDir: path.resolve(__dirname, 'dist/main'),
             minify: process.env.NODE_ENV === 'production',
             rollupOptions: {
               external: ['pg-native'],
@@ -63,20 +53,18 @@ export default defineConfig({
         },
       },
     ]),
-    // Enables Node.js integration inside the Renderer-Process.
-
+    renderer(),
   ],
   optimizeDeps: {
     exclude: ['pg-native'],
   },
   build: {
-    outDir: 'dist/renderer',
+    outDir: path.resolve(__dirname, 'dist/renderer'),
     emptyOutDir: true,
     rollupOptions: {
-      input: {
-        main: path.resolve(__dirname, 'src/renderer/index.html'),
-      },
+      input: path.resolve(__dirname, 'src/renderer/index.html'),
       external: ['pg-native'],
     },
   },
 });
+

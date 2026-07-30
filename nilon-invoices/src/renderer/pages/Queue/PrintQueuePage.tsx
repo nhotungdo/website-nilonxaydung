@@ -16,10 +16,13 @@ import { PageHeader } from '../../components/PageHeader';
 import { StatusBadge } from '../../components/StatusBadge';
 import { useQueueStore } from '../../stores/queueStore';
 import { usePrinterStore } from '../../stores/printerStore';
+import { useAuthStore } from '../../stores/authStore';
 import { useTranslation } from '../../locales';
 
 export const PrintQueuePage: React.FC = () => {
   const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   const { jobs, reprintJob, cancelJob, pauseQueue, resumeQueue, forcePrintJob } = useQueueStore();
   const printers = usePrinterStore((s) => s.printers);
 
@@ -111,13 +114,16 @@ export const PrintQueuePage: React.FC = () => {
                   <RotateCcw className="h-3 w-3" />
                   {t('buttons.retrySpool')}
                 </button>
-                <button
-                  onClick={() => forcePrintJob(job.id)}
-                  className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/20 text-emerald-400 flex items-center gap-1 transition-colors"
-                >
-                  <Zap className="h-3 w-3" />
-                  {t('buttons.forceSuccess')}
-                </button>
+                {isAdmin && (
+                  <button
+                    onClick={() => forcePrintJob(job.id)}
+                    className="px-2.5 py-1.5 rounded-lg text-[10px] font-bold bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/20 text-emerald-400 flex items-center gap-1 transition-colors"
+                    title="Chỉ Admin: Ép buộc trạng thái thành công"
+                  >
+                    <Zap className="h-3 w-3" />
+                    {t('buttons.forceSuccess')}
+                  </button>
+                )}
               </>
             ) : (
               <button
@@ -143,9 +149,13 @@ export const PrintQueuePage: React.FC = () => {
         subtitle={t('queue.subtitle')}
         actions={
           <button
-            onClick={handlePauseToggle}
+            onClick={isAdmin ? handlePauseToggle : undefined}
+            disabled={!isAdmin}
+            title={!isAdmin ? '🔒 Chỉ Admin mới có quyền tạm dừng hàng đợi hệ thống' : undefined}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
-              isQueuePaused 
+              !isAdmin
+                ? 'bg-slate-800 border border-white/5 text-slate-500 cursor-not-allowed'
+                : isQueuePaused 
                 ? 'bg-emerald-600/10 hover:bg-emerald-600/20 border border-emerald-500/20 text-emerald-400' 
                 : 'bg-amber-600/10 hover:bg-amber-600/20 border border-amber-500/20 text-amber-400'
             }`}

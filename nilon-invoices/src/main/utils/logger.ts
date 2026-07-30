@@ -7,7 +7,7 @@ class Logger {
 
   constructor() {
     let storageDir = '';
-    const isDev = process.env.NODE_ENV !== 'production';
+    const isDev = !app.isPackaged;
 
     try {
       if (isDev) {

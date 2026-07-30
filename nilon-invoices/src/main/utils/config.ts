@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import { app } from 'electron';
 import { logger } from './logger';
 
 // Explicitly load .env file from project root
@@ -15,15 +16,16 @@ if (fs.existsSync(envPath)) {
 
 export const config = {
   db: {
-    host: process.env.DB_HOST || 'localhost',
-    port: parseInt(process.env.DB_PORT || '5432', 10),
-    name: process.env.DB_NAME || 'nilon-invoices',
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || '123456',
-    url: process.env.DATABASE_URL || 'postgresql://postgres:123456@localhost:5432/nilon-invoices'
+    host: process.env.DB_HOST || 'aws-0-ap-southeast-1.pooler.supabase.com',
+    port: parseInt(process.env.DB_PORT || '6543', 10),
+    name: process.env.DB_NAME || 'postgres',
+    user: process.env.DB_USER || 'postgres.wtezillfvsdkjfctrimi',
+    password: process.env.DB_PASSWORD || 'Donhotung2004',
+    url: process.env.DATABASE_URL || 'postgresql://postgres.wtezillfvsdkjfctrimi:Donhotung2004@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres'
   },
-  isDev: process.env.NODE_ENV !== 'production'
+  isDev: !app.isPackaged
 };
+
 
 // Strict check assertions
 export const assertConfigIsValid = (): void => {

@@ -8,6 +8,7 @@ export const Topbar: React.FC = () => {
   const location = useLocation();
   const { pauseQueue, resumeQueue } = useQueueStore();
   const user = useAuthStore((s) => s.user);
+  const isAdmin = user?.role === 'admin';
   
   const [isPaused, setIsPaused] = useState(false);
   const [currentDateText, setCurrentDateText] = useState('');
@@ -82,11 +83,15 @@ export const Topbar: React.FC = () => {
 
         {/* Pause/Resume Printing Button */}
         <button
-          onClick={handleTogglePause}
-          className={`px-4 py-2 text-[11px] font-bold rounded-lg text-white transition-all shadow-sm ${
-            isPaused 
-              ? 'bg-amber-600 hover:bg-amber-700 shadow-amber-500/10' 
-              : 'bg-[#005B52] hover:bg-[#004D44] shadow-[#005B52]/10'
+          onClick={isAdmin ? handleTogglePause : undefined}
+          disabled={!isAdmin}
+          title={!isAdmin ? '🔒 Chỉ Admin mới có quyền tạm dừng hệ thống in' : undefined}
+          className={`px-4 py-2 text-[11px] font-bold rounded-lg transition-all shadow-sm ${
+            !isAdmin 
+              ? 'bg-slate-100 text-slate-400 cursor-not-allowed shadow-none border border-slate-200'
+              : isPaused 
+              ? 'bg-amber-600 hover:bg-amber-700 text-white shadow-amber-500/10' 
+              : 'bg-[#005B52] hover:bg-[#004D44] text-white shadow-[#005B52]/10'
           }`}
         >
           {isPaused ? 'Tiếp tục in' : 'Tạm dừng in'}
