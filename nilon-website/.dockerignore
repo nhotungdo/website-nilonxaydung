@@ -1,10 +1,11 @@
+Dockerfile
+.dockerignore
 node_modules
 .next
 .git
 .gitignore
-.dockerignore
-Dockerfile
-docker-compose.yml
 README.md
-npm-debug.log
-lint_results.txt
+.env*.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

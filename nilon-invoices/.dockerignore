@@ -1,0 +1,15 @@
+Dockerfile
+.dockerignore
+node_modules
+dist
+release
+release-build
+release-prod
+storage/sqlite
+storage/logs
+storage/pdf
+.git
+.gitignore
+README.md
+.env.local
+npm-debug.log*

@@ -7,5 +7,6 @@
     "**/release*/**": true,
     "**/dist/**": true
   },
-  "search.useIgnoreFiles": true
+  "search.useIgnoreFiles": true,
+  "cmake.sourceDirectory": "F:/OJT-Review/website-nilonxaydung/nilon-invoices-app/windows"
 }

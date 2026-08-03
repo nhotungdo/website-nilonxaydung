@@ -154,4 +154,7 @@ dist/
 dist-test/
 *.exe
 *.blockmap
+*.zip
+release.zip
+
 

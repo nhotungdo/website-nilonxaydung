@@ -114,12 +114,82 @@ CREATE TABLE IF NOT EXISTS printer_logs (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
+-- 10. Table: inventory_items
+CREATE TABLE IF NOT EXISTS inventory_items (
+  id              VARCHAR(100) PRIMARY KEY,
+  sku             VARCHAR(100) UNIQUE NOT NULL,
+  name            VARCHAR(255) NOT NULL,
+  category        VARCHAR(100) NOT NULL,
+  unit            VARCHAR(50) NOT NULL DEFAULT 'Cuộn',
+  current_stock   NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  min_stock_alert NUMERIC(15, 2) NOT NULL DEFAULT 10,
+  import_price    NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  selling_price   NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  specs           TEXT,
+  location        VARCHAR(255),
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  last_updated    TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 11. Table: stock_in_receipts
+CREATE TABLE IF NOT EXISTS stock_in_receipts (
+  id           VARCHAR(100) PRIMARY KEY,
+  receipt_code VARCHAR(100) UNIQUE NOT NULL,
+  product_id   VARCHAR(100) NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name VARCHAR(255) NOT NULL,
+  quantity     NUMERIC(15, 2) NOT NULL,
+  unit         VARCHAR(50) NOT NULL,
+  import_price NUMERIC(15, 2) NOT NULL,
+  total_amount NUMERIC(15, 2) NOT NULL,
+  batch_code   VARCHAR(100) NOT NULL,
+  supplier     VARCHAR(255),
+  notes        TEXT,
+  created_at   TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  created_by   VARCHAR(255) NOT NULL DEFAULT 'Staff'
+);
+
+-- 12. Table: daily_production_logs
+CREATE TABLE IF NOT EXISTS daily_production_logs (
+  id                  VARCHAR(100) PRIMARY KEY,
+  production_date     DATE NOT NULL DEFAULT CURRENT_DATE,
+  shift               VARCHAR(100) NOT NULL,
+  machine_id          VARCHAR(100) NOT NULL,
+  operator_name       VARCHAR(255) NOT NULL,
+  product_id          VARCHAR(100) NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name        VARCHAR(255) NOT NULL,
+  produced_quantity   NUMERIC(15, 2) NOT NULL,
+  waste_quantity      NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  unit                VARCHAR(50) NOT NULL,
+  auto_added_to_stock BOOLEAN NOT NULL DEFAULT TRUE,
+  notes               TEXT,
+  created_at          TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 13. Table: inventory_transactions
+CREATE TABLE IF NOT EXISTS inventory_transactions (
+  id              VARCHAR(100) PRIMARY KEY,
+  type            VARCHAR(50) NOT NULL CHECK (type IN ('STOCK_IN', 'PRODUCTION_ADD', 'STOCK_OUT', 'ADJUSTMENT')),
+  product_id      VARCHAR(100) NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name    VARCHAR(255) NOT NULL,
+  quantity_change NUMERIC(15, 2) NOT NULL,
+  balance_after   NUMERIC(15, 2) NOT NULL,
+  reference_code  VARCHAR(100) NOT NULL,
+  notes           TEXT,
+  created_at      TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  created_by      VARCHAR(255) NOT NULL DEFAULT 'Staff'
+);
+
 -- Create optimization indexes (IF NOT EXISTS to be idempotent)
 CREATE INDEX IF NOT EXISTS idx_orders_created_at ON orders(created_at);
 CREATE INDEX IF NOT EXISTS idx_orders_print_status ON orders(print_status);
 CREATE INDEX IF NOT EXISTS idx_print_jobs_status ON print_jobs(status);
 CREATE INDEX IF NOT EXISTS idx_printer_logs_created_at ON printer_logs(created_at);
+CREATE INDEX IF NOT EXISTS idx_inventory_items_sku ON inventory_items(sku);
+CREATE INDEX IF NOT EXISTS idx_stock_in_receipts_created ON stock_in_receipts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_daily_production_date ON daily_production_logs(production_date DESC);
+CREATE INDEX IF NOT EXISTS idx_inventory_tx_created ON inventory_transactions(created_at DESC);
 `;
+
 
 export const runMigrations = async (): Promise<void> => {
   logger.info('[Migration] Running schema migrations on Supabase PostgreSQL...');

@@ -33,7 +33,9 @@ export const vi = {
     autoprint: 'TỰ ĐỘNG IN',
     dashboard: 'Bảng điều khiển',
     realtimeOrders: 'Đơn hàng thời gian thực',
+    inventory: 'Trong kho & Sản xuất',
     printQueue: 'Hàng đợi in',
+
     printers: 'Máy in',
     invoicePreview: 'Xem trước hóa đơn',
     orderHistory: 'Lịch sử đơn hàng',

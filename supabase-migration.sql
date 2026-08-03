@@ -1,4 +1,4 @@
-﻿-- ================================================================
+-- ================================================================
 --  NILON XAY DUNG - Supabase Schema Migration
 --  Project ID : wtezillfvsdkjfctrimi
 --  CACH CHAY: https://supabase.com/dashboard/project/wtezillfvsdkjfctrimi/sql/new
@@ -132,20 +132,150 @@ CREATE INDEX IF NOT EXISTS idx_print_jobs_order_id  ON print_jobs(order_id);
 CREATE INDEX IF NOT EXISTS idx_printer_logs_created ON printer_logs(created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_customers_phone      ON customers(phone);
 
--- ROW LEVEL SECURITY - Tat de backend toan quyen truy cap
-ALTER TABLE users           DISABLE ROW LEVEL SECURITY;
-ALTER TABLE customers       DISABLE ROW LEVEL SECURITY;
-ALTER TABLE products        DISABLE ROW LEVEL SECURITY;
-ALTER TABLE orders          DISABLE ROW LEVEL SECURITY;
-ALTER TABLE order_items     DISABLE ROW LEVEL SECURITY;
-ALTER TABLE printers        DISABLE ROW LEVEL SECURITY;
-ALTER TABLE print_jobs      DISABLE ROW LEVEL SECURITY;
-ALTER TABLE failed_jobs     DISABLE ROW LEVEL SECURITY;
-ALTER TABLE app_settings    DISABLE ROW LEVEL SECURITY;
-ALTER TABLE printer_logs    DISABLE ROW LEVEL SECURITY;
+-- ROW LEVEL SECURITY - Bat RLS va phan quyen full policy (Xoa 14 Supabase Lint Errors)
+ALTER TABLE users           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE customers       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE products        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE orders          ENABLE ROW LEVEL SECURITY;
+ALTER TABLE order_items     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE printers        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE print_jobs      ENABLE ROW LEVEL SECURITY;
+ALTER TABLE failed_jobs     ENABLE ROW LEVEL SECURITY;
+ALTER TABLE app_settings    ENABLE ROW LEVEL SECURITY;
+ALTER TABLE printer_logs    ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "policy_users_all" ON users;
+CREATE POLICY "policy_users_all" ON users FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_customers_all" ON customers;
+CREATE POLICY "policy_customers_all" ON customers FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_products_all" ON products;
+CREATE POLICY "policy_products_all" ON products FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_orders_all" ON orders;
+CREATE POLICY "policy_orders_all" ON orders FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_order_items_all" ON order_items;
+CREATE POLICY "policy_order_items_all" ON order_items FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_printers_all" ON printers;
+CREATE POLICY "policy_printers_all" ON printers FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_print_jobs_all" ON print_jobs;
+CREATE POLICY "policy_print_jobs_all" ON print_jobs FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_failed_jobs_all" ON failed_jobs;
+CREATE POLICY "policy_failed_jobs_all" ON failed_jobs FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_app_settings_all" ON app_settings;
+CREATE POLICY "policy_app_settings_all" ON app_settings FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_printer_logs_all" ON printer_logs;
+CREATE POLICY "policy_printer_logs_all" ON printer_logs FOR ALL USING (true) WITH CHECK (true);
+
 
 -- REALTIME cho orders (Flutter app)
-ALTER PUBLICATION supabase_realtime ADD TABLE orders;
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_publication_tables
+    WHERE pubname = 'supabase_realtime' AND tablename = 'orders'
+  ) THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE orders;
+  END IF;
+END $$;
+
+
+-- BANG 11: inventory_items
+CREATE TABLE IF NOT EXISTS inventory_items (
+  id              VARCHAR(100)   PRIMARY KEY,
+  sku             VARCHAR(100)   UNIQUE NOT NULL,
+  name            VARCHAR(255)   NOT NULL,
+  category        VARCHAR(100)   NOT NULL,
+  unit            VARCHAR(50)    NOT NULL DEFAULT 'Cuộn',
+  current_stock   NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  min_stock_alert NUMERIC(15, 2) NOT NULL DEFAULT 10,
+  import_price    NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  selling_price   NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  specs           TEXT,
+  location        VARCHAR(255),
+  created_at      TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  last_updated    TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- BANG 12: stock_in_receipts
+CREATE TABLE IF NOT EXISTS stock_in_receipts (
+  id           VARCHAR(100)   PRIMARY KEY,
+  receipt_code VARCHAR(100)   UNIQUE NOT NULL,
+  product_id   VARCHAR(100)   NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name VARCHAR(255)   NOT NULL,
+  quantity     NUMERIC(15, 2) NOT NULL,
+  unit         VARCHAR(50)    NOT NULL,
+  import_price NUMERIC(15, 2) NOT NULL,
+  total_amount NUMERIC(15, 2) NOT NULL,
+  batch_code   VARCHAR(100)   NOT NULL,
+  supplier     VARCHAR(255),
+  notes        TEXT,
+  created_at   TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_by   VARCHAR(255)   NOT NULL DEFAULT 'Staff'
+);
+
+-- BANG 13: daily_production_logs
+CREATE TABLE IF NOT EXISTS daily_production_logs (
+  id                  VARCHAR(100)   PRIMARY KEY,
+  production_date     DATE           NOT NULL DEFAULT CURRENT_DATE,
+  shift               VARCHAR(100)   NOT NULL,
+  machine_id          VARCHAR(100)   NOT NULL,
+  operator_name       VARCHAR(255)   NOT NULL,
+  product_id          VARCHAR(100)   NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name        VARCHAR(255)   NOT NULL,
+  produced_quantity   NUMERIC(15, 2) NOT NULL,
+  waste_quantity      NUMERIC(15, 2) NOT NULL DEFAULT 0,
+  unit                VARCHAR(50)    NOT NULL,
+  auto_added_to_stock BOOLEAN        NOT NULL DEFAULT TRUE,
+  notes               TEXT,
+  created_at          TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- BANG 14: inventory_transactions
+CREATE TABLE IF NOT EXISTS inventory_transactions (
+  id              VARCHAR(100)   PRIMARY KEY,
+  type            VARCHAR(50)    NOT NULL CHECK (type IN ('STOCK_IN', 'PRODUCTION_ADD', 'STOCK_OUT', 'ADJUSTMENT')),
+  product_id      VARCHAR(100)   NOT NULL REFERENCES inventory_items(id) ON DELETE CASCADE,
+  product_name    VARCHAR(255)   NOT NULL,
+  quantity_change NUMERIC(15, 2) NOT NULL,
+  balance_after   NUMERIC(15, 2) NOT NULL,
+  reference_code  VARCHAR(100)   NOT NULL,
+  notes           TEXT,
+  created_at      TIMESTAMPTZ    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  created_by      VARCHAR(255)   NOT NULL DEFAULT 'Staff'
+);
+
+-- INDEXES INVENTORY
+CREATE INDEX IF NOT EXISTS idx_inventory_items_sku       ON inventory_items(sku);
+CREATE INDEX IF NOT EXISTS idx_stock_in_receipts_created ON stock_in_receipts(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_daily_production_date    ON daily_production_logs(production_date DESC);
+CREATE INDEX IF NOT EXISTS idx_inventory_tx_created      ON inventory_transactions(created_at DESC);
+
+-- ROW LEVEL SECURITY FOR INVENTORY (ENABLE RLS & POLICIES TO FIX LINT ERRORS)
+ALTER TABLE inventory_items         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE stock_in_receipts       ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_production_logs   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE inventory_transactions ENABLE ROW LEVEL SECURITY;
+
+DROP POLICY IF EXISTS "policy_inventory_items_all" ON inventory_items;
+CREATE POLICY "policy_inventory_items_all" ON inventory_items FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_stock_in_receipts_all" ON stock_in_receipts;
+CREATE POLICY "policy_stock_in_receipts_all" ON stock_in_receipts FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_daily_production_logs_all" ON daily_production_logs;
+CREATE POLICY "policy_daily_production_logs_all" ON daily_production_logs FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "policy_inventory_transactions_all" ON inventory_transactions;
+CREATE POLICY "policy_inventory_transactions_all" ON inventory_transactions FOR ALL USING (true) WITH CHECK (true);
+
 
 -- SEED DATA
 INSERT INTO users (id, username, password_hash, role, is_active)
@@ -164,9 +294,18 @@ INSERT INTO printers (id, name, paper_size, connection_type, ip_address, is_defa
   ('PRN-05', 'Auxiliary Backup XP-58',       'K58', 'WIFI', '192.168.1.202', FALSE, FALSE)
 ON CONFLICT (id) DO NOTHING;
 
+-- SEED DATA INVENTORY
+INSERT INTO inventory_items (id, sku, name, category, unit, current_stock, min_stock_alert, import_price, selling_price, specs, location) VALUES
+  ('PROD-001', 'PE-LOT-005', 'Nilon Lót Sàn PE Trắng Trẻo 0.05mm', 'Nilon Lót Sàn PE', 'Cuộn', 145, 30, 320000, 450000, 'Khổ 2m x 400m x 0.05mm', 'Kho A - Kệ 01'),
+  ('PROD-002', 'PE-LOT-010', 'Nilon Lót Sàn PE Trắng Đục 0.10mm',  'Nilon Lót Sàn PE', 'Cuộn', 82,  25, 580000, 780000, 'Khổ 2m x 200m x 0.10mm', 'Kho A - Kệ 02'),
+  ('PROD-003', 'PE-DEN-008', 'Nilon Đen Che Phủ Công Trình 0.08mm', 'Nilon Đen Công Trình', 'Cuộn', 18, 20, 410000, 590000, 'Khổ 2m x 300m (Tái sinh)', 'Kho B - Kệ 01'),
+  ('PROD-004', 'BAT-SOC-3M', 'Bạt Sọc 3 Màu Che Nắng Mưa Khổ 4m',  'Bạt Dứa / Bạt Sọc',   'Cuộn', 64, 15, 850000, 1150000, 'Khổ 4m x 50m (Bạt dứa 3 sọc)', 'Kho B - Kệ 04')
+ON CONFLICT (id) DO NOTHING;
+
 -- KIEM TRA - Xem ket qua
 SELECT table_name AS "Ten bang", 'OK' AS "Trang thai"
 FROM information_schema.tables
 WHERE table_schema = 'public' AND table_type = 'BASE TABLE'
-  AND table_name IN ('users','customers','products','orders','order_items','printers','print_jobs','failed_jobs','app_settings','printer_logs')
+  AND table_name IN ('users','customers','products','orders','order_items','printers','print_jobs','failed_jobs','app_settings','printer_logs','inventory_items','stock_in_receipts','daily_production_logs','inventory_transactions')
 ORDER BY table_name;
+

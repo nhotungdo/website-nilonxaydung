@@ -13,7 +13,8 @@ import {
   Activity,
   AlertTriangle,
   Settings,
-  HelpCircle
+  HelpCircle,
+  Boxes
 } from 'lucide-react';
 import { useAuthStore } from '../stores/authStore';
 
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
   const menuItems = [
     { name: 'Bảng điều khiển', path: '/dashboard', icon: <LayoutDashboard className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
     { name: 'Đơn hàng realtime', path: '/orders', icon: <TrendingUp className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
+    { name: 'Trong kho & Sản xuất', path: '/inventory', icon: <Boxes className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
     { name: 'Hàng đợi in', path: '/queue', icon: <Layers className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
     { name: 'Máy in & Trạng thái', path: '/printers', icon: <Printer className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
     { name: 'Lịch sử đơn hàng', path: '/history', icon: <History className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
@@ -45,6 +47,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
     { name: 'Cài đặt hệ thống', path: '/settings', icon: <Settings className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] },
     { name: 'Hỗ trợ kỹ thuật', path: '/support', icon: <HelpCircle className="h-[18px] w-[18px]" />, roles: ['admin', 'staff'] }
   ].filter(item => item.roles.includes(currentRole));
+
 
   return (
     <>

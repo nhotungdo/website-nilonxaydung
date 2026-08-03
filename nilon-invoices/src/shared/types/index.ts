@@ -76,3 +76,6 @@ export interface IOrderPayload {
   }>;
   createdAt: string;
 }
+
+export * from './inventory';
+

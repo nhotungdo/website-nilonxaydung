@@ -11,6 +11,7 @@ import { InvoicePreviewPage } from '../pages/Preview/InvoicePreviewPage';
 import { OrderHistoryPage } from '../pages/History/OrderHistoryPage';
 import { SettingsPage } from '../pages/Settings/SettingsPage';
 import { SupportPage } from '../pages/Support/SupportPage';
+import { InventoryPage } from '../pages/Inventory/InventoryPage';
 import { useAuthStore } from '../stores/authStore';
 
 // Main authentication guard
@@ -60,6 +61,7 @@ export const AppRouter: React.FC = () => {
         >
           <Route path="dashboard" element={<RoleRoute allowedRoles={['admin', 'staff']}><DashboardPage /></RoleRoute>} />
           <Route path="orders" element={<RoleRoute allowedRoles={['admin', 'staff']}><RealtimeOrdersPage /></RoleRoute>} />
+          <Route path="inventory" element={<RoleRoute allowedRoles={['admin', 'staff']}><InventoryPage /></RoleRoute>} />
           <Route path="queue" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintQueuePage /></RoleRoute>} />
           <Route path="printers" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintersPage /></RoleRoute>} />
           <Route path="history" element={<RoleRoute allowedRoles={['admin', 'staff']}><OrderHistoryPage /></RoleRoute>} />
@@ -67,6 +69,7 @@ export const AppRouter: React.FC = () => {
           <Route path="settings" element={<RoleRoute allowedRoles={['admin', 'staff']}><SettingsPage /></RoleRoute>} />
           <Route path="support" element={<RoleRoute allowedRoles={['admin', 'staff']}><SupportPage /></RoleRoute>} />
         </Route>
+
 
         {/* Fallback Redirection */}
         <Route path="*" element={<Navigate to="/" replace />} />
