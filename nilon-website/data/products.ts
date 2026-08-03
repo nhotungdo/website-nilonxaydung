@@ -4,6 +4,7 @@ export interface Product {
   slug: string;
   description?: string;
   image: string;
+  images?: string[];
   price: number;
   unit: string;
   category: string;
@@ -80,7 +81,13 @@ export const PRODUCTS: Product[] = [
     category: "nilon-lot-san-be-tong",
     categorySlug: "nilon-lot-san-be-tong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2070&auto=format&fit=crop",
+    image: "/images/products/nilon-lot-san-2zem/img_1.jpg",
+    images: [
+      "/images/products/nilon-lot-san-2zem/img_1.jpg",
+      "/images/products/nilon-lot-san-2zem/img_2.jpg",
+      "/images/products/nilon-lot-san-2zem/img_3.jpg",
+      "/images/products/nilon-lot-san-2zem/img_4.jpg"
+    ],
     description: "Độ dày tiết kiệm, phù hợp cho lót nền đổ bê tông dân dụng, lót chống thấm nền móng công trình.",
     price: 850000,
     unit: "Cuộn",
@@ -99,7 +106,13 @@ export const PRODUCTS: Product[] = [
     category: "nilon-lot-san-be-tong",
     categorySlug: "nilon-lot-san-be-tong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1621905252507-b35492cc74b4?q=80&w=2069&auto=format&fit=crop",
+    image: "/images/products/nilon-lot-san-4zem/img_1.jpg",
+    images: [
+      "/images/products/nilon-lot-san-4zem/img_1.jpg",
+      "/images/products/nilon-lot-san-4zem/img_2.jpg",
+      "/images/products/nilon-lot-san-4zem/img_3.jpg",
+      "/images/products/nilon-lot-san-4zem/img_4.jpg"
+    ],
     description: "Độ bền cao, chịu lực xé tốt. Chuyên dùng cho các dự án hạ tầng, đường giao thông, nhà xưởng quy mô lớn.",
     price: 1150000,
     unit: "Cuộn",
@@ -118,7 +131,13 @@ export const PRODUCTS: Product[] = [
     category: "nilon-lot-san-be-tong",
     categorySlug: "nilon-lot-san-be-tong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1590486803833-1c5dc8ddd4c8?q=80&w=1974&auto=format&fit=crop",
+    image: "/images/products/nilon-lot-san-6zem/img_1.jpg",
+    images: [
+      "/images/products/nilon-lot-san-6zem/img_1.jpg",
+      "/images/products/nilon-lot-san-6zem/img_2.jpg",
+      "/images/products/nilon-lot-san-6zem/img_3.jpg",
+      "/images/products/nilon-lot-san-6zem/img_4.jpg"
+    ],
     description: "Độ dày vượt trội, chống thấm tuyệt đối và chống xé rách cực tốt. Dùng cho công trình đặc thù cao cấp.",
     price: 1650000,
     unit: "Cuộn",
@@ -138,7 +157,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-dau",
-    image: "https://images.unsplash.com/photo-1513467535987-fd81bc7d62f8?q=80&w=800",
+    image: "/images/products/mu-bao-ho-cong-trinh/img_1.jpg",
+    images: [
+      "/images/products/mu-bao-ho-cong-trinh/img_1.jpg",
+      "/images/products/mu-bao-ho-cong-trinh/img_2.jpg",
+      "/images/products/mu-bao-ho-cong-trinh/img_3.jpg",
+      "/images/products/mu-bao-ho-cong-trinh/img_4.jpg"
+    ],
     description: "Mũ bảo hộ chất lượng cao, chịu lực tốt.",
     price: 45000,
     unit: "Cái",
@@ -151,7 +176,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-dau",
-    image: "https://images.unsplash.com/photo-1542385151-efd9000785a0?q=80&w=800",
+    image: "/images/products/non-bao-ho-cach-dien/img_1.jpg",
+    images: [
+      "/images/products/non-bao-ho-cach-dien/img_1.jpg",
+      "/images/products/non-bao-ho-cach-dien/img_2.jpg",
+      "/images/products/non-bao-ho-cach-dien/img_3.jpg",
+      "/images/products/non-bao-ho-cach-dien/img_4.jpg"
+    ],
     description: "Chống phóng điện, an toàn cho thợ điện.",
     price: 120000,
     unit: "Cái",
@@ -164,7 +195,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-dau",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/mu-chong-va-dap/img_1.jpg",
+    images: [
+      "/images/products/mu-chong-va-dap/img_1.jpg",
+      "/images/products/mu-chong-va-dap/img_2.jpg",
+      "/images/products/mu-chong-va-dap/img_3.jpg",
+      "/images/products/mu-chong-va-dap/img_4.jpg"
+    ],
     description: "Nhẹ nhàng, bảo vệ tối ưu.",
     price: 35000,
     unit: "Cái",
@@ -177,7 +214,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-dau",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/kinh-gan-mu-bao-ho/img_1.jpg",
+    images: [
+      "/images/products/kinh-gan-mu-bao-ho/img_1.jpg",
+      "/images/products/kinh-gan-mu-bao-ho/img_2.jpg",
+      "/images/products/kinh-gan-mu-bao-ho/img_3.jpg",
+      "/images/products/kinh-gan-mu-bao-ho/img_4.jpg"
+    ],
     description: "Chống bụi, chống tia UV.",
     price: 25000,
     unit: "Cái",
@@ -192,7 +235,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-tay",
-    image: "https://images.unsplash.com/photo-1581092160562-40aa08e78837?q=80&w=800",
+    image: "/images/products/gang-tay-soi/img_1.jpg",
+    images: [
+      "/images/products/gang-tay-soi/img_1.jpg",
+      "/images/products/gang-tay-soi/img_2.jpg",
+      "/images/products/gang-tay-soi/img_3.jpg",
+      "/images/products/gang-tay-soi/img_4.jpg"
+    ],
     price: 5000,
     unit: "Đôi",
     specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
@@ -204,7 +253,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/gang-tay-phu-cao-su/img_1.jpg",
+    images: [
+      "/images/products/gang-tay-phu-cao-su/img_1.jpg",
+      "/images/products/gang-tay-phu-cao-su/img_2.jpg",
+      "/images/products/gang-tay-phu-cao-su/img_3.jpg",
+      "/images/products/gang-tay-phu-cao-su/img_4.jpg"
+    ],
     price: 15000,
     unit: "Đôi",
     specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
@@ -216,7 +271,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/gang-tay-chong-cat/img_1.jpg",
+    images: [
+      "/images/products/gang-tay-chong-cat/img_1.jpg",
+      "/images/products/gang-tay-chong-cat/img_2.jpg",
+      "/images/products/gang-tay-chong-cat/img_3.jpg",
+      "/images/products/gang-tay-chong-cat/img_4.jpg"
+    ],
     price: 85000,
     unit: "Đôi",
     specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
@@ -228,7 +289,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/gang-tay-han/img_1.jpg",
+    images: [
+      "/images/products/gang-tay-han/img_1.jpg",
+      "/images/products/gang-tay-han/img_2.jpg",
+      "/images/products/gang-tay-han/img_3.jpg",
+      "/images/products/gang-tay-han/img_4.jpg"
+    ],
     price: 75000,
     unit: "Đôi",
     specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
@@ -240,7 +307,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/gang-tay-cach-dien/img_1.jpg",
+    images: [
+      "/images/products/gang-tay-cach-dien/img_1.jpg",
+      "/images/products/gang-tay-cach-dien/img_2.jpg",
+      "/images/products/gang-tay-cach-dien/img_3.jpg",
+      "/images/products/gang-tay-cach-dien/img_4.jpg"
+    ],
     price: 250000,
     unit: "Đôi",
     specs: [{"label":"Chất liệu","value":"Sợi Cotton / Sợi Poly / Cao su"},{"label":"Kích cỡ","value":"Free size"},{"label":"Tính năng","value":"Chống cắt, chống trơn trượt, bảo vệ tay"}],
@@ -254,7 +327,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-chan",
-    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    image: "/images/products/giay-bao-ho/img_1.jpg",
+    images: [
+      "/images/products/giay-bao-ho/img_1.jpg",
+      "/images/products/giay-bao-ho/img_2.jpg",
+      "/images/products/giay-bao-ho/img_3.jpg",
+      "/images/products/giay-bao-ho/img_4.jpg"
+    ],
     price: 350000,
     unit: "Đôi",
     specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
@@ -266,7 +345,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-chan",
-    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    image: "/images/products/ung-bao-ho/img_1.jpg",
+    images: [
+      "/images/products/ung-bao-ho/img_1.jpg",
+      "/images/products/ung-bao-ho/img_2.jpg",
+      "/images/products/ung-bao-ho/img_3.jpg",
+      "/images/products/ung-bao-ho/img_4.jpg"
+    ],
     price: 85000,
     unit: "Đôi",
     specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
@@ -278,7 +363,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-chan",
-    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    image: "/images/products/giay-chong-tinh-dien/img_1.jpg",
+    images: [
+      "/images/products/giay-chong-tinh-dien/img_1.jpg",
+      "/images/products/giay-chong-tinh-dien/img_2.jpg",
+      "/images/products/giay-chong-tinh-dien/img_3.jpg",
+      "/images/products/giay-chong-tinh-dien/img_4.jpg"
+    ],
     price: 450000,
     unit: "Đôi",
     specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
@@ -290,7 +381,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "bao-ho-chan",
-    image: "https://images.unsplash.com/photo-1509048191080-d2984bad6ae5?q=80&w=800",
+    image: "/images/products/giay-chong-dinh/img_1.jpg",
+    images: [
+      "/images/products/giay-chong-dinh/img_1.jpg",
+      "/images/products/giay-chong-dinh/img_2.jpg",
+      "/images/products/giay-chong-dinh/img_3.jpg",
+      "/images/products/giay-chong-dinh/img_4.jpg"
+    ],
     price: 550000,
     unit: "Đôi",
     specs: [{"label":"Mũi giày","value":"Lót thép chống dập ngón"},{"label":"Đế giày","value":"Lót thép chống đinh, chống trơn trượt"},{"label":"Chất liệu","value":"Da công nghiệp / Da thật / Nhựa"},{"label":"Tiêu chuẩn","value":"Tiêu chuẩn an toàn CE S3"}],
@@ -304,7 +401,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "quan-ao-bao-ho",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/dong-phuc-cong-nhan/img_1.jpg",
+    images: [
+      "/images/products/dong-phuc-cong-nhan/img_1.jpg",
+      "/images/products/dong-phuc-cong-nhan/img_2.jpg",
+      "/images/products/dong-phuc-cong-nhan/img_3.jpg",
+      "/images/products/dong-phuc-cong-nhan/img_4.jpg"
+    ],
     price: 180000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
@@ -316,7 +419,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "quan-ao-bao-ho",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/quan-ao-phan-quang/img_1.jpg",
+    images: [
+      "/images/products/quan-ao-phan-quang/img_1.jpg",
+      "/images/products/quan-ao-phan-quang/img_2.jpg",
+      "/images/products/quan-ao-phan-quang/img_3.jpg",
+      "/images/products/quan-ao-phan-quang/img_4.jpg"
+    ],
     price: 45000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
@@ -328,7 +437,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "quan-ao-bao-ho",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/quan-ao-chong-hoa-chat/img_1.jpg",
+    images: [
+      "/images/products/quan-ao-chong-hoa-chat/img_1.jpg",
+      "/images/products/quan-ao-chong-hoa-chat/img_2.jpg",
+      "/images/products/quan-ao-chong-hoa-chat/img_3.jpg",
+      "/images/products/quan-ao-chong-hoa-chat/img_4.jpg"
+    ],
     price: 250000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
@@ -340,7 +455,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "quan-ao-bao-ho",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/quan-ao-phong-sach/img_1.jpg",
+    images: [
+      "/images/products/quan-ao-phong-sach/img_1.jpg",
+      "/images/products/quan-ao-phong-sach/img_2.jpg",
+      "/images/products/quan-ao-phong-sach/img_3.jpg",
+      "/images/products/quan-ao-phong-sach/img_4.jpg"
+    ],
     price: 120000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
@@ -352,7 +473,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "quan-ao-bao-ho",
-    image: "https://images.unsplash.com/photo-1599839619722-39751411ea63?q=80&w=800",
+    image: "/images/products/ao-mua-cong-trinh/img_1.jpg",
+    images: [
+      "/images/products/ao-mua-cong-trinh/img_1.jpg",
+      "/images/products/ao-mua-cong-trinh/img_2.jpg",
+      "/images/products/ao-mua-cong-trinh/img_3.jpg",
+      "/images/products/ao-mua-cong-trinh/img_4.jpg"
+    ],
     price: 65000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Vải Kaki / Pangrim Hàn Quốc / Nilon"},{"label":"Size","value":"S, M, L, XL, XXL"},{"label":"Đặc điểm","value":"Đường may chắc chắn, thấm hút mồ hôi tốt"}],
@@ -366,7 +493,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-chong-roi",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/day-dai-an-toan/img_1.jpg",
+    images: [
+      "/images/products/day-dai-an-toan/img_1.jpg",
+      "/images/products/day-dai-an-toan/img_2.jpg",
+      "/images/products/day-dai-an-toan/img_3.jpg",
+      "/images/products/day-dai-an-toan/img_4.jpg"
+    ],
     price: 250000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
@@ -378,7 +511,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-chong-roi",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/moc-khoa-chong-roi/img_1.jpg",
+    images: [
+      "/images/products/moc-khoa-chong-roi/img_1.jpg",
+      "/images/products/moc-khoa-chong-roi/img_2.jpg",
+      "/images/products/moc-khoa-chong-roi/img_3.jpg",
+      "/images/products/moc-khoa-chong-roi/img_4.jpg"
+    ],
     price: 85000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
@@ -390,7 +529,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-chong-roi",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/day-cuu-sinh/img_1.jpg",
+    images: [
+      "/images/products/day-cuu-sinh/img_1.jpg",
+      "/images/products/day-cuu-sinh/img_2.jpg",
+      "/images/products/day-cuu-sinh/img_3.jpg",
+      "/images/products/day-cuu-sinh/img_4.jpg"
+    ],
     price: 15000,
     unit: "Mét",
     specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
@@ -402,7 +547,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-chong-roi",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/bo-chong-roi-tu-rut/img_1.jpg",
+    images: [
+      "/images/products/bo-chong-roi-tu-rut/img_1.jpg",
+      "/images/products/bo-chong-roi-tu-rut/img_2.jpg",
+      "/images/products/bo-chong-roi-tu-rut/img_3.jpg",
+      "/images/products/bo-chong-roi-tu-rut/img_4.jpg"
+    ],
     price: 1500000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Sợi dù cường lực, Móc thép mạ kẽm"},{"label":"Tải trọng","value":"Lên đến 1500kg"},{"label":"Ứng dụng","value":"Làm việc trên cao, vệ sinh kính"}],
@@ -416,7 +567,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-an-toan-khac",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/binh-chua-chay/img_1.jpg",
+    images: [
+      "/images/products/binh-chua-chay/img_1.jpg",
+      "/images/products/binh-chua-chay/img_2.jpg",
+      "/images/products/binh-chua-chay/img_3.jpg",
+      "/images/products/binh-chua-chay/img_4.jpg"
+    ],
     price: 280000,
     unit: "Bình",
     specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
@@ -428,7 +585,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-an-toan-khac",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/bien-canh-bao-an-toan/img_1.jpg",
+    images: [
+      "/images/products/bien-canh-bao-an-toan/img_1.jpg",
+      "/images/products/bien-canh-bao-an-toan/img_2.jpg",
+      "/images/products/bien-canh-bao-an-toan/img_3.jpg",
+      "/images/products/bien-canh-bao-an-toan/img_4.jpg"
+    ],
     price: 45000,
     unit: "Tấm",
     specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
@@ -440,7 +603,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "thiet-bi-an-toan-khac",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/luoi-den-xanh-cong-trinh/img_1.jpg",
+    images: [
+      "/images/products/luoi-den-xanh-cong-trinh/img_1.jpg",
+      "/images/products/luoi-den-xanh-cong-trinh/img_2.jpg",
+      "/images/products/luoi-den-xanh-cong-trinh/img_3.jpg",
+      "/images/products/luoi-den-xanh-cong-trinh/img_4.jpg"
+    ],
     price: 12000,
     unit: "m2",
     specs: [{"label":"Bảo hành","value":"12 tháng"},{"label":"Xuất xứ","value":"Việt Nam / Nhập khẩu"},{"label":"Đóng gói","value":"Tiêu chuẩn"}],
@@ -454,7 +623,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/bat-che-cong-trinh/img_1.jpg",
+    images: [
+      "/images/products/bat-che-cong-trinh/img_1.jpg",
+      "/images/products/bat-che-cong-trinh/img_2.jpg",
+      "/images/products/bat-che-cong-trinh/img_3.jpg",
+      "/images/products/bat-che-cong-trinh/img_4.jpg"
+    ],
     isBestSeller: true,
     price: 15000,
     unit: "m2",
@@ -467,7 +642,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/mang-pe-quan-hang/img_1.jpg",
+    images: [
+      "/images/products/mang-pe-quan-hang/img_1.jpg",
+      "/images/products/mang-pe-quan-hang/img_2.jpg",
+      "/images/products/mang-pe-quan-hang/img_3.jpg",
+      "/images/products/mang-pe-quan-hang/img_4.jpg"
+    ],
     isBestSeller: true,
     price: 85000,
     unit: "Cuộn",
@@ -480,7 +661,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/bang-keo-cong-nghiep/img_1.jpg",
+    images: [
+      "/images/products/bang-keo-cong-nghiep/img_1.jpg",
+      "/images/products/bang-keo-cong-nghiep/img_2.jpg",
+      "/images/products/bang-keo-cong-nghiep/img_3.jpg",
+      "/images/products/bang-keo-cong-nghiep/img_4.jpg"
+    ],
     price: 12000,
     unit: "Cuộn",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -492,7 +679,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/bang-keo-dan-nen/img_1.jpg",
+    images: [
+      "/images/products/bang-keo-dan-nen/img_1.jpg",
+      "/images/products/bang-keo-dan-nen/img_2.jpg",
+      "/images/products/bang-keo-dan-nen/img_3.jpg",
+      "/images/products/bang-keo-dan-nen/img_4.jpg"
+    ],
     price: 25000,
     unit: "Cuộn",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -504,7 +697,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/tam-carton-lot-san/img_1.jpg",
+    images: [
+      "/images/products/tam-carton-lot-san/img_1.jpg",
+      "/images/products/tam-carton-lot-san/img_2.jpg",
+      "/images/products/tam-carton-lot-san/img_3.jpg",
+      "/images/products/tam-carton-lot-san/img_4.jpg"
+    ],
     price: 8000,
     unit: "Tấm",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -516,7 +715,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/luoi-bao-che-xay-dung/img_1.jpg",
+    images: [
+      "/images/products/luoi-bao-che-xay-dung/img_1.jpg",
+      "/images/products/luoi-bao-che-xay-dung/img_2.jpg",
+      "/images/products/luoi-bao-che-xay-dung/img_3.jpg",
+      "/images/products/luoi-bao-che-xay-dung/img_4.jpg"
+    ],
     price: 18000,
     unit: "m2",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -528,7 +733,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/tam-phu-chong-bui/img_1.jpg",
+    images: [
+      "/images/products/tam-phu-chong-bui/img_1.jpg",
+      "/images/products/tam-phu-chong-bui/img_2.jpg",
+      "/images/products/tam-phu-chong-bui/img_3.jpg",
+      "/images/products/tam-phu-chong-bui/img_4.jpg"
+    ],
     price: 35000,
     unit: "Tấm",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -540,7 +751,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/tam-nhua-corrugated/img_1.jpg",
+    images: [
+      "/images/products/tam-nhua-corrugated/img_1.jpg",
+      "/images/products/tam-nhua-corrugated/img_2.jpg",
+      "/images/products/tam-nhua-corrugated/img_3.jpg",
+      "/images/products/tam-nhua-corrugated/img_4.jpg"
+    ],
     price: 45000,
     unit: "Tấm",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -552,7 +769,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/xop-chong-soc/img_1.jpg",
+    images: [
+      "/images/products/xop-chong-soc/img_1.jpg",
+      "/images/products/xop-chong-soc/img_2.jpg",
+      "/images/products/xop-chong-soc/img_3.jpg",
+      "/images/products/xop-chong-soc/img_4.jpg"
+    ],
     price: 150000,
     unit: "Cuộn",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -564,7 +787,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "vat-tu-che-chan",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/bat-soc-xanh-cam/img_1.jpg",
+    images: [
+      "/images/products/bat-soc-xanh-cam/img_1.jpg",
+      "/images/products/bat-soc-xanh-cam/img_2.jpg",
+      "/images/products/bat-soc-xanh-cam/img_3.jpg",
+      "/images/products/bat-soc-xanh-cam/img_4.jpg"
+    ],
     price: 18000,
     unit: "m2",
     specs: [{"label":"Chất liệu","value":"Nhựa PE / HDPE / Nilon nguyên sinh"},{"label":"Độ bền","value":"1 đến 3 năm ngoài trời"},{"label":"Kích thước","value":"Đa dạng (1m, 2m, 3m, 4m...)"},{"label":"Tính năng","value":"Che nắng, mưa, bụi bẩn công trình"}],
@@ -578,7 +807,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/dao-roc-giay/img_1.jpg",
+    images: [
+      "/images/products/dao-roc-giay/img_1.jpg",
+      "/images/products/dao-roc-giay/img_2.jpg",
+      "/images/products/dao-roc-giay/img_3.jpg",
+      "/images/products/dao-roc-giay/img_4.jpg"
+    ],
     price: 15000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -590,7 +825,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/bay-tret/img_1.jpg",
+    images: [
+      "/images/products/bay-tret/img_1.jpg",
+      "/images/products/bay-tret/img_2.jpg",
+      "/images/products/bay-tret/img_3.jpg",
+      "/images/products/bay-tret/img_4.jpg"
+    ],
     price: 25000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -602,7 +843,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/co-son/img_1.jpg",
+    images: [
+      "/images/products/co-son/img_1.jpg",
+      "/images/products/co-son/img_2.jpg",
+      "/images/products/co-son/img_3.jpg",
+      "/images/products/co-son/img_4.jpg"
+    ],
     price: 12000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -614,7 +861,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/ru-lo-son/img_1.jpg",
+    images: [
+      "/images/products/ru-lo-son/img_1.jpg",
+      "/images/products/ru-lo-son/img_2.jpg",
+      "/images/products/ru-lo-son/img_3.jpg",
+      "/images/products/ru-lo-son/img_4.jpg"
+    ],
     price: 35000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -626,7 +879,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/thuoc-cuon/img_1.jpg",
+    images: [
+      "/images/products/thuoc-cuon/img_1.jpg",
+      "/images/products/thuoc-cuon/img_2.jpg",
+      "/images/products/thuoc-cuon/img_3.jpg",
+      "/images/products/thuoc-cuon/img_4.jpg"
+    ],
     price: 45000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -638,7 +897,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/bua/img_1.jpg",
+    images: [
+      "/images/products/bua/img_1.jpg",
+      "/images/products/bua/img_2.jpg",
+      "/images/products/bua/img_3.jpg",
+      "/images/products/bua/img_4.jpg"
+    ],
     price: 85000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -650,7 +915,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/kim/img_1.jpg",
+    images: [
+      "/images/products/kim/img_1.jpg",
+      "/images/products/kim/img_2.jpg",
+      "/images/products/kim/img_3.jpg",
+      "/images/products/kim/img_4.jpg"
+    ],
     price: 65000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -662,7 +933,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "dung-cu-cam-tay",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/sung-ban-keo-silicon/img_1.jpg",
+    images: [
+      "/images/products/sung-ban-keo-silicon/img_1.jpg",
+      "/images/products/sung-ban-keo-silicon/img_2.jpg",
+      "/images/products/sung-ban-keo-silicon/img_3.jpg",
+      "/images/products/sung-ban-keo-silicon/img_4.jpg"
+    ],
     price: 45000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Thép hợp kim cao cấp / Nhựa cứng"},{"label":"Thương hiệu","value":"Chính hãng"},{"label":"Bảo hành","value":"6 tháng"}],
@@ -676,7 +953,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/bang-keo-giay-che-son/img_1.jpg",
+    images: [
+      "/images/products/bang-keo-giay-che-son/img_1.jpg",
+      "/images/products/bang-keo-giay-che-son/img_2.jpg",
+      "/images/products/bang-keo-giay-che-son/img_3.jpg",
+      "/images/products/bang-keo-giay-che-son/img_4.jpg"
+    ],
     price: 15000,
     unit: "Cuộn",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -688,7 +971,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1541088737380-60b731e07b81?q=80&w=800",
+    image: "/images/products/nilon-che-noi-that/img_1.jpg",
+    images: [
+      "/images/products/nilon-che-noi-that/img_1.jpg",
+      "/images/products/nilon-che-noi-that/img_2.jpg",
+      "/images/products/nilon-che-noi-that/img_3.jpg",
+      "/images/products/nilon-che-noi-that/img_4.jpg"
+    ],
     isBestSeller: true,
     price: 25000,
     unit: "Cuộn",
@@ -701,7 +990,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/khay-son/img_1.jpg",
+    images: [
+      "/images/products/khay-son/img_1.jpg",
+      "/images/products/khay-son/img_2.jpg",
+      "/images/products/khay-son/img_3.jpg",
+      "/images/products/khay-son/img_4.jpg"
+    ],
     price: 15000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -713,7 +1008,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/thang-nhom/img_1.jpg",
+    images: [
+      "/images/products/thang-nhom/img_1.jpg",
+      "/images/products/thang-nhom/img_2.jpg",
+      "/images/products/thang-nhom/img_3.jpg",
+      "/images/products/thang-nhom/img_4.jpg"
+    ],
     price: 1200000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -725,7 +1026,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/may-phun-son/img_1.jpg",
+    images: [
+      "/images/products/may-phun-son/img_1.jpg",
+      "/images/products/may-phun-son/img_2.jpg",
+      "/images/products/may-phun-son/img_3.jpg",
+      "/images/products/may-phun-son/img_4.jpg"
+    ],
     price: 3500000,
     unit: "Bộ",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -737,7 +1044,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/giay-nham/img_1.jpg",
+    images: [
+      "/images/products/giay-nham/img_1.jpg",
+      "/images/products/giay-nham/img_2.jpg",
+      "/images/products/giay-nham/img_3.jpg",
+      "/images/products/giay-nham/img_4.jpg"
+    ],
     price: 5000,
     unit: "Tờ",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -749,7 +1062,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/keo-silicone/img_1.jpg",
+    images: [
+      "/images/products/keo-silicone/img_1.jpg",
+      "/images/products/keo-silicone/img_2.jpg",
+      "/images/products/keo-silicone/img_3.jpg",
+      "/images/products/keo-silicone/img_4.jpg"
+    ],
     price: 45000,
     unit: "Chai",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -761,7 +1080,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/keo-dan-xay-dung/img_1.jpg",
+    images: [
+      "/images/products/keo-dan-xay-dung/img_1.jpg",
+      "/images/products/keo-dan-xay-dung/img_2.jpg",
+      "/images/products/keo-dan-xay-dung/img_3.jpg",
+      "/images/products/keo-dan-xay-dung/img_4.jpg"
+    ],
     price: 65000,
     unit: "Tuýp",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -773,7 +1098,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/khan-lau-cong-nghiep/img_1.jpg",
+    images: [
+      "/images/products/khan-lau-cong-nghiep/img_1.jpg",
+      "/images/products/khan-lau-cong-nghiep/img_2.jpg",
+      "/images/products/khan-lau-cong-nghiep/img_3.jpg",
+      "/images/products/khan-lau-cong-nghiep/img_4.jpg"
+    ],
     price: 25000,
     unit: "kg",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -785,7 +1116,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/xe-day-hang/img_1.jpg",
+    images: [
+      "/images/products/xe-day-hang/img_1.jpg",
+      "/images/products/xe-day-hang/img_2.jpg",
+      "/images/products/xe-day-hang/img_3.jpg",
+      "/images/products/xe-day-hang/img_4.jpg"
+    ],
     price: 1500000,
     unit: "Cái",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
@@ -797,7 +1134,13 @@ export const PRODUCTS: Product[] = [
     category: "bao-ho-lao-dong",
     categorySlug: "bao-ho-lao-dong",
     subCategory: "ho-tro-son-noi-that",
-    image: "https://images.unsplash.com/photo-1581092580497-e0d23cbdf1dc?q=80&w=800",
+    image: "/images/products/gian-giao-tre/img_1.jpg",
+    images: [
+      "/images/products/gian-giao-tre/img_1.jpg",
+      "/images/products/gian-giao-tre/img_2.jpg",
+      "/images/products/gian-giao-tre/img_3.jpg",
+      "/images/products/gian-giao-tre/img_4.jpg"
+    ],
     price: 50000,
     unit: "Cây",
     specs: [{"label":"Chất liệu","value":"Nhựa, Nhôm, Giấy chuyên dụng"},{"label":"Đặc tính","value":"Tiện lợi, dễ sử dụng, bảo vệ bề mặt"},{"label":"Xuất xứ","value":"Việt Nam"}],
