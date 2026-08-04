@@ -2,6 +2,8 @@
  * Core Technical & Commercial RAG Knowledge Base for Nilon Xây Dựng AI Sales Assistant
  */
 
+import { PRODUCTS } from '@/data/products';
+
 export interface ProductSpec {
   id: string;
   name: string;
@@ -151,87 +153,6 @@ export const AI_KNOWLEDGE_BASE = {
       rollLength: "Cuộn 3.8kg / 5kg",
       pricePerKgBase: 44000,
       bestFor: "Quấn pallet hàng hóa xuất khẩu, bọc máy móc thiết bị tránh trầy xước"
-    },
-    // Bảo hộ lao động & Vật tư phụ
-    {
-      id: "mu-bao-ho-cong-trinh",
-      name: "Mũ bảo hộ công trình (Nhựa HDPE/ABS)",
-      category: "Bảo hộ lao động",
-      thicknessZem: "N/A",
-      thicknessMm: "N/A",
-      resinType: "Nhựa HDPE / ABS chịu va đập",
-      tearStrength: "TCVN 6407:1998",
-      tensileStrength: "Chịu lực va đập > 5000N",
-      isoCertificates: ["ISO 9001:2015", "TCVN 6407"],
-      color: "Trắng, Vàng, Xanh dương, Đỏ",
-      rollWidth: "Free size (có núm vặn)",
-      rollLength: "Cái",
-      pricePerKgBase: 45000,
-      bestFor: "Bảo vệ vùng đầu cho kỹ sư, công nhân trên công trường, chống vật rơi"
-    },
-    {
-      id: "giay-bao-ho-lao-dong",
-      name: "Giày bảo hộ lao động (Mũi lót thép)",
-      category: "Bảo hộ lao động",
-      thicknessZem: "N/A",
-      thicknessMm: "N/A",
-      resinType: "Da thật / Da công nghiệp, Đế PU",
-      tearStrength: "Đạt chuẩn CE S3 / TCVN",
-      tensileStrength: "Chịu va đập 200J",
-      isoCertificates: ["CE S3", "ISO 9001:2015"],
-      color: "Đen",
-      rollWidth: "Size 38 - 44",
-      rollLength: "Đôi",
-      pricePerKgBase: 350000,
-      bestFor: "Chống đinh, chống dập ngón, chống trơn trượt cho thợ công trình & nhà xưởng"
-    },
-    {
-      id: "gang-tay-bao-ho",
-      name: "Găng tay sợi / Găng tay chống cắt",
-      category: "Bảo hộ lao động",
-      thicknessZem: "N/A",
-      thicknessMm: "N/A",
-      resinType: "Sợi Cotton / Phủ cao su Nitrile",
-      tearStrength: "Chống xước & chống cắt mức 3-5",
-      tensileStrength: "Bền bỉ",
-      isoCertificates: ["ISO 9001:2015"],
-      color: "Trắng, Xám, Đen",
-      rollWidth: "Free size",
-      rollLength: "Đôi",
-      pricePerKgBase: 15000,
-      bestFor: "Bảo vệ tay công nhân khi bốc xếp, thi công kéo thép & gạch đá"
-    },
-    {
-      id: "quan-ao-phan-quang",
-      name: "Áo phản quang kỹ sư / Đồng phục bảo hộ",
-      category: "Bảo hộ lao động",
-      thicknessZem: "N/A",
-      thicknessMm: "N/A",
-      resinType: "Vải Kaki Pangrim / Vải lưới phản quang",
-      tearStrength: "Dày dặn, thấm hút mồ hôi tốt",
-      tensileStrength: "Bền màu",
-      isoCertificates: ["ISO 9001:2015"],
-      color: "Xanh công nhân, Cam, Vàng chanh",
-      rollWidth: "Size M, L, XL, XXL",
-      rollLength: "Bộ / Áo",
-      pricePerKgBase: 45000,
-      bestFor: "Bảo hộ nhận diện công nhân & kỹ sư ban đêm hoặc môi trường ánh sáng yếu"
-    },
-    {
-      id: "bat-che-cong-trinh",
-      name: "Bạt che công trình (Bạt xanh cam / Bạt sọc)",
-      category: "Vật tư che chắn",
-      thicknessZem: "3 zem",
-      thicknessMm: "0.03 mm",
-      resinType: "Nhựa PE dệt tráng phủ chống thấm",
-      tearStrength: "Bền nắng mưa 1-3 năm",
-      tensileStrength: "Chịu kéo tốt",
-      isoCertificates: ["ISO 9001:2015"],
-      color: "Xanh cam / Sọc 3 màu",
-      rollWidth: "Khổ 2m, 4m, 6m",
-      rollLength: "Cuộn / Tấm",
-      pricePerKgBase: 18000,
-      bestFor: "Che nắng mưa, che chắn vật tư xây dựng, bao che giàn giáo công trình"
     }
   ] as ProductSpec[],
 
@@ -245,12 +166,23 @@ export const AI_KNOWLEDGE_BASE = {
   shippingFees: [
     { region: "Nội thành TP.HCM / Bình Dương / Đồng Nai", estimatedFee: "200.000đ - 350.000đ / chuyến xe tải", freeShippingMinKg: 1000 },
     { region: "Tỉnh Miền Tây & Đông Nam Bộ (Long An, Tiền Giang, Tây Ninh...)", estimatedFee: "500đ - 800đ / kg (Gửi xe chành hoặc giao tận công trình)", freeShippingMinKg: 3000 },
-    { region: "Tỉnh Tây Nguyên & Miền Trung (Lâm Đồng, Đắk Lắk, Bình Thuận...)", estimatedFee: "800đ - 1.200đ / kg", freeShippingMinKg: 5000 },
+    { region: "Tỉnh Tây Nguyên & Miền Trung (Lâm Đồng, Đắc Lắk, Bình Thuận...)", estimatedFee: "800đ - 1.200đ / kg", freeShippingMinKg: 5000 },
     { region: "Các tỉnh Miền Bắc & Hà Nội", estimatedFee: "1.200đ - 1.800đ / kg (Gửi xe container/tàu hỏa)", freeShippingMinKg: 10000 }
   ] as ShippingPolicy[]
 };
 
-import { PRODUCTS } from '@/data/products';
+/**
+ * Formats all website catalog products into a structured RAG text block
+ * for the AI Sales Assistant prompt.
+ */
+export function getFormattedWebsiteCatalog(): string {
+  const catalogLines = PRODUCTS.map(p => {
+    const specsStr = p.specs ? p.specs.map(s => `${s.label}: ${s.value}`).join(', ') : '';
+    return `- ${p.name} | Giá: ${p.price.toLocaleString('vi-VN')} VNĐ / ${p.unit} | Danh mục: ${p.category} | ${p.description || ''} ${specsStr ? `(${specsStr})` : ''}`.trim();
+  });
+
+  return catalogLines.join('\n');
+}
 
 /**
  * Utility to calculate exact quote details programmatically
@@ -350,7 +282,7 @@ export function calculateQuoteDetails(
     }
   }
 
-  // If match score is too low (< 5) or no product matches: Return notFound (Zalo OA fallback trigger)
+  // If match score is too low (< 5) or no product matches: Return notFound
   if (!matchedProduct || bestScore < 5) {
     return {
       notFound: true,
