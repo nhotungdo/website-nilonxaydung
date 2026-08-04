@@ -76,7 +76,7 @@ export default function AiSalesChatbot() {
     {
       id: 'welcome-msg',
       role: 'assistant',
-      content: 'Dạ xin chào Anh/Chị! Em là **AI Sales Assistant (Tư vấn 24/7)** của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 **Tư vấn Nilon lót sàn & Màng PE**: 2zem - 10zem, độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001.\n- ⛑️ **Trang thiết bị Bảo hộ lao động**: Mũ bảo hộ công trình, Găng tay chống cắt, Giày mũi lót thép (CE S3), Áo phản quang, Bạt che công trình...\n- 📊 **Tính giá sỉ theo kg/cuộn/bộ & phí giao công trình**.\n- 📄 **Tự động xuất File Báo Giá PDF Tạm Tính** ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin hoặc báo giá vật tư nào cho công trình ạ?',
+      content: 'Dạ xin chào Anh/Chị! Em là AI Sales Assistant (Tư vấn 24/7) của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 Tư vấn Nilon lót sàn & Màng PE: 2zem - 10zem, độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001.\n- ⛑️ Trang thiết bị Bảo hộ lao động: Mũ bảo hộ công trình, Găng tay chống cắt, Giày mũi lót thép (CE S3), Áo phản quang, Bạt che công trình...\n- 📊 Tính giá sỉ theo kg/cuộn/bộ & phí giao công trình.\n- 📄 Tự động xuất File Báo Giá PDF Tạm Tính ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin hoặc báo giá vật tư nào cho công trình ạ?',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -125,11 +125,12 @@ export default function AiSalesChatbot() {
       }
 
       const data = await res.json();
+      const sanitizedContent = (data.content || '').replace(/\*/g, '');
 
       const botMsg: ChatMsg = {
         id: `bot-${Date.now()}`,
         role: 'assistant',
-        content: data.content,
+        content: sanitizedContent,
         quoteData: data.quoteData,
         pdfData: data.pdfData,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
@@ -138,7 +139,7 @@ export default function AiSalesChatbot() {
       setMessages(prev => [...prev, botMsg]);
 
       // If user prompted for PDF quote or bot suggested lead form, trigger lead prompt
-      if (text.toLowerCase().includes('pdf') || text.toLowerCase().includes('báo giá') || data.content.includes('Tên, Số điện thoại')) {
+      if (text.toLowerCase().includes('pdf') || text.toLowerCase().includes('báo giá') || sanitizedContent.includes('Tên, Số điện thoại')) {
         // Auto pre-fill if available
       }
     } catch (err: unknown) {
@@ -149,7 +150,7 @@ export default function AiSalesChatbot() {
         {
           id: `err-${Date.now()}`,
           role: 'assistant',
-          content: 'Dạ hệ thống AI đang bận một chút, Anh/Chị có thể gọi ngay Hotline **0901.234.567** để được nhân viên hỗ trợ trực tiếp ạ!',
+          content: 'Dạ hệ thống AI đang bận một chút, Anh/Chị có thể gọi ngay Hotline 0901.234.567 để được nhân viên hỗ trợ trực tiếp ạ!',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -198,103 +199,100 @@ export default function AiSalesChatbot() {
           onClick={() => setIsOpen(true)}
           className="relative group flex items-center gap-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white px-5 py-3.5 rounded-full shadow-2xl hover:shadow-blue-500/50 border border-blue-400/30 transition-all duration-300"
         >
-          {/* Animated pulse ring */}
-          <span className="absolute -top-1 -right-1 flex h-4 w-4">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-slate-900"></span>
-          </span>
-
-          <div className="bg-white/20 p-2 rounded-full backdrop-blur-md">
-            <Bot className="w-6 h-6 text-white animate-bounce" />
+          <div className="relative">
+            <Bot className="w-6 h-6 text-amber-300" />
+            <span className="absolute -top-1 -right-1 flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+            </span>
           </div>
-
           <div className="text-left hidden sm:block">
-            <div className="text-xs font-semibold text-blue-200 uppercase tracking-wider flex items-center gap-1">
+            <div className="text-xs font-bold leading-tight flex items-center gap-1.5">
               <span>AI Sales Assistant</span>
-              <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-1.5 py-0.5 rounded border border-emerald-500/30 font-mono">24/7</span>
+              <span className="bg-amber-400/20 text-amber-300 text-[10px] px-1.5 py-0.2 rounded border border-amber-400/30">24/7</span>
             </div>
-            <div className="text-sm font-bold text-white">Tư vấn Kỹ thuật & Báo giá PDF</div>
+            <div className="text-[10px] text-blue-200">Tư vấn kỹ thuật & Báo giá tự động</div>
           </div>
         </motion.button>
       )}
 
-      {/* Main Chat Modal */}
+      {/* Main Chat Modal Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 40, scale: 0.95 }}
-            transition={{ duration: 0.25 }}
-            className={`flex flex-col bg-slate-950/95 backdrop-blur-xl border border-slate-800 rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+            className={`bg-slate-950 text-slate-100 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col transition-all duration-300 ${
               isExpanded 
-                ? 'w-[95vw] sm:w-[700px] h-[85vh]' 
-                : 'w-[92vw] sm:w-[440px] h-[620px] max-h-[90vh]'
+                ? 'w-[95vw] sm:w-[800px] h-[85vh]' 
+                : 'w-[92vw] sm:w-[420px] h-[600px] max-h-[82vh]'
             }`}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-blue-950 p-4 border-b border-slate-800 flex items-center justify-between">
+            <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 py-3.5 border-b border-slate-800 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="relative">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 p-0.5 shadow-lg">
-                    <div className="w-full h-full bg-slate-900 rounded-full flex items-center justify-center">
-                      <Bot className="w-6 h-6 text-blue-400" />
-                    </div>
-                  </div>
-                  <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 border-2 border-slate-900 rounded-full"></span>
+                <div className="w-9 h-9 rounded-xl bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-amber-300 shadow-inner">
+                  <Bot className="w-5 h-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-white text-base">AI Sales Assistant</h3>
-                    <span className="bg-emerald-500/20 text-emerald-300 text-[10px] px-2 py-0.5 rounded-full border border-emerald-500/30 font-medium">
-                      24/7
+                  <h3 className="font-bold text-white text-base">AI Sales Assistant</h3>
+                  <div className="flex items-center gap-2 text-[11px] text-slate-400">
+                    <span className="flex items-center gap-1 text-emerald-400 font-medium">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> Sẵn sàng 24/7
                     </span>
+                    <span>• Nilon Xây Dựng</span>
                   </div>
-                  <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                    Tư vấn ISO 9001 & Báo Giá PDF Công Trình
-                  </p>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1">
                 <button
+                  type="button"
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors"
+                  className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors hidden sm:block"
                   title={isExpanded ? "Thu nhỏ" : "Phóng to"}
                 >
                   {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
                 </button>
                 <button
+                  type="button"
                   onClick={() => setIsOpen(false)}
-                  className="p-1.5 text-slate-400 hover:text-white hover:bg-slate-800/80 rounded-lg transition-colors"
-                  title="Đóng chat"
+                  className="p-1.5 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition-colors"
+                  title="Đóng cửa sổ chat"
                 >
                   <X className="w-5 h-5" />
                 </button>
               </div>
             </div>
 
-            {/* Chat Body - Messages Container */}
-            <div className="flex-1 p-4 overflow-y-auto space-y-4 scrollbar-thin scrollbar-thumb-slate-800">
+            {/* Message Area */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 scrollbar-thin scrollbar-thumb-slate-800">
               {messages.map((msg) => (
                 <div
                   key={msg.id}
-                  className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                  className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
+                  {msg.role === 'assistant' && (
+                    <div className="w-8 h-8 rounded-full bg-blue-600/30 border border-blue-500/40 flex items-center justify-center text-amber-300 shrink-0 mt-0.5">
+                      <Bot className="w-4 h-4" />
+                    </div>
+                  )}
+
                   <div
-                    className={`max-w-[85%] rounded-2xl p-4 shadow-lg transition-all ${
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md ${
                       msg.role === 'user'
                         ? 'bg-blue-600 text-white rounded-br-none'
-                        : 'bg-slate-900/90 text-slate-100 border border-slate-800 rounded-bl-none'
+                        : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none'
                     }`}
                   >
-                    {/* Role Header */}
-                    <div className="flex items-center justify-between gap-2 mb-1.5 opacity-75 text-[11px] font-medium border-b border-white/10 pb-1">
-                      <span className="flex items-center gap-1">
+                    {/* Role Tag & Time */}
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 gap-2">
+                      <span className="font-bold flex items-center gap-1 text-slate-300">
                         {msg.role === 'user' ? (
                           <>
-                            <User className="w-3 h-3" /> Bạn (Khách hàng)
+                            <User className="w-3 h-3 text-blue-300" /> Khách hàng
                           </>
                         ) : (
                           <>
@@ -393,7 +391,7 @@ export default function AiSalesChatbot() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
                     <div>
-                      <label className="block text-slate-400 mb-1">Họ tên người nhận *</label>
+                      <label className="block text-slate-400 mb-1">Họ tên người nhận (bắt buộc)</label>
                       <input
                         type="text"
                         required
@@ -404,7 +402,7 @@ export default function AiSalesChatbot() {
                       />
                     </div>
                     <div>
-                      <label className="block text-slate-400 mb-1">Số điện thoại *</label>
+                      <label className="block text-slate-400 mb-1">Số điện thoại (bắt buộc)</label>
                       <input
                         type="tel"
                         required
@@ -417,7 +415,7 @@ export default function AiSalesChatbot() {
                   </div>
 
                   <div className="text-xs">
-                    <label className="block text-slate-400 mb-1">Địa chỉ công trình nhận hàng *</label>
+                    <label className="block text-slate-400 mb-1">Địa chỉ công trình nhận hàng (bắt buộc)</label>
                     <input
                       type="text"
                       required
