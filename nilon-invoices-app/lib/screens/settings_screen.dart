@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/app_settings_model.dart';
 import '../providers/settings_provider.dart';
+import '../services/notification_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
 
@@ -241,6 +242,52 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           value: _soundAlert,
                           activeThumbColor: AppTheme.primaryTeal,
                           onChanged: (val) => setState(() => _soundAlert = val),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+
+                  GlassCard(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: const [
+                            Icon(Icons.notifications_active_rounded, color: AppTheme.primaryTeal),
+                            SizedBox(width: 8),
+                            Text('Thông báo Đẩy Điện thoại (Push Notification)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                          ],
+                        ),
+                        const Divider(height: 24),
+                        const Text(
+                          'Kiểm tra tính năng phát âm thanh, rung và hiển thị banner thông báo đơn hàng mới trên thanh trạng thái thiết bị.',
+                          style: TextStyle(fontSize: 12, color: AppTheme.textMuted),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: AppTheme.primaryTeal,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                          ),
+                          onPressed: () async {
+                            final messenger = ScaffoldMessenger.of(context);
+                            final success = await NotificationService.sendTestNotification();
+                            if (mounted) {
+                              messenger.showSnackBar(
+                                SnackBar(
+                                  backgroundColor: success ? AppTheme.primaryTeal : Colors.red,
+                                  content: Text(
+                                    success
+                                        ? '🔔 Đã bắn thông báo thử nghiệm thành công tới điện thoại!'
+                                        : '❌ Lỗi gửi thông báo thử nghiệm. Vui lòng cấp quyền thông báo!',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                          icon: const Icon(Icons.vibration_rounded, color: Colors.white, size: 18),
+                          label: const Text('Gửi thông báo thử nghiệm', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
                         ),
                       ],
                     ),

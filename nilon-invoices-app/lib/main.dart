@@ -7,6 +7,8 @@ import 'providers/order_provider.dart';
 import 'providers/printer_provider.dart';
 import 'providers/queue_provider.dart';
 import 'providers/settings_provider.dart';
+import 'providers/inventory_provider.dart';
+import 'providers/production_provider.dart';
 
 import 'services/supabase_service.dart';
 import 'services/notification_service.dart';
@@ -15,6 +17,8 @@ import 'theme/app_theme.dart';
 import 'screens/login_screen.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/realtime_orders_screen.dart';
+import 'screens/inventory_screen.dart';
+import 'screens/production_screen.dart';
 import 'screens/print_queue_screen.dart';
 import 'screens/printers_screen.dart';
 import 'screens/invoice_preview_screen.dart';
@@ -52,6 +56,8 @@ class NilonInvoicesAdminApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PrinterProvider()),
         ChangeNotifierProvider(create: (_) => QueueProvider()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
+        ChangeNotifierProvider(create: (_) => InventoryProvider()),
+        ChangeNotifierProvider(create: (_) => ProductionProvider()),
       ],
       child: MaterialApp(
         title: 'Nilon Invoices Admin App',
@@ -85,6 +91,10 @@ class _AppShellState extends State<AppShell> {
         return 'Bảng điều khiển';
       case '/orders':
         return 'Đơn hàng realtime';
+      case '/inventory':
+        return 'Quản lý tồn kho';
+      case '/production':
+        return 'Quản lý sản xuất';
       case '/queue':
         return 'Hàng đợi in';
       case '/printers':
@@ -108,6 +118,10 @@ class _AppShellState extends State<AppShell> {
         return const DashboardScreen();
       case '/orders':
         return RealtimeOrdersScreen(onNavigate: _onNavigate);
+      case '/inventory':
+        return const InventoryScreen();
+      case '/production':
+        return const ProductionScreen();
       case '/queue':
         return const PrintQueueScreen();
       case '/printers':

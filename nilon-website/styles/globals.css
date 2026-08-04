@@ -1,10 +1,13 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #2b6cb0; /* DesignUI primary accent */
-  --color-primary-dark: #1a365d; /* DesignUI tertiary brand */
+  --color-primary: #2b6cb0;
+  /* DesignUI primary accent */
+  --color-primary-dark: #1a365d;
+  /* DesignUI tertiary brand */
   --color-primary-container: #1a365d;
-  --color-navy: #1a365d; /* Dark navy */
+  --color-navy: #1a365d;
+  /* Dark navy */
   --color-secondary: #4a5568;
   --color-secondary-container: #2d3748;
   --color-surface: #FFFFFF;
@@ -69,7 +72,12 @@ body {
   letter-spacing: 0;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   line-height: 1.2;
   letter-spacing: 0;
@@ -85,6 +93,7 @@ h1, h2, h3, h4, h5, h6 {
   .font-heading {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   }
+
   .font-sans {
     font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
   }
@@ -95,19 +104,24 @@ h1, h2, h3, h4, h5, h6 {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: #f8fafc;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
   border-radius: 9999px;
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: #2b6cb0;
 }
 
 /* Smooth transitions for interactive elements */
-a, button, [role="button"] {
+a,
+button,
+[role="button"] {
   transition-property: color, background-color, border-color, box-shadow, opacity, transform;
   transition-duration: 150ms;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
