@@ -210,8 +210,18 @@ export function getFormattedWebsiteCatalog(): string {
   return catalogLines.join('\n');
 }
 
+export interface CatalogVariant {
+  id: string;
+  name: string;
+  price: number;
+  unit: string;
+  category: string;
+  description?: string;
+}
+
 /**
  * Utility to calculate exact quote details programmatically
+ * and list ALL matching product variants & related complementary products.
  */
 export function calculateQuoteDetails(
   productSearchTerm: string,
@@ -236,7 +246,7 @@ export function calculateQuoteDetails(
     'bao nhieu tien', 'bao nhieu', 'gia bao nhieu', 'gia ntn', 'xin gia', 
     'bao gia', 'la bao nhieu', 'gia', 'ban the nao', 'mua', 'cho xin', 
     'cung cap', '1 cai', '1 doi', '1 bo', '1 kg', '1 cuon', '1 m2', 'co khong', 
-    'can', 'muon', 'tinh gia'
+    'can', 'muon', 'tinh gia', 'tat ca', 'cac loai', 'cho toi hoi'
   ];
 
   let cleanedTerm = normalizedTerm;
@@ -248,72 +258,111 @@ export function calculateQuoteDetails(
     cleanedTerm = normalizedTerm;
   }
 
-  // Search through website catalog PRODUCTS
-  let matchedProduct: { id: string; name: string; price: number; unit: string; category: string; description?: string } | null = null;
-  let bestScore = 0;
+  // 1. Search through website catalog PRODUCTS to find ALL matching variants of the queried product group
+  const allVariants: CatalogVariant[] = [];
+  const relatedProducts: CatalogVariant[] = [];
+
+  // Determine main category/family key
+  let isNilonFamily = cleanedTerm.includes('nilon') || cleanedTerm.includes('pe') || cleanedTerm.includes('mang') || cleanedTerm.includes('lot san') || cleanedTerm.includes('zem');
+  let isHatSafety = cleanedTerm.includes('mu') || cleanedTerm.includes('non') || cleanedTerm.includes('kinh');
+  let isGloveSafety = cleanedTerm.includes('gang') || cleanedTerm.includes('tay');
+  let isShoeSafety = cleanedTerm.includes('giay') || cleanedTerm.includes('ung') || cleanedTerm.includes('chan');
+  let isClothesSafety = cleanedTerm.includes('quan') || cleanedTerm.includes('ao') || cleanedTerm.includes('phan quang') || cleanedTerm.includes('dong phuc');
+  let isTarpSafety = cleanedTerm.includes('bat') || cleanedTerm.includes('keo') || cleanedTerm.includes('luoi') || cleanedTerm.includes('che');
 
   for (const p of PRODUCTS) {
     const pNameNorm = normalizeStr(p.name);
     const pSlugNorm = normalizeStr(p.slug);
 
-    let score = 0;
+    let isMatch = false;
 
-    // Check exact or substring containment with cleaned search term & full term
     if (cleanedTerm === pNameNorm || cleanedTerm === pSlugNorm) {
-      score = 100 + pNameNorm.length;
-    } else if (cleanedTerm.includes(pNameNorm) || pNameNorm.includes(cleanedTerm)) {
-      score = 50 + Math.min(cleanedTerm.length, pNameNorm.length);
-    } else if (normalizedTerm.includes(pNameNorm) || pNameNorm.includes(normalizedTerm)) {
-      score = 40 + Math.min(normalizedTerm.length, pNameNorm.length);
+      isMatch = true;
+    } else if (cleanedTerm.length >= 3 && (pNameNorm.includes(cleanedTerm) || cleanedTerm.includes(pNameNorm))) {
+      isMatch = true;
+    } else if (isNilonFamily && (p.category === 'nilon-lot-san-be-tong' || pNameNorm.includes('nilon') || pNameNorm.includes('mang pe'))) {
+      isMatch = true;
+    } else if (isHatSafety && (p.subCategory === 'bao-ho-dau' || pNameNorm.includes('mu') || pNameNorm.includes('non'))) {
+      isMatch = true;
+    } else if (isGloveSafety && (p.subCategory === 'bao-ho-tay' || pNameNorm.includes('gang'))) {
+      isMatch = true;
+    } else if (isShoeSafety && (p.subCategory === 'bao-ho-chan' || pNameNorm.includes('giay') || pNameNorm.includes('ung'))) {
+      isMatch = true;
+    } else if (isClothesSafety && (p.subCategory === 'quan-ao-bao-ho' || pNameNorm.includes('ao') || pNameNorm.includes('quan'))) {
+      isMatch = true;
+    } else if (isTarpSafety && (p.subCategory === 'vat-tu-che-chan' || pNameNorm.includes('bat') || pNameNorm.includes('keo'))) {
+      isMatch = true;
+    }
+
+    if (isMatch) {
+      if (!allVariants.some(v => v.id === p.id)) {
+        allVariants.push({
+          id: p.id,
+          name: p.name,
+          price: p.price,
+          unit: p.unit,
+          category: p.category,
+          description: p.description
+        });
+      }
+    }
+  }
+
+  // Also match AI_KNOWLEDGE_BASE.products
+  for (const p of AI_KNOWLEDGE_BASE.products) {
+    const pNameNorm = normalizeStr(p.name);
+    if (cleanedTerm === pNameNorm || (cleanedTerm.length >= 3 && (pNameNorm.includes(cleanedTerm) || cleanedTerm.includes(pNameNorm))) || (isNilonFamily && p.category.includes('Nilon'))) {
+      if (!allVariants.some(v => v.id === p.id || v.name === p.name)) {
+        allVariants.push({
+          id: p.id,
+          name: p.name,
+          price: p.pricePerKgBase,
+          unit: p.rollLength || "kg",
+          category: p.category,
+          description: p.bestFor
+        });
+      }
+    }
+  }
+
+  // 2. Find complementary / RELATED products that are NOT in allVariants
+  for (const p of PRODUCTS) {
+    if (allVariants.some(v => v.id === p.id)) continue;
+
+    let isRelated = false;
+    if (isNilonFamily) {
+      // If querying nilon, related products are tape, tarps, safety gloves, safety boots
+      if (p.id === 'bang-keo-cong-nghiep' || p.id === 'bat-che-cong-trinh' || p.id === 'mu-bao-ho-cong-trinh' || p.id === 'giay-bao-ho') {
+        isRelated = true;
+      }
     } else {
-      // Word match scoring
-      const words = cleanedTerm.split(/\s+/).filter(w => w.length >= 2);
-      const matchedWords = words.filter(w => pNameNorm.includes(w) || pSlugNorm.includes(w));
-      if (matchedWords.length > 0) {
-        score = matchedWords.length * 10;
+      // If querying safety gear, related products are nilon lót sàn 4zem/6zem, bạt che
+      if (p.id === 'nilon-lot-san-4zem' || p.id === 'nilon-lot-san-6zem' || p.id === 'bat-che-cong-trinh') {
+        isRelated = true;
       }
     }
 
-    if (score > bestScore) {
-      bestScore = score;
-      matchedProduct = p;
-    }
-  }
-
-  // Also check AI_KNOWLEDGE_BASE.products
-  for (const p of AI_KNOWLEDGE_BASE.products) {
-    const pNameNorm = normalizeStr(p.name);
-    let score = 0;
-
-    if (cleanedTerm === pNameNorm) {
-      score = 110 + pNameNorm.length;
-    } else if (cleanedTerm.includes(pNameNorm) || pNameNorm.includes(cleanedTerm)) {
-      score = 55 + Math.min(cleanedTerm.length, pNameNorm.length);
-    } else if (normalizedTerm.includes(pNameNorm) || pNameNorm.includes(normalizedTerm)) {
-      score = 45 + Math.min(normalizedTerm.length, pNameNorm.length);
-    } else if (p.thicknessZem !== "N/A" && (cleanedTerm.includes(normalizeStr(p.thicknessZem)) || normalizedTerm.includes(normalizeStr(p.thicknessZem)))) {
-      score = 30;
-    }
-
-    if (score > bestScore) {
-      bestScore = score;
-      matchedProduct = {
+    if (isRelated && !relatedProducts.some(r => r.id === p.id)) {
+      relatedProducts.push({
         id: p.id,
         name: p.name,
-        price: p.pricePerKgBase,
-        unit: p.rollLength || (p.thicknessZem !== "N/A" ? "kg" : "cái"),
+        price: p.price,
+        unit: p.unit,
         category: p.category,
-        description: p.bestFor
-      };
+        description: p.description
+      });
     }
   }
 
-  // If match score is too low (< 5) or no product matches: Return notFound
-  if (!matchedProduct || bestScore < 5) {
+  // If no specific variants matched, pick the top matching product or default first variant
+  let primaryMatched = allVariants[0] || null;
+  if (!primaryMatched) {
     return {
       notFound: true,
       searchedTerm: productSearchTerm,
       product: null,
+      allVariants: [],
+      relatedProducts: [],
       quantityKg: 0,
       unitLabel: "",
       isSafetyEquipment: false,
@@ -329,12 +378,12 @@ export function calculateQuoteDetails(
     };
   }
 
-  const isSafetyEquipment = matchedProduct.category !== "Nilon lót sàn móng" && matchedProduct.category !== "nilon-lot-san-be-tong" && matchedProduct.unit !== "kg";
-  const unitLabel = matchedProduct.unit || (isSafetyEquipment ? "Cái" : "kg");
+  const isSafetyEquipment = primaryMatched.category !== "Nilon lót sàn móng" && primaryMatched.category !== "nilon-lot-san-be-tong" && primaryMatched.unit !== "kg";
+  const unitLabel = primaryMatched.unit || (isSafetyEquipment ? "Cái" : "kg");
 
   const product: ProductSpec = {
-    id: matchedProduct.id,
-    name: matchedProduct.name,
+    id: primaryMatched.id,
+    name: primaryMatched.name,
     category: isSafetyEquipment ? "Bảo hộ lao động" : "Nilon lót sàn móng",
     thicknessZem: "N/A",
     thicknessMm: "N/A",
@@ -345,8 +394,8 @@ export function calculateQuoteDetails(
     color: "Tiêu chuẩn",
     rollWidth: "Tiêu chuẩn",
     rollLength: unitLabel,
-    pricePerKgBase: matchedProduct.price,
-    bestFor: matchedProduct.description || "Thi công công trình"
+    pricePerKgBase: primaryMatched.price,
+    bestFor: primaryMatched.description || "Thi công công trình"
   };
 
   // Tier discount calculation
@@ -383,6 +432,8 @@ export function calculateQuoteDetails(
   return {
     notFound: false,
     product,
+    allVariants,
+    relatedProducts,
     quantityKg,
     unitLabel,
     isSafetyEquipment,

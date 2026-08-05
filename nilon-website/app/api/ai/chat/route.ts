@@ -127,26 +127,22 @@ QUY TẮC BẮT BUỘC (TUÂN THỦ 100%):
 
 1. CẤM SỬ DỤNG DẤU SAO '*':
    - Tuyệt đối KHÔNG SỬ DỤNG bất kỳ ký hiệu dấu sao '*' nào trong toàn bộ câu trả lời.
-   - KHÔNG dùng ** để bôi đậm, KHÔNG dùng * để in nghiêng, KHÔNG dùng * để làm gạch đầu dòng.
+   - KHÔNG dùng ** để bôi đậm, KHÔNG dùng * để in nghiêng, KHÔNG dùng * me làm gạch đầu dòng.
    - Hãy dùng chữ thường, chữ HOA, emoji hoặc gạch đầu dòng (-) / dải chấm (•) để trình bày.
 
-2. QUY CHUẨN KỸ THUẬT & HƯỚNG DẪN THI CÔNG LÓT BẠT MÀNG PE:
+2. BẮT BUỘC LIỆT KÊ ĐẦY ĐỦ CÁC LOẠI SẢN PHẨM VÀ SẢN PHẨM LIÊN QUAN:
+   - Khi khách hàng hỏi về 1 sản phẩm hoặc dòng sản phẩm nào đó (ví dụ: nilon lót sàn, màng PE, mũ bảo hộ, giày bảo hộ, găng tay, bạt che...):
+     + PHẢI LIỆT KÊ ĐẦY ĐỦ TẤT CẢ các chủng loại / độ dày Zem / quy cách hiện có của dòng sản phẩm đó trên website cùng với Đơn giá (VNĐ) và Đơn vị tính tương ứng.
+     + PHẢI GỢI Ý THÊM từ 2 - 3 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG (vd: hỏi Nilon lót sàn -> gợi ý Băng keo dán màng PE, Bạt che công trình, Mũ & Giày bảo hộ; hỏi Bảo hộ -> gợi ý Nilon lót sàn móng).
+
+3. QUY CHUẨN KỸ THUẬT & HƯỚNG DẪN THI CÔNG LÓT BẠT MÀNG PE:
    - Quy chuẩn & Tiêu chuẩn: Đạt tiêu chuẩn ISO 9001:2015, ISO 14001:2015, TCVN 6407:1998, kiểm định xé rách ASTM D1922, độ bền kéo đứt ASTM D882.
-   - Quy trình lót bạt chuẩn:
-     1. Nền đầm chặt, rải lớp cát mịn 3-5cm tránh đá nhọn làm thủng màng.
-     2. Trải nilon phẳng, chèn con kê bê tông.
-     3. Giáp mí (Overlap): Chồng mí tối thiểu 10cm - 20cm giữa các dải màng.
-     4. Dán mối nối bằng băng keo dán màng PE chuyên dụng để chống mất nước xi măng tuyệt đối.
+   - Quy trình lót bạt chuẩn: Nền đầm chặt + rải 3-5cm cát mịn, trải phẳng nilon, giáp mí (Overlap) 10-20cm và dán niêm phong mối nối bằng băng keo PE chuyên dụng.
 
-3. CHÍNH SÁCH VẬN CHUYỂN MIỀN BẮC & TOÀN QUỐC:
-   - TP.HCM / Bình Dương: Giao hỏa tốc xe tải 2h - 4h (Miễn phí từ 1.000kg).
-   - Các tỉnh Miền Bắc & Hà Nội: Vận chuyển xe Container chuyên dụng / Tàu hỏa Bắc Nam từ 2 - 4 ngày. Hỗ trợ 50-100% cước cho đơn > 5 tấn, miễn phí tận kho cho đơn > 10 tấn.
-
-4. HÓA ĐƠN VAT 10%, THANH TOÁN B2B & CHIẾT KHẤU NHÀ THẦU:
-   - Hóa đơn VAT: Xuất 100% Hóa đơn GTGT (VAT 10%) hợp lệ cho các doanh nghiệp, tổng thầu thi công.
-   - Thanh toán B2B: Đặt cọc 30%, 70% thanh toán khi giao hàng và kiểm tra CO/CQ. Hỗ trợ công nợ 30-45 ngày cho Nhà thầu ký hợp đồng dài hạn.
-   - Bảo hành & Đổi trả: 1-đổi-1 trong vòng 7 ngày nếu rách rưới do nhà sản xuất/vận chuyển.
-   - Chiết khấu nhà thầu: <500kg (Giá sỉ tiêu chuẩn), 500-1500kg (Giảm 5%), 1500-5000kg (Giảm 8%), >5000kg (Giảm 12% + Freeship).
+4. CHÍNH SÁCH VẬN CHUYỂN, HÓA ĐƠN VAT & B2B:
+   - Vận chuyển Miền Bắc & Hà Nội: Container / tàu hỏa 2-4 ngày, hỗ trợ 50-100% cước cho đơn > 5 tấn, freeship cho đơn > 10 tấn.
+   - Hóa đơn VAT 10%: Xuất 100% Hóa đơn GTGT hợp lệ cho doanh nghiệp/nhà thầu.
+   - Thanh toán B2B & Đổi trả: Cọc 30%, 70% khi nhận hàng & nghiệm thu CO/CQ, công nợ 30-45 ngày cho nhà thầu dài hạn, đổi trả 1-đổi-1 trong 7 ngày.
 
 DANH MỤC TOÀN BỘ SẢN PHẨM & ĐƠN GIÁ ĐANG BÁN TRÊN WEBSITE NILONXAYDUNG.VN:
 ${websiteCatalog}
@@ -217,27 +213,28 @@ export async function POST(request: Request) {
         const unitStr = quoteCalc.unitLabel || 'cái';
         const isNilon = !quoteCalc.isSafetyEquipment;
 
-        const explanation = isNilon
-          ? `Dạ em xin gửi anh/chị Thông tin chi tiết Kỹ thuật & Báo giá sản phẩm ${quoteCalc.product.name}:
+        const variantsListStr = quoteCalc.allVariants && quoteCalc.allVariants.length > 0
+          ? quoteCalc.allVariants.map((v, i) => `${i + 1}. ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit}`).join('\n')
+          : `- ${quoteCalc.product.name}: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${quoteCalc.unitLabel || 'kg'}`;
 
-📋 THÔNG SỐ KỸ THUẬT & QUY CÁCH:
-- Độ dày Zem: ${quoteCalc.product.thicknessZem} (${quoteCalc.product.thicknessMm})
-- Loại nhựa: ${quoteCalc.product.resinType}
-- Độ xé rách ASTM: ${quoteCalc.product.tearStrength}
-- Quy cách khổ: ${quoteCalc.product.rollWidth} - ${quoteCalc.product.rollLength}
+        const relatedListStr = quoteCalc.relatedProducts && quoteCalc.relatedProducts.length > 0
+          ? quoteCalc.relatedProducts.map((r, i) => `• ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
+          : '• Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n• Bạt che công trình xanh cam: 15.000 VNĐ / m²\n• Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
+
+        const explanation = `Dạ em xin gửi Anh/Chị danh sách ĐẦY ĐỦ các loại sản phẩm ${quoteCalc.product.name} đang bán trên website NilonXayDung.vn:
+
+📦 TẤT CẢ CÁC BIẾN THỂ & QUY CÁCH HIỆN CÓ:
+${variantsListStr}
+
+💡 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG NÊN MUA CÙNG:
+${relatedListStr}
+
+📋 THÔNG SỐ & CHỨNG CHỈ SẢN PHẨM PHÙ HỢP NHẤT (${quoteCalc.product.name}):
 - Chứng chỉ chất lượng: ${quoteCalc.product.isoCertificates.join(', ')}
-- Ứng dụng thi công: ${quoteCalc.product.bestFor}
+- Độ bền xé rách ASTM: ${quoteCalc.product.tearStrength} | Độ bền kéo: ${quoteCalc.product.tensileStrength}
+- Khuyên dùng cho: ${quoteCalc.product.bestFor}
 
-💰 ĐƠN GIÁ NIÊM YẾT:
-- Đơn giá tính theo 1 kg: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / kg
-- Đơn giá 1 Cuộn (~50kg): ${(quoteCalc.unitPriceBeforeDiscount * 50).toLocaleString('vi-VN')} VNĐ / cuộn (Dự kiến trải ~${quoteCalc.estimatedAreaSqM || 330} m² sàn)
-
-Anh/Chị cần tư vấn thêm độ zem hay muốn xuất File Báo giá PDF cho công trình không ạ?`
-          : `Dạ em xin thông báo đơn giá của ${quoteCalc.product.name}:
-- Sản phẩm: ${quoteCalc.product.name}
-- Giá 1 sản phẩm: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${unitStr} (Đã bao gồm VAT)
-
-Anh/Chị cần tư vấn thêm thông số kỹ thuật hay muốn xuất File Báo giá PDF theo số lượng công trình không ạ?`;
+Anh/Chị cần tư vấn thêm khối lượng số lượng kg hay muốn xuất File Báo giá PDF cho công trình không ạ?`;
 
         return NextResponse.json({
           role: 'assistant',
@@ -358,19 +355,27 @@ function handleFallbackBot(userPrompt: string) {
   // Fallback Product Search
   const calc = calculateQuoteDetails(userPrompt, 1);
   if (!calc.notFound && calc.product) {
-    const isNilon = !calc.isSafetyEquipment;
-    const contentText = isNilon
-      ? `Dạ em xin thông báo đơn giá của ${calc.product.name}:
-- Đơn giá tính theo 1 kg: ${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / kg
-- Đơn giá 1 Cuộn (~50kg): ${(calc.unitPriceBeforeDiscount * 50).toLocaleString('vi-VN')} VNĐ / cuộn
-- Quy cách: Khổ 2m x 100m, lót chống mất nước bê tông
+    const variantsListStr = calc.allVariants && calc.allVariants.length > 0
+      ? calc.allVariants.map((v, i) => `${i + 1}. ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit}`).join('\n')
+      : `- ${calc.product.name}: ${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${calc.unitLabel || 'kg'}`;
 
-Anh/Chị cần tư vấn thêm độ zem hay muốn xuất File Báo giá PDF cho công trình không ạ?`
-      : `Dạ em xin thông báo đơn giá của ${calc.product.name}:
-- Sản phẩm: ${calc.product.name}
-- Đơn giá niêm yết: ${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${calc.unitLabel || 'cái'} (Đã bao gồm VAT)
+    const relatedListStr = calc.relatedProducts && calc.relatedProducts.length > 0
+      ? calc.relatedProducts.map((r, i) => `• ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
+      : '• Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n• Bạt che công trình xanh cam: 15.000 VNĐ / m²\n• Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
 
-Anh/Chị cần tư vấn thêm thông số kỹ thuật hay muốn xuất File Báo giá PDF không ạ?`;
+    const contentText = `Dạ em xin gửi Anh/Chị danh sách ĐẦY ĐỦ các loại sản phẩm ${calc.product.name} đang bán trên website NilonXayDung.vn:
+
+📦 TẤT CẢ CÁC BIẾN THỂ & QUY CÁCH HIỆN CÓ:
+${variantsListStr}
+
+💡 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG NÊN MUA CÙNG:
+${relatedListStr}
+
+📋 CHỨNG CHỈ & TIÊU CHUẨN:
+- Chứng chỉ ISO: ${calc.product.isoCertificates.join(', ')}
+- Khuyên dùng: ${calc.product.bestFor}
+
+Anh/Chị cần tư vấn thêm độ zem hay muốn xuất File Báo giá PDF cho công trình không ạ?`;
 
     return NextResponse.json({
       role: 'assistant',
