@@ -70,7 +70,33 @@ export const AI_KNOWLEDGE_BASE = {
       recycledResin: "Hạt nhựa tái sinh Grade A (đen/xám/xanh): Sản xuất từ nilon chọn lọc tái chế, độ bền xé rách vừa phải (ASTM D1922 > 200 g/mil), chi phí tiết kiệm 25-35%, rất phù hợp lót sàn đổ bê tông lót móng 1 lần."
     },
     tearStrengthTest: "Tiêu chuẩn đo độ xé rách ASTM D1922 (Elmendorf Tear Strength) đảm bảo màng nilon không bị thủng/xé rách khi công nhân di chuyển, kéo thép hoặc đổ bê tông đá 1x2 tươi trực tiếp lên trên.",
+    tensileStrengthTest: "Tiêu chuẩn ASTM D882 đo độ bền kéo đứt màng PE (22 - 40 MPa), đảm bảo màng không bị biến dạng khi lót dưới tải trọng bê tông tươi nặng từ 2.4-2.5 tấn/m³.",
     safetyStandards: "Thiết bị bảo hộ lao động đạt tiêu chuẩn TCVN 6407:1998, CE S3, nhựa HDPE/ABS chịu lực chống va đập, đế/mũi lót thép chống đinh dập ngón."
+  },
+
+  constructionGuides: {
+    foundationPreparation: "Quy trình lót màng nilon đổ bê tông chuẩn kỹ thuật:\n1. Nền đất/đá dăm cần được đầm chặt và phủ lớp cát mịn 3-5cm để tránh đá nhọn làm thủng màng.\n2. Trải cuộn nilon phẳng, không bị nhăn nheo hay đọng nước.\n3. Giáp mí (Overlap): Các dải nilon chồng lên nhau tối thiểu 10cm - 20cm để chống thất thoát nước xi măng và ngăn hơi ẩm từ đất chèn lên.\n4. Dán niêm phong mối nối: Sử dụng băng keo dán màng chuyên dụng hoặc keo dán PE tại các đoạn nối nilon.\n5. Đặt con kê bê tông và thi công cốt thép cẩn thận, tránh va đập nhọn trực tiếp vào màng."
+  },
+
+  commercialPolicies: {
+    vatInvoice: {
+      status: "Có hỗ trợ 100%",
+      detail: "Công ty xuất đầy đủ Hóa đơn Giá trị Gia tăng (VAT 10%) hợp lệ cho các doanh nghiệp, tổng thầu thi công, công ty xây dựng. Giá niêm yết trên hợp đồng đã bao gồm hoặc chưa bao gồm VAT theo thỏa thuận."
+    },
+    b2bPaymentTerms: {
+      standard: "Đặt cọc 30% khi ký hợp đồng/chốt đơn hàng, thanh toán 70% còn lại ngay khi giao hàng đến công trình và nghiệm thu chứng chỉ CO/CQ.",
+      contractorCredit: "Hỗ trợ bảo lãnh / công nợ từ 30 - 45 ngày đối với các Nhà thầu chính, Tổng thầu xây dựng có hợp đồng cung ứng vật tư dài hạn hoặc đơn hàng lớn định kỳ."
+    },
+    returnAndExchange: {
+      policy: "Chính sách đổi trả 1-đổi-1 trong vòng 7 ngày kể từ khi nhận hàng.",
+      conditions: "Đổi mới miễn phí 100% nếu cuộn nilon bị rách rưới, sai độ zem, thiếu kg, rách nát do lỗi vận chuyển hoặc lỗi sản xuất từ nhà máy."
+    },
+    contractorDiscounts: {
+      smallOrder: "Đơn hàng < 500kg: Giá sỉ tiêu chuẩn.",
+      mediumOrder: "Đơn hàng 500kg - 1.500kg: Chiết khấu 5%.",
+      largeOrder: "Đơn hàng 1.500kg - 5.000kg: Chiết khấu 8%.",
+      vipContractor: "Đơn hàng > 5.000kg hoặc Đối tác Nhà thầu thân thiết: Chiết khấu 12% + Miễn phí vận chuyển tận công trình."
+    }
   },
 
   products: [
@@ -164,10 +190,10 @@ export const AI_KNOWLEDGE_BASE = {
   ] as PriceTier[],
 
   shippingFees: [
-    { region: "Nội thành TP.HCM / Bình Dương / Đồng Nai", estimatedFee: "200.000đ - 350.000đ / chuyến xe tải", freeShippingMinKg: 1000 },
-    { region: "Tỉnh Miền Tây & Đông Nam Bộ (Long An, Tiền Giang, Tây Ninh...)", estimatedFee: "500đ - 800đ / kg (Gửi xe chành hoặc giao tận công trình)", freeShippingMinKg: 3000 },
-    { region: "Tỉnh Tây Nguyên & Miền Trung (Lâm Đồng, Đắc Lắk, Bình Thuận...)", estimatedFee: "800đ - 1.200đ / kg", freeShippingMinKg: 5000 },
-    { region: "Các tỉnh Miền Bắc & Hà Nội", estimatedFee: "1.200đ - 1.800đ / kg (Gửi xe container/tàu hỏa)", freeShippingMinKg: 10000 }
+    { region: "Nội thành TP.HCM / Bình Dương / Đồng Nai", estimatedFee: "200.000đ - 350.000đ / chuyến xe tải (Giao hỏa tốc 2h - 4h)", freeShippingMinKg: 1000 },
+    { region: "Tỉnh Miền Tây & Đông Nam Bộ (Long An, Tiền Giang, Tây Ninh...)", estimatedFee: "500đ - 800đ / kg (Gửi xe chành hoặc xe tải giao tận công trình trong ngày)", freeShippingMinKg: 3000 },
+    { region: "Tỉnh Tây Nguyên & Miền Trung (Lâm Đồng, Đắc Lắk, Bình Thuận...)", estimatedFee: "800đ - 1.200đ / kg (Thời gian giao 1 - 2 ngày)", freeShippingMinKg: 5000 },
+    { region: "Các tỉnh Miền Bắc & Hà Nội (Hà Nội, Hải Phòng, Bắc Ninh, Quảng Ninh...)", estimatedFee: "1.200đ - 1.800đ / kg (Vận chuyển xe Container chuyên dụng / Tàu hỏa Bắc Nam 2 - 4 ngày). Hỗ trợ 50-100% cước cho đơn > 5 tấn, miễn phí giao tận kho cho đơn > 10 tấn.", freeShippingMinKg: 10000 }
   ] as ShippingPolicy[]
 };
 

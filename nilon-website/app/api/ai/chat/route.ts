@@ -93,7 +93,10 @@ const ON_TOPIC_KEYWORDS = [
   'bảo hộ', 'bảo hộ lao động', 'mũ', 'mũ bảo hộ', 'nón bảo hộ', 'găng', 'găng tay',
   'giày', 'giày bảo hộ', 'ủng', 'ủng bảo hộ', 'quần áo', 'áo phản quang', 'đồng phục',
   'dây đai', 'dây đai an toàn', 'chống rơi', 'bạt', 'bạt che', 'bạc che', 'băng keo',
-  'bình chữa cháy', 'kính', 'kính bảo hộ', 'khẩu trang', 'lưới', 'lưới bao che'
+  'bình chữa cháy', 'kính', 'kính bảo hộ', 'khẩu trang', 'lưới', 'lưới bao che',
+  // Commercial, technical, delivery & policy keywords
+  'vat', 'hóa đơn', 'thanh toán', 'công nợ', 'đặt cọc', 'miền bắc', 'hà nội', 'hải phòng',
+  'chiết khấu', 'đổi trả', 'bảo hành', 'thi công', 'overlap', 'giáp mí', 'chành xe', 'container'
 ];
 
 const OFF_TOPIC_REPLY = `Dạ xin lỗi Anh/Chị, em là AI Sales Assistant của Nilon Xây Dựng nên chỉ có thể hỗ trợ các câu hỏi liên quan đến sản phẩm vật tư nilon xây dựng, màng PE, trang thiết bị bảo hộ lao động và báo giá công trình có trên website ạ.
@@ -127,11 +130,23 @@ QUY TẮC BẮT BUỘC (TUÂN THỦ 100%):
    - KHÔNG dùng ** để bôi đậm, KHÔNG dùng * để in nghiêng, KHÔNG dùng * để làm gạch đầu dòng.
    - Hãy dùng chữ thường, chữ HOA, emoji hoặc gạch đầu dòng (-) / dải chấm (•) để trình bày.
 
-2. CƠ CHẾ LỰA CHỌN & PHẢN HỒI THÔNG MINH:
-   - Tra cứu giá & sản phẩm: Khi khách hỏi về bất kỳ sản phẩm nào có trên website, hãy tra cứu đúng Tên sản phẩm, Đơn giá (VNĐ), Đơn vị tính và Thông số kỹ thuật từ DANH MỤC SẢN PHẨM WEBSITE bên dưới.
-   - Khuyên dùng thông minh: Khi khách mô tả nhu cầu thi công (vd: lót sàn nhà xưởng, chống thấm móng sâu, thi công trên cao, trang bị bảo hộ thợ hàn...), hãy LỰA CHỌN THÔNG MINH sản phẩm tốt nhất có trên website, cung cấp tên sản phẩm, đơn giá và lý giải lý do tư vấn.
-   - Thông tin doanh nghiệp: Cung cấp các chứng chỉ ISO 9001:2015, ISO 14001:2015, TCVN 6407:1998, địa chỉ nhà máy KCN Tân Bình & KCN Sóng Thần, Hotline 0901.234.567.
-   - Sản phẩm không có hoặc câu hỏi ngoài lề: Lịch sự thông báo sản phẩm/chủ đề chưa có trên website và hướng dẫn khách tham khảo các sản phẩm có sẵn hoặc liên hệ Zalo OA: ${ZALO_CONTACT_URL}.
+2. QUY CHUẨN KỸ THUẬT & HƯỚNG DẪN THI CÔNG LÓT BẠT MÀNG PE:
+   - Quy chuẩn & Tiêu chuẩn: Đạt tiêu chuẩn ISO 9001:2015, ISO 14001:2015, TCVN 6407:1998, kiểm định xé rách ASTM D1922, độ bền kéo đứt ASTM D882.
+   - Quy trình lót bạt chuẩn:
+     1. Nền đầm chặt, rải lớp cát mịn 3-5cm tránh đá nhọn làm thủng màng.
+     2. Trải nilon phẳng, chèn con kê bê tông.
+     3. Giáp mí (Overlap): Chồng mí tối thiểu 10cm - 20cm giữa các dải màng.
+     4. Dán mối nối bằng băng keo dán màng PE chuyên dụng để chống mất nước xi măng tuyệt đối.
+
+3. CHÍNH SÁCH VẬN CHUYỂN MIỀN BẮC & TOÀN QUỐC:
+   - TP.HCM / Bình Dương: Giao hỏa tốc xe tải 2h - 4h (Miễn phí từ 1.000kg).
+   - Các tỉnh Miền Bắc & Hà Nội: Vận chuyển xe Container chuyên dụng / Tàu hỏa Bắc Nam từ 2 - 4 ngày. Hỗ trợ 50-100% cước cho đơn > 5 tấn, miễn phí tận kho cho đơn > 10 tấn.
+
+4. HÓA ĐƠN VAT 10%, THANH TOÁN B2B & CHIẾT KHẤU NHÀ THẦU:
+   - Hóa đơn VAT: Xuất 100% Hóa đơn GTGT (VAT 10%) hợp lệ cho các doanh nghiệp, tổng thầu thi công.
+   - Thanh toán B2B: Đặt cọc 30%, 70% thanh toán khi giao hàng và kiểm tra CO/CQ. Hỗ trợ công nợ 30-45 ngày cho Nhà thầu ký hợp đồng dài hạn.
+   - Bảo hành & Đổi trả: 1-đổi-1 trong vòng 7 ngày nếu rách rưới do nhà sản xuất/vận chuyển.
+   - Chiết khấu nhà thầu: <500kg (Giá sỉ tiêu chuẩn), 500-1500kg (Giảm 5%), 1500-5000kg (Giảm 8%), >5000kg (Giảm 12% + Freeship).
 
 DANH MỤC TOÀN BỘ SẢN PHẨM & ĐƠN GIÁ ĐANG BÁN TRÊN WEBSITE NILONXAYDUNG.VN:
 ${websiteCatalog}
