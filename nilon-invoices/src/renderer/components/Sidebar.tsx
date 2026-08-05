@@ -78,6 +78,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ className = '' }) => {
                   }`}>
                     {currentRole === 'admin' ? 'ADMIN' : 'STAFF'}
                   </span>
+                  <button
+                    onClick={() => {
+                      if (window.electronAPI?.updater?.check) {
+                        window.electronAPI.updater.check();
+                      }
+                      alert('Đang kiểm tra và tự động cập nhật bản mới nhất...');
+                    }}
+                    title="Tự động cập nhật bản mới"
+                    className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-blue-600 hover:bg-blue-700 text-white shadow-xs transition-colors cursor-pointer"
+                  >
+                    Cập nhật
+                  </button>
                 </div>
               </motion.div>
             ) : (

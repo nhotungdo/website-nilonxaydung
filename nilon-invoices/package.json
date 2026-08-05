@@ -8,7 +8,7 @@
   "private": true,
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && electron-builder --dir -c.directories.output=../../release-build",
+    "build": "tsc && vite build && electron-builder",
     "build:dir": "tsc && vite build && electron-builder --dir",
     "compile": "tsc",
     "lint": "eslint . --ext .ts,.tsx",

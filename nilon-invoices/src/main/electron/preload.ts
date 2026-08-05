@@ -67,6 +67,19 @@ const electronAPI = {
     getSettings: () => ipcRenderer.invoke('db:get-settings'),
     saveSettings: (settings: any) => ipcRenderer.invoke('db:save-settings', settings),
     getProducts: () => ipcRenderer.invoke('db:get-products'),
+  },
+
+  // Auto-Updater Operations
+  updater: {
+    check: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATER?.CHECK || 'updater:check'),
+    install: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATER?.INSTALL || 'updater:install'),
+    getStatus: () => ipcRenderer.invoke(IPC_CHANNELS.UPDATER?.GET_STATUS || 'updater:get-status'),
+    onStatus: (callback: (statusData: any) => void) => {
+      const channel = IPC_CHANNELS.UPDATER?.ON_STATUS || 'updater:on-status';
+      const listener = (_event: any, data: any) => callback(data);
+      ipcRenderer.on(channel, listener);
+      return () => ipcRenderer.removeListener(channel, listener);
+    },
   }
 };
 

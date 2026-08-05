@@ -9,7 +9,8 @@ import {
   CheckCircle,
   ToggleLeft,
   ToggleRight,
-  TerminalSquare
+  TerminalSquare,
+  Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../../stores/authStore';
@@ -244,6 +245,42 @@ export const SettingsPage: React.FC = () => {
                 {formData.sound_alert ? <ToggleRight className="h-8 w-8" /> : <ToggleLeft className="h-8 w-8" />}
               </div>
             </div>
+          </div>
+
+          {/* Auto Update Section */}
+          <div className="bg-white border border-[#D2E3F6] rounded-2xl p-6 shadow-[0_4px_12px_rgba(0,0,0,0.01)]">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="h-5 w-5 text-indigo-600" />
+              <h2 className="text-[15px] font-bold text-slate-800">Cập nhật ứng dụng</h2>
+            </div>
+
+            <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-xl p-4 border border-slate-200/80 mb-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-600">Phiên bản hiện tại</span>
+                <span className="text-xs font-extrabold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700">v1.0.0</span>
+              </div>
+              <p className="text-[11px] font-semibold text-slate-500 leading-relaxed">
+                Tự động kiểm tra và nâng cấp lên phiên bản mới nhất đã được sửa xong và đóng gói của hệ thống Nilon Invoices.
+              </p>
+            </div>
+
+            <button
+              type="button"
+              onClick={async () => {
+                try {
+                  if (window.electronAPI?.updater?.check) {
+                    await window.electronAPI.updater.check();
+                  }
+                  alert('Đang kiểm tra và tự động cập nhật bản mới nhất...');
+                } catch (err: any) {
+                  alert(`Lỗi cập nhật: ${err.message}`);
+                }
+              }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold rounded-xl shadow-md shadow-blue-500/20 active:scale-98 transition-all cursor-pointer text-xs"
+            >
+              <Sparkles className="h-4 w-4 text-amber-300 animate-pulse" />
+              <span>Tự động cập nhật bản mới</span>
+            </button>
           </div>
 
           {/* Danger Zone */}

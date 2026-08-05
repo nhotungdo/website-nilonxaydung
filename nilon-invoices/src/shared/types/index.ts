@@ -77,5 +77,12 @@ export interface IOrderPayload {
   createdAt: string;
 }
 
+export interface IUpdateStatus {
+  status: 'idle' | 'checking' | 'available' | 'downloading' | 'downloaded' | 'not-available' | 'error' | 'installing';
+  message: string;
+  progress?: number;
+  version?: string;
+}
+
 export * from './inventory';
 

@@ -42,6 +42,14 @@ export const IPC_CHANNELS = {
     GET_LOGS: 'system:get-logs',
     CLEAR_LOGS: 'system:clear-logs',
     ON_LOG_ADD: 'system:on-log-add',
+  },
+
+  // Auto-Updater Operations
+  UPDATER: {
+    CHECK: 'updater:check',
+    INSTALL: 'updater:install',
+    GET_STATUS: 'updater:get-status',
+    ON_STATUS: 'updater:on-status',
   }
 } as const;
 

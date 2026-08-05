@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import { initDatabase, db } from '../database/sqlite';
 import { db as postgresDb } from '../database/postgres';
 import { registerDatabaseIpcHandlers } from '../ipc/database.ipc';
@@ -8,8 +8,23 @@ import { createSystemTray } from './tray';
 import { printerManager } from '../printer/printer.manager';
 import { socketClient } from '../socket/socket.client';
 import IPC_CHANNELS from '../../shared/events';
-import { IPrinter, IPrintJob, ISystemLog } from '../../shared/types';
+import { IPrinter, IPrintJob, ISystemLog, IUpdateStatus } from '../../shared/types';
 import path from 'path';
+import fs from 'fs';
+
+// Auto-Updater status tracking state
+let currentUpdateStatus: IUpdateStatus = {
+  status: 'idle',
+  message: 'Ứng dụng đã sẵn sàng.'
+};
+
+function broadcastUpdateStatus(newStatus: IUpdateStatus): void {
+  currentUpdateStatus = newStatus;
+  const win = getMainWindow();
+  if (win && win.webContents) {
+    win.webContents.send(IPC_CHANNELS.UPDATER?.ON_STATUS || 'updater:on-status', currentUpdateStatus);
+  }
+}
 
 // Prevent multiple instances of the app from running concurrently on the same machine
 const isSingleInstance = app.requestSingleInstanceLock();
@@ -67,11 +82,6 @@ if (!isSingleInstance) {
 }
 
 function setupAutoUpdater() {
-  if (!app.isPackaged) {
-    logger.info('[AutoUpdater] Skipped in development mode.');
-    return;
-  }
-
   try {
     const { autoUpdater } = require('electron-updater');
     autoUpdater.logger = logger;
@@ -80,38 +90,68 @@ function setupAutoUpdater() {
 
     autoUpdater.on('checking-for-update', () => {
       logger.info('[AutoUpdater] Checking for updates...');
+      broadcastUpdateStatus({
+        status: 'checking',
+        message: 'Đang kiểm tra phiên bản mới nhất từ server...'
+      });
     });
 
     autoUpdater.on('update-available', (info: any) => {
       logger.info(`[AutoUpdater] New update available: v${info.version}`);
+      broadcastUpdateStatus({
+        status: 'available',
+        message: `Phát hiện phiên bản mới v${info.version}! Đang tự động tải về...`,
+        version: info.version
+      });
     });
 
     autoUpdater.on('update-not-available', () => {
       logger.info('[AutoUpdater] App is up to date.');
+      broadcastUpdateStatus({
+        status: 'not-available',
+        message: 'Bạn đang sử dụng phiên bản mới nhất (v1.0.0).'
+      });
     });
 
     autoUpdater.on('error', (err: any) => {
       logger.error(`[AutoUpdater] Error: ${err?.message || err}`);
+      broadcastUpdateStatus({
+        status: 'error',
+        message: `Lỗi kết nối máy chủ cập nhật: ${err?.message || err}`
+      });
     });
 
     autoUpdater.on('download-progress', (progressObj: any) => {
-      logger.info(`[AutoUpdater] Downloading: ${Math.round(progressObj.percent)}%`);
-    });
-
-    autoUpdater.on('update-downloaded', () => {
-      logger.info('[AutoUpdater] Update downloaded. Will install automatically on app restart.');
-    });
-
-    autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
-      logger.error('[AutoUpdater] Initial update check failed:', err?.message || err);
-    });
-
-    // Check for updates every 30 minutes
-    setInterval(() => {
-      autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
-        logger.error('[AutoUpdater] Periodic update check failed:', err?.message || err);
+      const percent = Math.round(progressObj.percent);
+      logger.info(`[AutoUpdater] Downloading: ${percent}%`);
+      broadcastUpdateStatus({
+        status: 'downloading',
+        message: `Đang tự động tải bản mới: ${percent}%`,
+        progress: percent
       });
-    }, 30 * 60 * 1000);
+    });
+
+    autoUpdater.on('update-downloaded', (info: any) => {
+      logger.info('[AutoUpdater] Update downloaded. Ready to install.');
+      broadcastUpdateStatus({
+        status: 'downloaded',
+        message: `Bản mới v${info?.version || '1.0.0'} đã tải xong. Nhấn để cập nhật ngay!`,
+        version: info?.version
+      });
+    });
+
+    if (app.isPackaged) {
+      autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
+        logger.error('[AutoUpdater] Initial update check failed:', err?.message || err);
+      });
+
+      // Check for updates every 30 minutes
+      setInterval(() => {
+        autoUpdater.checkForUpdatesAndNotify().catch((err: any) => {
+          logger.error('[AutoUpdater] Periodic update check failed:', err?.message || err);
+        });
+      }, 30 * 60 * 1000);
+    }
   } catch (err: any) {
     logger.error('[AutoUpdater] Setup error:', err?.message || err);
   }
@@ -291,5 +331,104 @@ function registerIpcHandlers(): void {
   ipcMain.handle(IPC_CHANNELS.SYSTEM.CLEAR_LOGS, () => {
     db.prepare('DELETE FROM printer_logs').run();
     return { success: true };
+  });
+
+  // --- AUTO UPDATER IPC HANDLERS ---
+  ipcMain.handle(IPC_CHANNELS.UPDATER.GET_STATUS, () => {
+    return currentUpdateStatus;
+  });
+
+  ipcMain.handle(IPC_CHANNELS.UPDATER.CHECK, async () => {
+    logger.info('[IPC] Auto-update check manually triggered.');
+    broadcastUpdateStatus({
+      status: 'checking',
+      message: 'Đang kết nối hệ thống để tìm bản cập nhật mới nhất...'
+    });
+
+    if (app.isPackaged) {
+      try {
+        const { autoUpdater } = require('electron-updater');
+        const checkResult = await autoUpdater.checkForUpdates();
+        return { success: true, checkResult };
+      } catch (err: any) {
+        broadcastUpdateStatus({
+          status: 'error',
+          message: `Không thể tìm thấy bản cập nhật trực tuyến: ${err.message}`
+        });
+        return { success: false, error: err.message };
+      }
+    }
+
+    // Local / Dev Mode Fallback check for compiled latest installer or unpacked binary
+    const releaseInstaller = path.join(app.getAppPath(), 'release', 'Nilon Invoices Setup 1.0.0.exe');
+    const unpackedExe = path.join(app.getAppPath(), 'release', 'win-unpacked', 'Nilon Invoices.exe');
+
+    if (fs.existsSync(releaseInstaller)) {
+      broadcastUpdateStatus({
+        status: 'downloaded',
+        message: 'Đã phát hiện bộ cài bản mới nhất (Nilon Invoices Setup 1.0.0.exe). Bạn có thể nâng cấp ngay!',
+        version: '1.0.0'
+      });
+      return { success: true, hasLocalUpdate: true };
+    } else if (fs.existsSync(unpackedExe)) {
+      broadcastUpdateStatus({
+        status: 'downloaded',
+        message: 'Đã phát hiện bản thực thi mới nhất (Nilon Invoices.exe). Sẵn sàng khởi chạy!',
+        version: '1.0.0'
+      });
+      return { success: true, hasLocalUpdate: true };
+    } else {
+      broadcastUpdateStatus({
+        status: 'not-available',
+        message: 'Ứng dụng hiện tại đã ở phiên bản mới nhất v1.0.0.'
+      });
+      return { success: true, isLatest: true };
+    }
+  });
+
+  ipcMain.handle(IPC_CHANNELS.UPDATER.INSTALL, async () => {
+    logger.info('[IPC] Auto-update installation triggered.');
+
+    if (app.isPackaged) {
+      try {
+        const { autoUpdater } = require('electron-updater');
+        autoUpdater.quitAndInstall(false, true);
+        return { success: true };
+      } catch (err: any) {
+        logger.error('[AutoUpdater] Quit and install failed:', err);
+      }
+    }
+
+    // Local execution fallback
+    const releaseInstaller = path.join(app.getAppPath(), 'release', 'Nilon Invoices Setup 1.0.0.exe');
+    const unpackedExe = path.join(app.getAppPath(), 'release', 'win-unpacked', 'Nilon Invoices.exe');
+
+    if (fs.existsSync(releaseInstaller)) {
+      broadcastUpdateStatus({
+        status: 'installing',
+        message: 'Đang mở bộ cài bản mới nhất Nilon Invoices Setup 1.0.0.exe...'
+      });
+      shell.openPath(releaseInstaller);
+      setTimeout(() => {
+        app.quit();
+      }, 1500);
+      return { success: true };
+    } else if (fs.existsSync(unpackedExe)) {
+      broadcastUpdateStatus({
+        status: 'installing',
+        message: 'Đang khởi chạy phiên bản mới nhất Nilon Invoices.exe...'
+      });
+      shell.openPath(unpackedExe);
+      setTimeout(() => {
+        app.quit();
+      }, 1500);
+      return { success: true };
+    } else {
+      broadcastUpdateStatus({
+        status: 'error',
+        message: 'Không tìm thấy tệp cài đặt bản mới trong thư mục release.'
+      });
+      return { success: false, error: 'Installer file not found' };
+    }
   });
 }
