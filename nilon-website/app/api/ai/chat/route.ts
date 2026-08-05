@@ -121,28 +121,36 @@ function buildSystemPrompt(): string {
 
   return `
 Bạn là "AI Sales Assistant" - Chuyên gia tư vấn kỹ thuật & báo giá tự động 24/7 của CÔNG TY TNHH SX & TM NILON XÂY DỰNG.
-Phong cách giao tiếp: Chuyên nghiệp, am hiểu sâu sắc về kỹ thuật vật tư công trình & trang thiết bị bảo hộ lao động, lịch sự, tư vấn nhanh gọn.
+Phong cách giao tiếp: Thân thiện, lịch sự, chuyên nghiệp, tư vấn trực tiếp và nhanh gọn.
 
-QUY TẮC BẮT BUỘC (TUÂN THỦ 100%):
+QUY TẮC PHẢN HỒI KHI KHÁCH HỎI BẤT KỲ SẢN PHẨM NÀO (TUÂN THỦ FORMAT CHUẨN 100%):
 
 1. CẤM SỬ DỤNG DẤU SAO '*':
    - Tuyệt đối KHÔNG SỬ DỤNG bất kỳ ký hiệu dấu sao '*' nào trong toàn bộ câu trả lời.
-   - KHÔNG dùng ** để bôi đậm, KHÔNG dùng * để in nghiêng, KHÔNG dùng * me làm gạch đầu dòng.
-   - Hãy dùng chữ thường, chữ HOA, emoji hoặc gạch đầu dòng (-) / dải chấm (•) để trình bày.
+   - KHÔNG dùng ** để bôi đậm, KHÔNG dùng * để in nghiêng. Hãy dùng chữ thường, chữ HOA, emoji hoặc gạch đầu dòng (-).
 
-2. BẮT BUỘC LIỆT KÊ ĐẦY ĐỦ CÁC LOẠI SẢN PHẨM VÀ SẢN PHẨM LIÊN QUAN:
-   - Khi khách hàng hỏi về 1 sản phẩm hoặc dòng sản phẩm nào đó (ví dụ: nilon lót sàn, màng PE, mũ bảo hộ, giày bảo hộ, găng tay, bạt che...):
-     + PHẢI LIỆT KÊ ĐẦY ĐỦ TẤT CẢ các chủng loại / độ dày Zem / quy cách hiện có của dòng sản phẩm đó trên website cùng với Đơn giá (VNĐ) và Đơn vị tính tương ứng.
-     + PHẢI GỢI Ý THÊM từ 2 - 3 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG (vd: hỏi Nilon lót sàn -> gợi ý Băng keo dán màng PE, Bạt che công trình, Mũ & Giày bảo hộ; hỏi Bảo hộ -> gợi ý Nilon lót sàn móng).
+2. CẤU TRÚC PHẢN HỒI MẪU 3 (THÂN THIỆN & TRỰC TIẾP):
+   Khi khách hỏi về bất kỳ sản phẩm nào, bạn BẮT BUỘC trả lời theo đúng cấu trúc 3 phần sau:
 
-3. QUY CHUẨN KỸ THUẬT & HƯỚNG DẪN THI CÔNG LÓT BẠT MÀNG PE:
-   - Quy chuẩn & Tiêu chuẩn: Đạt tiêu chuẩn ISO 9001:2015, ISO 14001:2015, TCVN 6407:1998, kiểm định xé rách ASTM D1922, độ bền kéo đứt ASTM D882.
-   - Quy trình lót bạt chuẩn: Nền đầm chặt + rải 3-5cm cát mịn, trải phẳng nilon, giáp mí (Overlap) 10-20cm và dán niêm phong mối nối bằng băng keo PE chuyên dụng.
+   Dạ em chào Anh/Chị! Em xin gửi thông tin chi tiết về [Tên Dòng Sản Phẩm]:
 
-4. CHÍNH SÁCH VẬN CHUYỂN, HÓA ĐƠN VAT & B2B:
-   - Vận chuyển Miền Bắc & Hà Nội: Container / tàu hỏa 2-4 ngày, hỗ trợ 50-100% cước cho đơn > 5 tấn, freeship cho đơn > 10 tấn.
-   - Hóa đơn VAT 10%: Xuất 100% Hóa đơn GTGT hợp lệ cho doanh nghiệp/nhà thầu.
-   - Thanh toán B2B & Đổi trả: Cọc 30%, 70% khi nhận hàng & nghiệm thu CO/CQ, công nợ 30-45 ngày cho nhà thầu dài hạn, đổi trả 1-đổi-1 trong 7 ngày.
+   1. BẢNG GIÁ ĐỦ LOẠI TẠI KHO:
+   - [Tên biến thể 1]: [Đơn giá] VNĐ / [Đơn vị] ([Ứng dụng nổi bật])
+   - [Tên biến thể 2]: [Đơn giá] VNĐ / [Đơn vị] ([Ứng dụng nổi bật])
+   (Liệt kê ĐẦY ĐỦ các chủng loại/độ zem hiện có của dòng sản phẩm đó trên website)
+
+   2. VẬT TƯ MUA CÙNG:
+   - [Sản phẩm liên quan 1]: [Đơn giá] VNĐ / [Đơn vị]
+   - [Sản phẩm liên quan 2]: [Đơn giá] VNĐ / [Đơn vị]
+   (Gợi ý 2-3 sản phẩm đồng bộ thi công như Băng keo dán màng PE, Bạt che xanh cam, Mũ/Giày/Găng tay bảo hộ)
+
+   3. ƯU ĐÃI & CHÍNH SÁCH:
+   - Chiết khấu sỉ 5% đến 12% theo khối lượng (từ 500kg trở lên)
+   - Đầy đủ chứng chỉ ISO 9001/14001, TCVN 6407 & Hóa đơn VAT 10%
+   - Giao hỏa tốc TPHCM/Bình Dương 2h-4h hoặc vận chuyển Container/Tàu hỏa đi Hà Nội & Miền Bắc (2-4 ngày)
+   - Đổi trả 1-đổi-1 trong 7 ngày nếu lỗi sản xuất/vận chuyển
+
+   [Lời mời khép lại thân thiện: Anh/Chị cần lấy loại nào hay muốn em tính số kg theo m² sàn hoặc xuất PDF báo giá ạ?]
 
 DANH MỤC TOÀN BỘ SẢN PHẨM & ĐƠN GIÁ ĐANG BÁN TRÊN WEBSITE NILONXAYDUNG.VN:
 ${websiteCatalog}
@@ -214,27 +222,28 @@ export async function POST(request: Request) {
         const isNilon = !quoteCalc.isSafetyEquipment;
 
         const variantsListStr = quoteCalc.allVariants && quoteCalc.allVariants.length > 0
-          ? quoteCalc.allVariants.map((v, i) => `${i + 1}. ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit}`).join('\n')
+          ? quoteCalc.allVariants.map((v) => `- ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit} (${v.description || 'Tiêu chuẩn công trình'})`).join('\n')
           : `- ${quoteCalc.product.name}: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${quoteCalc.unitLabel || 'kg'}`;
 
         const relatedListStr = quoteCalc.relatedProducts && quoteCalc.relatedProducts.length > 0
-          ? quoteCalc.relatedProducts.map((r, i) => `• ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
-          : '• Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n• Bạt che công trình xanh cam: 15.000 VNĐ / m²\n• Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
+          ? quoteCalc.relatedProducts.map((r) => `- ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
+          : '- Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n- Bạt che công trình xanh cam: 15.000 VNĐ / m²\n- Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
 
-        const explanation = `Dạ em xin gửi Anh/Chị danh sách ĐẦY ĐỦ các loại sản phẩm ${quoteCalc.product.name} đang bán trên website NilonXayDung.vn:
+        const explanation = `Dạ em chào Anh/Chị! Em xin gửi thông tin chi tiết về ${quoteCalc.product.name}:
 
-📦 TẤT CẢ CÁC BIẾN THỂ & QUY CÁCH HIỆN CÓ:
+1. BẢNG GIÁ ĐỦ LOẠI TẠI KHO:
 ${variantsListStr}
 
-💡 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG NÊN MUA CÙNG:
+2. VẬT TƯ MUA CÙNG:
 ${relatedListStr}
 
-📋 THÔNG SỐ & CHỨNG CHỈ SẢN PHẨM PHÙ HỢP NHẤT (${quoteCalc.product.name}):
-- Chứng chỉ chất lượng: ${quoteCalc.product.isoCertificates.join(', ')}
-- Độ bền xé rách ASTM: ${quoteCalc.product.tearStrength} | Độ bền kéo: ${quoteCalc.product.tensileStrength}
-- Khuyên dùng cho: ${quoteCalc.product.bestFor}
+3. ƯU ĐÃI & CHÍNH SÁCH:
+- Chiết khấu sỉ 5% đến 12% theo khối lượng (từ 500kg trở lên)
+- Đầy đủ chứng chỉ ISO 9001/14001, TCVN 6407 & Hóa đơn VAT 10%
+- Giao hỏa tốc TPHCM/Bình Dương 2h-4h hoặc xe Container/Tàu hỏa đi Hà Nội & Miền Bắc (2-4 ngày)
+- Đổi trả 1-đổi-1 trong vòng 7 ngày nếu lỗi sản xuất/vận chuyển
 
-Anh/Chị cần tư vấn thêm khối lượng số lượng kg hay muốn xuất File Báo giá PDF cho công trình không ạ?`;
+Anh/Chị cần lấy mẫu nào hay muốn em tính thử số kg theo diện tích m² sàn nhà mình ạ?`;
 
         return NextResponse.json({
           role: 'assistant',
@@ -356,26 +365,28 @@ function handleFallbackBot(userPrompt: string) {
   const calc = calculateQuoteDetails(userPrompt, 1);
   if (!calc.notFound && calc.product) {
     const variantsListStr = calc.allVariants && calc.allVariants.length > 0
-      ? calc.allVariants.map((v, i) => `${i + 1}. ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit}`).join('\n')
+      ? calc.allVariants.map((v) => `- ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit} (${v.description || 'Tiêu chuẩn công trình'})`).join('\n')
       : `- ${calc.product.name}: ${calc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${calc.unitLabel || 'kg'}`;
 
     const relatedListStr = calc.relatedProducts && calc.relatedProducts.length > 0
-      ? calc.relatedProducts.map((r, i) => `• ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
-      : '• Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n• Bạt che công trình xanh cam: 15.000 VNĐ / m²\n• Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
+      ? calc.relatedProducts.map((r) => `- ${r.name}: ${r.price.toLocaleString('vi-VN')} VNĐ / ${r.unit}`).join('\n')
+      : '- Băng keo công nghiệp dán màng PE: 12.000 VNĐ / cuộn\n- Bạt che công trình xanh cam: 15.000 VNĐ / m²\n- Mũ bảo hộ công trình HDPE: 45.000 VNĐ / cái';
 
-    const contentText = `Dạ em xin gửi Anh/Chị danh sách ĐẦY ĐỦ các loại sản phẩm ${calc.product.name} đang bán trên website NilonXayDung.vn:
+    const contentText = `Dạ em chào Anh/Chị! Em xin gửi thông tin chi tiết về ${calc.product.name}:
 
-📦 TẤT CẢ CÁC BIẾN THỂ & QUY CÁCH HIỆN CÓ:
+1. BẢNG GIÁ ĐỦ LOẠI TẠI KHO:
 ${variantsListStr}
 
-💡 SẢN PHẨM LIÊN QUAN / ĐỒNG BỘ THI CÔNG NÊN MUA CÙNG:
+2. VẬT TƯ MUA CÙNG:
 ${relatedListStr}
 
-📋 CHỨNG CHỈ & TIÊU CHUẨN:
-- Chứng chỉ ISO: ${calc.product.isoCertificates.join(', ')}
-- Khuyên dùng: ${calc.product.bestFor}
+3. ƯU ĐÃI & CHÍNH SÁCH:
+- Chiết khấu sỉ 5% đến 12% theo khối lượng (từ 500kg trở lên)
+- Đầy đủ chứng chỉ ISO 9001/14001, TCVN 6407 & Hóa đơn VAT 10%
+- Giao hỏa tốc TPHCM/Bình Dương 2h-4h hoặc xe Container/Tàu hỏa đi Hà Nội & Miền Bắc (2-4 ngày)
+- Đổi trả 1-đổi-1 trong vòng 7 ngày nếu lỗi sản xuất/vận chuyển
 
-Anh/Chị cần tư vấn thêm độ zem hay muốn xuất File Báo giá PDF cho công trình không ạ?`;
+Anh/Chị cần lấy mẫu nào hay muốn em tính thử số kg theo diện tích m² sàn nhà mình ạ?`;
 
     return NextResponse.json({
       role: 'assistant',
