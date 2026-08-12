@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order_model.dart';
+import '../models/system_notification_model.dart';
 import '../services/order_api_service.dart';
 import '../services/notification_service.dart';
+import '../providers/system_notification_provider.dart';
 
 class OrderProvider extends ChangeNotifier {
   List<OrderModel> _orders = [];
@@ -51,18 +53,36 @@ class OrderProvider extends ChangeNotifier {
   void _subscribeRealtime() {
     _realtimeChannel = OrderApiService.subscribeToNewOrders(
       onNewOrder: (order) {
-        // Check if this order already exists in the list (update) or is new (insert)
+        // Chỉ xử lý INSERT (đơn hàng mới)
         final existingIndex = _orders.indexWhere((o) => o.id == order.id);
-        if (existingIndex >= 0) {
-          // UPDATE: cập nhật đơn cũ — không thông báo
-          _orders[existingIndex] = order;
-        } else {
-          // INSERT: đơn hàng mới — thêm vào đầu danh sách và thông báo
+        if (existingIndex < 0) {
           _orders.insert(0, order);
           NotificationService.showNewOrderNotification(order);
+          
+          // Dispatch in-app notification history
+          SystemNotificationProvider.dispatch(SystemNotificationModel(
+            title: 'Đơn hàng mới',
+            message: 'Đơn hàng ${order.orderCode} từ ${order.customerName} đã được tạo.',
+            type: 'info',
+            payloadRoute: '/orders',
+          ));
+          
           debugPrint('[OrderProvider] New order received — notification sent: ${order.orderCode}');
+          notifyListeners();
         }
-        notifyListeners();
+      },
+      onOrderUpdated: (orderId, updatedFields) {
+        // Xử lý UPDATE (nhận payload từ DB và cập nhật local model mà không fetch lại)
+        final existingIndex = _orders.indexWhere((o) => o.id == orderId);
+        if (existingIndex >= 0) {
+          final oldOrder = _orders[existingIndex];
+          _orders[existingIndex] = oldOrder.copyWith(
+            printStatus: updatedFields['print_status'] as String?,
+            orderStatus: updatedFields['order_status'] as String?,
+            // Thêm các fields khác nếu cần update realtime
+          );
+          notifyListeners();
+        }
       },
       onError: (error) {
         debugPrint('[OrderProvider] Realtime error: $error');

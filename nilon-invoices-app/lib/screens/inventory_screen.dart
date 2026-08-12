@@ -230,6 +230,8 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
               ),
               child: TabBar(
                 controller: _tabController,
+                isScrollable: true,
+                tabAlignment: TabAlignment.start,
                 indicatorColor: AppTheme.primaryTeal,
                 indicatorWeight: 3,
                 labelColor: AppTheme.primaryTeal,
@@ -408,7 +410,13 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                                         child: Text(item.sku, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 11, color: AppTheme.textMuted)),
                                       ),
                                       const SizedBox(width: 8),
-                                      Text(item.category, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.primaryTeal)),
+                                      Flexible(
+                                        child: Text(
+                                          item.category,
+                                          style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 12, color: AppTheme.primaryTeal),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
                                     ],
                                   ),
                                   const SizedBox(height: 4),
@@ -429,7 +437,9 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                                 ),
                                 Text('Cảnh báo min: ${item.minStockAlert.toStringAsFixed(0)}', style: const TextStyle(fontSize: 11, color: AppTheme.textMuted)),
                                 const SizedBox(height: 4),
-                                Row(
+                                Wrap(
+                                  spacing: 4,
+                                  runSpacing: 4,
                                   children: [
                                     IconButton(
                                       icon: const Icon(Icons.edit_rounded, size: 18, color: Colors.blueAccent),
@@ -487,7 +497,13 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                     children: [
                       Row(
                         children: [
-                          Text(rc.receiptCode, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal)),
+                          Flexible(
+                            child: Text(
+                              rc.receiptCode,
+                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.primaryTeal),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                           const SizedBox(width: 10),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -566,7 +582,13 @@ class _InventoryScreenState extends State<InventoryScreen> with SingleTickerProv
                             child: Text(typeLabel, style: TextStyle(fontSize: 10, fontWeight: FontWeight.bold, color: isAdd ? AppTheme.colorEmerald : Colors.orange)),
                           ),
                           const SizedBox(width: 8),
-                          Text('Mã Ref: ${tx.referenceCode}', style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textMuted)),
+                          Flexible(
+                            child: Text(
+                              'Mã Ref: ${tx.referenceCode}',
+                              style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: AppTheme.textMuted),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 4),
@@ -867,6 +889,7 @@ class _CreateStockInDialogState extends State<_CreateStockInDialog> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedProductId,
                   decoration: InputDecoration(labelText: 'Chọn sản phẩm nhập kho', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                   items: items

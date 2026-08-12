@@ -3,7 +3,9 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../providers/queue_provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/system_notification_provider.dart';
 import '../theme/app_theme.dart';
+import 'notifications_dialog.dart';
 
 class AdminTopbar extends StatelessWidget {
   final String title;
@@ -15,6 +17,7 @@ class AdminTopbar extends StatelessWidget {
   Widget build(BuildContext context) {
     final queueProvider = context.watch<QueueProvider>();
     final user = context.watch<AuthProvider>().currentUser;
+    final notificationProvider = context.watch<SystemNotificationProvider>();
     final formattedDate = DateFormat("'Ngày' dd 'Tháng' MM, yyyy", 'vi_VN').format(DateTime.now());
 
     return Container(
@@ -127,10 +130,44 @@ class AdminTopbar extends StatelessWidget {
                       const SizedBox(width: 6),
 
                       // Bell notification
-                      IconButton(
-                        icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 20),
-                        onPressed: () {},
-                        visualDensity: VisualDensity.compact,
+                      Stack(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.notifications_outlined, color: AppTheme.textMuted, size: 20),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                barrierColor: Colors.transparent, // Prevent screen dimming
+                                builder: (ctx) => NotificationsDialog(
+                                  // Can optionally handle navigation if needed:
+                                  // onNavigate: (route) => context.read<AppShellState>()._onNavigate(route),
+                                  // But here we rely on the parent providing navigation via callback if needed,
+                                  // or just leave it for now.
+                                ),
+                              );
+                            },
+                            visualDensity: VisualDensity.compact,
+                          ),
+                          if (notificationProvider.unreadCount > 0)
+                            Positioned(
+                              right: 6,
+                              top: 6,
+                              child: Container(
+                                padding: const EdgeInsets.all(2),
+                                decoration: BoxDecoration(
+                                  color: Colors.redAccent,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(color: Colors.white, width: 1.5),
+                                ),
+                                constraints: const BoxConstraints(minWidth: 12, minHeight: 12),
+                                child: Text(
+                                  '${notificationProvider.unreadCount}',
+                                  style: const TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
 
                       if (!isVeryNarrow) ...[

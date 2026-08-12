@@ -236,7 +236,10 @@ class _ProductionScreenState extends State<ProductionScreen> {
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 4,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
                                           Container(
                                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
@@ -249,12 +252,10 @@ class _ProductionScreenState extends State<ProductionScreen> {
                                               style: const TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.white),
                                             ),
                                           ),
-                                          const SizedBox(width: 8),
                                           Text(
                                             log.machineId,
                                             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppTheme.textDark),
                                           ),
-                                          const SizedBox(width: 8),
                                           Text(
                                             '(${dateFormat.format(log.productionDate)})',
                                             style: const TextStyle(fontSize: 12, color: AppTheme.textMuted),
@@ -267,16 +268,26 @@ class _ProductionScreenState extends State<ProductionScreen> {
                                         style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15, color: AppTheme.primaryDarkTeal),
                                       ),
                                       const SizedBox(height: 4),
-                                      Row(
+                                      Wrap(
+                                        spacing: 8,
+                                        runSpacing: 4,
+                                        crossAxisAlignment: WrapCrossAlignment.center,
                                         children: [
-                                          const Icon(Icons.person_outline_rounded, size: 16, color: AppTheme.textMuted),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            'Người vận hành: ${log.operatorName}',
-                                            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const Icon(Icons.person_outline_rounded, size: 16, color: AppTheme.textMuted),
+                                              const SizedBox(width: 4),
+                                              Flexible(
+                                                child: Text(
+                                                  'Người vận hành: ${log.operatorName}',
+                                                  style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
+                                            ],
                                           ),
-                                          if (log.autoAddedToStock) ...[
-                                            const SizedBox(width: 12),
+                                          if (log.autoAddedToStock)
                                             Container(
                                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                                               decoration: BoxDecoration(
@@ -295,7 +306,6 @@ class _ProductionScreenState extends State<ProductionScreen> {
                                                 ],
                                               ),
                                             ),
-                                          ],
                                         ],
                                       ),
                                       if (log.notes != null && log.notes!.isNotEmpty) ...[
@@ -467,6 +477,7 @@ class _AddProductionLogDialogState extends State<_AddProductionLogDialog> {
               mainAxisSize: MainAxisSize.min,
               children: [
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedShift,
                   decoration: InputDecoration(labelText: 'Chọn Ca Sản Xuất', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                   items: const [
@@ -500,6 +511,7 @@ class _AddProductionLogDialogState extends State<_AddProductionLogDialog> {
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
+                  isExpanded: true,
                   initialValue: _selectedProductId,
                   decoration: InputDecoration(labelText: 'Sản phẩm đầu ra', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                   items: inventoryItems

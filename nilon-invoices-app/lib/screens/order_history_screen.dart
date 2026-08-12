@@ -31,7 +31,22 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
           o.customerName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
           o.customerPhone.contains(_searchQuery);
 
-      return matchesSearch;
+      bool matchesDate = true;
+      final now = DateTime.now();
+      
+      if (_dateRange == 'Hôm nay') {
+        matchesDate = o.createdAt.year == now.year &&
+            o.createdAt.month == now.month &&
+            o.createdAt.day == now.day;
+      } else if (_dateRange == '7 ngày qua') {
+        final startOfToday = DateTime(now.year, now.month, now.day);
+        final sevenDaysAgo = startOfToday.subtract(const Duration(days: 7));
+        matchesDate = o.createdAt.isAfter(sevenDaysAgo);
+      } else if (_dateRange == 'Tháng này') {
+        matchesDate = o.createdAt.year == now.year && o.createdAt.month == now.month;
+      } // If 'Tất cả', matchesDate remains true
+
+      return matchesSearch && matchesDate;
     }).toList();
 
     return SingleChildScrollView(
@@ -122,10 +137,13 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                   ),
                 ),
                 const SizedBox(width: 16),
-                DropdownButton<String>(
-                  value: _dateRange,
-                  underline: const SizedBox(),
+                Expanded(
+                  child: DropdownButton<String>(
+                    isExpanded: true,
+                    value: _dateRange,
+                    underline: const SizedBox(),
                   items: const [
+                    DropdownMenuItem(value: 'Tất cả', child: Text('Tất cả')),
                     DropdownMenuItem(value: 'Hôm nay', child: Text('Hôm nay')),
                     DropdownMenuItem(value: '7 ngày qua', child: Text('7 ngày qua')),
                     DropdownMenuItem(value: 'Tháng này', child: Text('Tháng này')),
@@ -135,6 +153,7 @@ class _OrderHistoryScreenState extends State<OrderHistoryScreen> {
                       _dateRange = val ?? 'Tháng này';
                     });
                   },
+                ),
                 ),
               ],
             ),

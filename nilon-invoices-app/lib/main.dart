@@ -9,6 +9,7 @@ import 'providers/queue_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/inventory_provider.dart';
 import 'providers/production_provider.dart';
+import 'providers/system_notification_provider.dart';
 
 import 'services/supabase_service.dart';
 import 'services/notification_service.dart';
@@ -58,6 +59,7 @@ class NilonInvoicesAdminApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => SettingsProvider()),
         ChangeNotifierProvider(create: (_) => InventoryProvider()),
         ChangeNotifierProvider(create: (_) => ProductionProvider()),
+        ChangeNotifierProvider(create: (_) => SystemNotificationProvider()),
       ],
       child: MaterialApp(
         title: 'Nilon Invoices Admin App',

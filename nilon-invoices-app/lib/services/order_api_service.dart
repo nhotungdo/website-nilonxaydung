@@ -160,6 +160,7 @@ class OrderApiService {
   /// Returns a RealtimeChannel that should be unsubscribed when done.
   static RealtimeChannel subscribeToNewOrders({
     required void Function(OrderModel order) onNewOrder,
+    required void Function(String orderId, Map<String, dynamic> updatedFields) onOrderUpdated,
     required void Function(String error) onError,
   }) {
     final channel = _db
@@ -187,16 +188,15 @@ class OrderApiService {
           event: PostgresChangeEvent.update,
           schema: 'public',
           table: 'orders',
-          callback: (payload) async {
-            // Also listen for order updates (e.g., print_status changes)
+          callback: (payload) {
+            // Optimistically update the UI based on payload without fetching the full joined order again
             try {
               final orderId = payload.newRecord['id'] as String?;
               if (orderId == null) return;
-              final order = await fetchOrderById(orderId);
-              if (order != null) {
-                onNewOrder(order); // Reuse same callback for updates
-              }
-            } catch (_) {}
+              onOrderUpdated(orderId, payload.newRecord);
+            } catch (e) {
+              onError('Realtime update error: $e');
+            }
           },
         )
         .subscribe();

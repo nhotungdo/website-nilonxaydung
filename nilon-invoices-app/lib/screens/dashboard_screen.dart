@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:fl_chart/fl_chart.dart';
 import '../models/order_model.dart';
 import '../providers/order_provider.dart';
 import '../services/product_api_service.dart';
 import '../theme/app_theme.dart';
 import '../widgets/glass_card.dart';
-
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -44,6 +44,28 @@ class _DashboardScreenState extends State<DashboardScreen> {
       if (_selectedTab == 'Đã hủy' || _selectedTab == 'Canceled') return o.orderStatus == 'cancelled';
       return true;
     }).toList();
+
+    // Calculate daily revenue for the last 7 days
+    final now = DateTime.now();
+    final List<Map<String, dynamic>> dailyRevenue = List.generate(7, (index) {
+      final date = now.subtract(Duration(days: 6 - index));
+      final dateString = DateFormat('dd/MM').format(date);
+      
+      final dayOrders = orders.where((o) {
+        return o.createdAt.year == date.year &&
+               o.createdAt.month == date.month &&
+               o.createdAt.day == date.day &&
+               o.orderStatus != 'cancelled';
+      });
+      
+      final revenue = dayOrders.fold<double>(0, (sum, o) => sum + o.totalAmount);
+      return {'date': dateString, 'revenue': revenue};
+    });
+    
+    final maxRevenue = dailyRevenue.isEmpty 
+        ? 0.0 
+        : dailyRevenue.map((e) => e['revenue'] as double).reduce((a, b) => a > b ? a : b);
+    final chartMaxY = maxRevenue == 0 ? 1000000.0 : maxRevenue * 1.2;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(24),
@@ -162,6 +184,113 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
         },
       ),
+          const SizedBox(height: 24),
+
+          // Revenue Chart Section
+          GlassCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Biểu đồ Doanh thu (7 ngày gần nhất)',
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: AppTheme.textDark),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  height: 300,
+                  child: BarChart(
+                    BarChartData(
+                      alignment: BarChartAlignment.spaceAround,
+                      maxY: chartMaxY,
+                      barTouchData: BarTouchData(
+                        enabled: true,
+                        touchTooltipData: BarTouchTooltipData(
+                          getTooltipColor: (group) => Colors.blueGrey.shade900,
+                          getTooltipItem: (group, groupIndex, rod, rodIndex) {
+                            return BarTooltipItem(
+                              '${dailyRevenue[group.x.toInt()]['date']}\n',
+                              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                              children: [
+                                TextSpan(
+                                  text: currencyFormat.format(rod.toY),
+                                  style: const TextStyle(color: Colors.greenAccent, fontSize: 14, fontWeight: FontWeight.w900),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+                      titlesData: FlTitlesData(
+                        show: true,
+                        bottomTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            getTitlesWidget: (value, meta) {
+                              final index = value.toInt();
+                              if (index >= 0 && index < dailyRevenue.length) {
+                                return Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Text(
+                                    dailyRevenue[index]['date'],
+                                    style: const TextStyle(color: AppTheme.textMuted, fontSize: 10, fontWeight: FontWeight.bold),
+                                  ),
+                                );
+                              }
+                              return const SizedBox.shrink();
+                            },
+                          ),
+                        ),
+                        leftTitles: AxisTitles(
+                          sideTitles: SideTitles(
+                            showTitles: true,
+                            reservedSize: 60,
+                            getTitlesWidget: (value, meta) {
+                              if (value == chartMaxY || value == 0) return const SizedBox.shrink();
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Text(
+                                  NumberFormat.compact(locale: 'vi_VN').format(value),
+                                  style: const TextStyle(color: AppTheme.textMuted, fontSize: 10),
+                                  textAlign: TextAlign.right,
+                                ),
+                              );
+                            },
+                          ),
+                        ),
+                        topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                      ),
+                      gridData: FlGridData(
+                        show: true,
+                        drawVerticalLine: false,
+                        getDrawingHorizontalLine: (value) => FlLine(color: Colors.grey.withValues(alpha: 0.1), strokeWidth: 1),
+                      ),
+                      borderData: FlBorderData(show: false),
+                      barGroups: dailyRevenue.asMap().entries.map((entry) {
+                        return BarChartGroupData(
+                          x: entry.key,
+                          barRods: [
+                            BarChartRodData(
+                              toY: entry.value['revenue'] as double,
+                              color: AppTheme.primaryTeal,
+                              width: 22,
+                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(6), topRight: Radius.circular(6)),
+                              backDrawRodData: BackgroundBarChartRodData(
+                                show: true,
+                                toY: chartMaxY,
+                                color: AppTheme.primaryTeal.withValues(alpha: 0.05),
+                              ),
+                            ),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           const SizedBox(height: 24),
 
           // Orders Table Section
@@ -623,6 +752,7 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                 builder: (context, constraints) {
                   final isNarrow = constraints.maxWidth < 450;
                   final paymentField = DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: _paymentMethod,
                     decoration: const InputDecoration(labelText: 'Phương thức thanh toán', border: OutlineInputBorder(), isDense: true),
                     items: const [
@@ -703,6 +833,7 @@ class _CreateOrderDialogState extends State<_CreateOrderDialog> {
                       Expanded(
                         flex: 3,
                         child: DropdownButtonFormField<String>(
+                          isExpanded: true,
                           initialValue: item['name'].toString(),
                           decoration: const InputDecoration(border: OutlineInputBorder(), isDense: true),
                           items: _catalog.map((cat) {

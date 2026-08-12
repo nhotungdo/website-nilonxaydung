@@ -40,110 +40,121 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
       displayedOrders = cancelledList;
     }
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.all(24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          LayoutBuilder(
-            builder: (context, constraints) {
-              final isMobile = constraints.maxWidth < 650;
-
-              final titleSection = Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: const [
-                  Text(
-                    'Đơn hàng thời gian thực (Realtime)',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
-                  ),
-                  Text(
-                    'Theo dõi biến động đơn hàng tự động và điều khiển lệnh in tức thì.',
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
-                  ),
-                ],
-              );
-
-              final actionSection = Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade50,
-                  borderRadius: BorderRadius.circular(20),
-                  border: Border.all(color: Colors.green.shade200),
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.wifi_tethering_rounded, color: Colors.green.shade700, size: 16),
-                    const SizedBox(width: 6),
-                    Flexible(
-                      child: Text(
-                        'Tự động đồng bộ 3s',
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700),
-                      ),
-                    ),
-                  ],
-                ),
-              );
-
-              if (isMobile) {
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    titleSection,
-                    const SizedBox(height: 12),
-                    actionSection,
-                  ],
-                );
-              }
-
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Expanded(child: titleSection),
-                  const SizedBox(width: 12),
-                  actionSection,
-                ],
-              );
-            },
-          ),
-          const SizedBox(height: 20),
-
-          // Tabs
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
+    return CustomScrollView(
+      slivers: [
+        SliverPadding(
+          padding: const EdgeInsets.all(24),
+          sliver: SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildTabButton('waiting', 'Đơn chờ in (${waitingList.length})', Icons.hourglass_top_rounded, Colors.amber.shade800),
-                const SizedBox(width: 12),
-                _buildTabButton('printed', 'Đã in hóa đơn (${printedList.length})', Icons.check_circle_rounded, Colors.green.shade700),
-                const SizedBox(width: 12),
-                _buildTabButton('cancelled', 'Đơn đã hủy (${cancelledList.length})', Icons.cancel_rounded, Colors.redAccent),
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isMobile = constraints.maxWidth < 650;
+
+                    final titleSection = Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: const [
+                        Text(
+                          'Đơn hàng thời gian thực (Realtime)',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.w900, color: AppTheme.textDark),
+                        ),
+                        Text(
+                          'Theo dõi biến động đơn hàng tự động và điều khiển lệnh in tức thì.',
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w600, color: AppTheme.textMuted),
+                        ),
+                      ],
+                    );
+
+                    final actionSection = Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade50,
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: Colors.green.shade200),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.wifi_tethering_rounded, color: Colors.green.shade700, size: 16),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              'Tự động đồng bộ 3s',
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontSize: 11, fontWeight: FontWeight.bold, color: Colors.green.shade700),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (isMobile) {
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          titleSection,
+                          const SizedBox(height: 12),
+                          actionSection,
+                        ],
+                      );
+                    }
+
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(child: titleSection),
+                        const SizedBox(width: 12),
+                        actionSection,
+                      ],
+                    );
+                  },
+                ),
+                const SizedBox(height: 20),
+
+                // Tabs
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: [
+                      _buildTabButton('waiting', 'Đơn chờ in (${waitingList.length})', Icons.hourglass_top_rounded, Colors.amber.shade800),
+                      const SizedBox(width: 12),
+                      _buildTabButton('printed', 'Đã in hóa đơn (${printedList.length})', Icons.check_circle_rounded, Colors.green.shade700),
+                      const SizedBox(width: 12),
+                      _buildTabButton('cancelled', 'Đơn đã hủy (${cancelledList.length})', Icons.cancel_rounded, Colors.redAccent),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
             ),
           ),
-          const SizedBox(height: 20),
-
-          // Order cards list
-          if (displayedOrders.isEmpty)
-            GlassCard(
-              padding: const EdgeInsets.symmetric(vertical: 60),
-              child: Center(
-                child: Column(
-                  children: const [
-                    Icon(Icons.inbox_rounded, size: 48, color: Colors.grey),
-                    SizedBox(height: 12),
-                    Text('Không có đơn hàng nào trong mục này', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
-                  ],
+        ),
+        
+        if (displayedOrders.isEmpty)
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            sliver: SliverToBoxAdapter(
+              child: GlassCard(
+                padding: const EdgeInsets.symmetric(vertical: 60),
+                child: Center(
+                  child: Column(
+                    children: const [
+                      Icon(Icons.inbox_rounded, size: 48, color: Colors.grey),
+                      SizedBox(height: 12),
+                      Text('Không có đơn hàng nào trong mục này', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.grey)),
+                    ],
+                  ),
                 ),
               ),
-            )
-          else
-            ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
+            ),
+          )
+        else
+          SliverPadding(
+            padding: const EdgeInsets.symmetric(horizontal: 24),
+            sliver: SliverList.builder(
               itemCount: displayedOrders.length,
               itemBuilder: (context, index) {
                 final order = displayedOrders[index];
@@ -263,19 +274,21 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                         ),
                         const SizedBox(height: 16),
 
-                        // Card Actions Row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        // Card Actions
+                        Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 12,
+                          runSpacing: 12,
                           children: [
-                            Expanded(
-                              child: Text(
-                                'Thời gian tạo: ${DateFormat('HH:mm:ss - dd/MM/yyyy').format(order.createdAt)}',
-                                overflow: TextOverflow.ellipsis,
-                                style: const TextStyle(fontSize: 11, color: Colors.grey),
-                              ),
+                            Text(
+                              'Thời gian tạo: ${DateFormat('HH:mm:ss - dd/MM/yyyy').format(order.createdAt)}',
+                              style: const TextStyle(fontSize: 11, color: Colors.grey),
                             ),
-                            const SizedBox(width: 12),
-                            Row(
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 if (order.printStatus == 'waiting' && order.orderStatus != 'cancelled')
                                   ElevatedButton.icon(
@@ -293,7 +306,6 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                                     icon: const Icon(Icons.print_rounded, size: 16, color: Colors.white),
                                     label: const Text('In ngay', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white, fontSize: 12)),
                                   ),
-                                const SizedBox(width: 8),
                                 OutlinedButton.icon(
                                   style: OutlinedButton.styleFrom(
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -304,7 +316,6 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                                   icon: const Icon(Icons.visibility_outlined, size: 16),
                                   label: const Text('Xem trước', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                                 ),
-                                const SizedBox(width: 8),
                                 IconButton(
                                   icon: const Icon(Icons.delete_outline_rounded, color: Colors.redAccent, size: 20),
                                   onPressed: () {
@@ -330,8 +341,8 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                 );
               },
             ),
-        ],
-      ),
+          ),
+      ],
     );
   }
 

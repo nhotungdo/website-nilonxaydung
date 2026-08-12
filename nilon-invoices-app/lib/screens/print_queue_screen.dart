@@ -196,8 +196,9 @@ class PrintQueueScreen extends StatelessWidget {
                         ),
                       );
 
-                      final actionButtons = Row(
-                        mainAxisSize: MainAxisSize.min,
+                      final actionButtons = Wrap(
+                        spacing: 4,
+                        runSpacing: 4,
                         children: [
                           if (job.status == 'FAILED')
                             IconButton(

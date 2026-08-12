@@ -279,6 +279,7 @@ class _AddPrinterDialogState extends State<_AddPrinterDialog> {
               children: [
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: _paperSize,
                     decoration: const InputDecoration(labelText: 'Khổ giấy', border: OutlineInputBorder()),
                     items: const [
@@ -291,6 +292,7 @@ class _AddPrinterDialogState extends State<_AddPrinterDialog> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: DropdownButtonFormField<String>(
+                    isExpanded: true,
                     initialValue: _connectionType,
                     decoration: const InputDecoration(labelText: 'Kết nối', border: OutlineInputBorder()),
                     items: const [
