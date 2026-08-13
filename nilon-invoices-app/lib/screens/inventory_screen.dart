@@ -5,6 +5,7 @@ import '../models/inventory_item_model.dart';
 import '../models/stock_in_receipt_model.dart';
 import '../providers/inventory_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/currency_formatter.dart';
 import '../widgets/glass_card.dart';
 
 class InventoryScreen extends StatefulWidget {
@@ -722,9 +723,9 @@ class _AddEditItemDialogState extends State<_AddEditItemDialog> {
                 const SizedBox(height: 12),
                 Row(
                   children: [
-                    Expanded(child: _buildInput('Giá nhập vốn (₫)', _importPriceCtrl, isNumber: true)),
+                    Expanded(child: _buildInput('Giá nhập vốn (₫)', _importPriceCtrl, isCurrency: true)),
                     const SizedBox(width: 12),
-                    Expanded(child: _buildInput('Giá bán đề xuất (₫)', _sellingPriceCtrl, isNumber: true)),
+                    Expanded(child: _buildInput('Giá bán đề xuất (₫)', _sellingPriceCtrl, isCurrency: true)),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -754,8 +755,8 @@ class _AddEditItemDialogState extends State<_AddEditItemDialog> {
                 unit: _unitCtrl.text.trim(),
                 currentStock: double.tryParse(_currentStockCtrl.text) ?? 0,
                 minStockAlert: double.tryParse(_minStockCtrl.text) ?? 10,
-                importPrice: double.tryParse(_importPriceCtrl.text) ?? 0,
-                sellingPrice: double.tryParse(_sellingPriceCtrl.text) ?? 0,
+                importPrice: double.tryParse(_importPriceCtrl.text.replaceAll('.', '')) ?? 0,
+                sellingPrice: double.tryParse(_sellingPriceCtrl.text.replaceAll('.', '')) ?? 0,
                 specs: _specsCtrl.text.trim(),
                 location: _locationCtrl.text.trim(),
                 createdAt: isEditing ? widget.itemToEdit!.createdAt : DateTime.now(),
@@ -778,10 +779,11 @@ class _AddEditItemDialogState extends State<_AddEditItemDialog> {
     );
   }
 
-  Widget _buildInput(String label, TextEditingController controller, {bool required = false, bool isNumber = false}) {
+  Widget _buildInput(String label, TextEditingController controller, {bool required = false, bool isNumber = false, bool isCurrency = false}) {
     return TextFormField(
       controller: controller,
-      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      keyboardType: isNumber || isCurrency ? TextInputType.number : TextInputType.text,
+      inputFormatters: isCurrency ? [CurrencyInputFormatter()] : [],
       validator: (val) => required && (val == null || val.isEmpty) ? 'Không được bỏ trống' : null,
       decoration: InputDecoration(
         labelText: label,
@@ -923,6 +925,7 @@ class _CreateStockInDialogState extends State<_CreateStockInDialog> {
                       child: TextFormField(
                         controller: _importPriceCtrl,
                         keyboardType: TextInputType.number,
+                        inputFormatters: [CurrencyInputFormatter()],
                         decoration: InputDecoration(labelText: 'Giá nhập đơn vị (₫)', isDense: true, border: OutlineInputBorder(borderRadius: BorderRadius.circular(8))),
                       ),
                     ),
@@ -962,7 +965,7 @@ class _CreateStockInDialogState extends State<_CreateStockInDialog> {
           onPressed: () async {
             if (_formKey.currentState?.validate() ?? false) {
               final qty = double.tryParse(_quantityCtrl.text) ?? 0;
-              final price = double.tryParse(_importPriceCtrl.text) ?? 0;
+              final price = double.tryParse(_importPriceCtrl.text.replaceAll('.', '')) ?? 0;
 
               final receipt = StockInReceiptModel(
                 id: 'RC-${DateTime.now().millisecondsSinceEpoch}',

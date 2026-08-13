@@ -11,10 +11,17 @@ class OrderProvider extends ChangeNotifier {
   bool _isLoading = false;
   String? _error;
   RealtimeChannel? _realtimeChannel;
+  OrderModel? _previewOrder;
 
   List<OrderModel> get orders => _orders;
   bool get isLoading => _isLoading;
   String? get error => _error;
+  OrderModel? get previewOrder => _previewOrder;
+
+  void setPreviewOrder(OrderModel? order) {
+    _previewOrder = order;
+    notifyListeners();
+  }
 
   OrderProvider() {
     _initialize();

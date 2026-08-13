@@ -311,6 +311,7 @@ class _RealtimeOrdersScreenState extends State<RealtimeOrdersScreen> {
                                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                   ),
                                   onPressed: () {
+                                    orderProvider.setPreviewOrder(order);
                                     widget.onNavigate('/preview');
                                   },
                                   icon: const Icon(Icons.visibility_outlined, size: 16),

@@ -23,7 +23,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
     final queueProvider = context.read<QueueProvider>();
     final orders = orderProvider.orders;
 
-    final targetOrder = orders.isNotEmpty ? orders.first : null;
+    final targetOrder = orderProvider.previewOrder ?? (orders.isNotEmpty ? orders.first : null);
     final currencyFormat = NumberFormat.currency(locale: 'vi_VN', symbol: '₫');
 
     return SingleChildScrollView(
@@ -101,7 +101,7 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                 children: [
                   Expanded(child: titleSection),
                   const SizedBox(width: 12),
-                  actionSection,
+                  Flexible(child: actionSection),
                 ],
               );
             },

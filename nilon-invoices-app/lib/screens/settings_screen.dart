@@ -256,7 +256,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           children: const [
                             Icon(Icons.notifications_active_rounded, color: AppTheme.primaryTeal),
                             SizedBox(width: 8),
-                            Text('Thông báo Đẩy Điện thoại (Push Notification)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+                            Expanded(
+                              child: Text(
+                                'Thông báo Đẩy Điện thoại (Push Notification)',
+                                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                              ),
+                            ),
                           ],
                         ),
                         const Divider(height: 24),
