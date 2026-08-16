@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
 import '../providers/order_provider.dart';
 import '../providers/queue_provider.dart';
 import '../theme/app_theme.dart';
@@ -16,6 +19,82 @@ class InvoicePreviewScreen extends StatefulWidget {
 
 class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
   String _selectedPaperSize = 'K80'; // 'K80' or 'K58'
+
+  Future<void> _generateAndSharePdf(BuildContext context, dynamic order, String paperSize) async {
+    final pdf = pw.Document();
+    
+    // Load Vietnamese supporting fonts
+    final font = await PdfGoogleFonts.robotoRegular();
+    final fontBold = await PdfGoogleFonts.robotoBold();
+
+    final isK80 = paperSize == 'K80';
+    final pageFormat = isK80 ? PdfPageFormat.roll80 : PdfPageFormat.roll57;
+
+    pdf.addPage(
+      pw.Page(
+        pageFormat: pageFormat,
+        margin: const pw.EdgeInsets.all(12),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
+            children: [
+              pw.Text('NILON XÂY DỰNG', style: pw.TextStyle(font: fontBold, fontSize: 16)),
+              pw.SizedBox(height: 4),
+              pw.Text('Chuyên Bạt Che, Găng Tay & Nilon Bê Tông', style: pw.TextStyle(font: font, fontSize: 10)),
+              pw.Text('Hotline: 090 123 4567', style: pw.TextStyle(font: font, fontSize: 10)),
+              pw.Divider(),
+              pw.Text('HÓA ĐƠN BÁN HÀNG', style: pw.TextStyle(font: fontBold, fontSize: 14)),
+              pw.Text('Số: ${order.orderCode}', style: pw.TextStyle(font: font, fontSize: 10)),
+              pw.Text('Khách hàng: ${order.customerName}', style: pw.TextStyle(font: font, fontSize: 10)),
+              pw.SizedBox(height: 10),
+              pw.Table(
+                columnWidths: {
+                  0: const pw.FlexColumnWidth(3),
+                  1: const pw.FlexColumnWidth(1),
+                  2: const pw.FlexColumnWidth(2),
+                },
+                children: [
+                  pw.TableRow(
+                    children: [
+                      pw.Text('Tên VT', style: pw.TextStyle(font: fontBold, fontSize: 10)),
+                      pw.Text('SL', style: pw.TextStyle(font: fontBold, fontSize: 10), textAlign: pw.TextAlign.center),
+                      pw.Text('Thành tiền', style: pw.TextStyle(font: fontBold, fontSize: 10), textAlign: pw.TextAlign.right),
+                    ]
+                  ),
+                  ...order.items.map<pw.TableRow>((item) => pw.TableRow(
+                    children: [
+                      pw.Text(item.name, style: pw.TextStyle(font: font, fontSize: 10)),
+                      pw.Text('${item.quantity}', style: pw.TextStyle(font: font, fontSize: 10), textAlign: pw.TextAlign.center),
+                      pw.Text(NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(item.totalPrice), style: pw.TextStyle(font: font, fontSize: 10), textAlign: pw.TextAlign.right),
+                    ]
+                  )).toList(),
+                ],
+              ),
+              pw.Divider(),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('TỔNG CỘNG:', style: pw.TextStyle(font: fontBold, fontSize: 12)),
+                  pw.Text(NumberFormat.currency(locale: 'vi_VN', symbol: 'đ').format(order.totalAmount), style: pw.TextStyle(font: fontBold, fontSize: 12)),
+                ]
+              ),
+              pw.SizedBox(height: 10),
+              pw.BarcodeWidget(
+                barcode: pw.Barcode.qrCode(),
+                data: 'https://nilonxaydung.vn/invoice/${order.orderCode}',
+                width: 80,
+                height: 80,
+              ),
+              pw.SizedBox(height: 10),
+              pw.Text('CẢM ƠN QUÝ KHÁCH!', style: pw.TextStyle(font: fontBold, fontSize: 10)),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.sharePdf(bytes: await pdf.save(), filename: 'hoadon_${order.orderCode}.pdf');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +159,19 @@ class _InvoicePreviewScreenState extends State<InvoicePreviewScreen> {
                       },
                       icon: const Icon(Icons.print_rounded, color: Colors.white, size: 18),
                       label: const Text('In phiếu ngay', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                    const SizedBox(width: 12),
+                    OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppTheme.primaryTeal),
+                      ),
+                      onPressed: () {
+                        if (targetOrder != null) {
+                          _generateAndSharePdf(context, targetOrder, _selectedPaperSize);
+                        }
+                      },
+                      icon: const Icon(Icons.picture_as_pdf_rounded, color: AppTheme.primaryTeal, size: 18),
+                      label: const Text('Xuất PDF', style: TextStyle(color: AppTheme.primaryTeal, fontWeight: FontWeight.bold)),
                     ),
                   ],
                 ),

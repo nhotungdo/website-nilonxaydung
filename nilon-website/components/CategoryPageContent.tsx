@@ -47,7 +47,7 @@ const CategoryIcon = ({ id, className }: { id: string, className?: string }) => 
   }
 };
 
-export default function CategoryPageContent() {
+export default function CategoryPageContent({ initialProducts = PRODUCTS }: { initialProducts?: any[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -64,7 +64,7 @@ export default function CategoryPageContent() {
 
   // Filter products based on search term and active category
   const filteredProducts = useMemo(() => {
-    return PRODUCTS.filter((product) => {
+    return initialProducts.filter((product) => {
       const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = activeCategory === "all" || product.subCategory === activeCategory;
       return matchesSearch && matchesCategory;
@@ -147,7 +147,7 @@ export default function CategoryPageContent() {
                 onClick={() => setActiveCategory("all")}
                 className={`text-xs font-semibold uppercase tracking-wider transition-colors ${activeCategory === "all" ? 'text-[#2b6cb0] font-bold' : 'text-slate-500 hover:text-[#1a365d]'}`}
               >
-                Tất cả ({PRODUCTS.length})
+                Tất cả ({initialProducts.length})
               </button>
             </div>
 
@@ -211,7 +211,7 @@ export default function CategoryPageContent() {
 
             {/* Responsive Grid: 5 cols Desktop, 3 Tablet, 2 Mobile */}
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
-              {PRODUCTS.filter(p => p.isBestSeller).slice(0, 5).map(product => (
+              {initialProducts.filter(p => p.isBestSeller).slice(0, 5).map(product => (
                 <ProductItem key={`featured-${product.id}`} product={product} onAddToCart={handleAddToCart} />
               ))}
             </div>

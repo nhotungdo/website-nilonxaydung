@@ -67,6 +67,7 @@ const electronAPI = {
     getSettings: () => ipcRenderer.invoke('db:get-settings'),
     saveSettings: (settings: any) => ipcRenderer.invoke('db:save-settings', settings),
     getProducts: () => ipcRenderer.invoke('db:get-products'),
+    createProduct: (product: any) => ipcRenderer.invoke('db:create-product', product),
   },
 
   // Auto-Updater Operations

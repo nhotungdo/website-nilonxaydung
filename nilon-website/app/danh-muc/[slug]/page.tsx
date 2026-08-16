@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { products } from '@/data/products';
+import { prisma } from '@/lib/prisma';
 import { categories } from '@/data/categories';
 import ProductCard from '@/components/ProductCard';
 import { generateSEO } from '@/lib/seo';
@@ -24,7 +24,9 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     notFound();
   }
 
-  const categoryProducts = products.filter((p) => p.categorySlug === category.slug);
+  const categoryProducts = await prisma.product.findMany({
+    where: { categorySlug: category.slug },
+  });
 
   return (
     <div className="py-12 bg-white">

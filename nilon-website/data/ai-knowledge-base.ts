@@ -263,12 +263,12 @@ export function calculateQuoteDetails(
   const relatedProducts: CatalogVariant[] = [];
 
   // Determine main category/family key
-  let isNilonFamily = cleanedTerm.includes('nilon') || cleanedTerm.includes('pe') || cleanedTerm.includes('mang') || cleanedTerm.includes('lot san') || cleanedTerm.includes('zem');
-  let isHatSafety = cleanedTerm.includes('mu') || cleanedTerm.includes('non') || cleanedTerm.includes('kinh');
-  let isGloveSafety = cleanedTerm.includes('gang') || cleanedTerm.includes('tay');
-  let isShoeSafety = cleanedTerm.includes('giay') || cleanedTerm.includes('ung') || cleanedTerm.includes('chan');
-  let isClothesSafety = cleanedTerm.includes('quan') || cleanedTerm.includes('ao') || cleanedTerm.includes('phan quang') || cleanedTerm.includes('dong phuc');
-  let isTarpSafety = cleanedTerm.includes('bat') || cleanedTerm.includes('keo') || cleanedTerm.includes('luoi') || cleanedTerm.includes('che');
+  const isNilonFamily = cleanedTerm.includes('nilon') || cleanedTerm.includes('pe') || cleanedTerm.includes('mang') || cleanedTerm.includes('lot san') || cleanedTerm.includes('zem');
+  const isHatSafety = cleanedTerm.includes('mu') || cleanedTerm.includes('non') || cleanedTerm.includes('kinh');
+  const isGloveSafety = cleanedTerm.includes('gang') || cleanedTerm.includes('tay');
+  const isShoeSafety = cleanedTerm.includes('giay') || cleanedTerm.includes('ung') || cleanedTerm.includes('chan');
+  const isClothesSafety = cleanedTerm.includes('quan') || cleanedTerm.includes('ao') || cleanedTerm.includes('phan quang') || cleanedTerm.includes('dong phuc');
+  const isTarpSafety = cleanedTerm.includes('bat') || cleanedTerm.includes('keo') || cleanedTerm.includes('luoi') || cleanedTerm.includes('che');
 
   for (const p of PRODUCTS) {
     const pNameNorm = normalizeStr(p.name);
@@ -355,7 +355,7 @@ export function calculateQuoteDetails(
   }
 
   // If no specific variants matched, pick the top matching product or default first variant
-  let primaryMatched = allVariants[0] || null;
+  const primaryMatched = allVariants[0] || null;
   if (!primaryMatched) {
     return {
       notFound: true,

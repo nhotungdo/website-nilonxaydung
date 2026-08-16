@@ -35,6 +35,7 @@ class AdminSidebar extends StatelessWidget {
       AdminSidebarItem(title: 'Đơn hàng realtime', route: '/orders', icon: Icons.trending_up_rounded),
       AdminSidebarItem(title: 'Trong kho', route: '/inventory', icon: Icons.warehouse_outlined),
       AdminSidebarItem(title: 'Sản xuất', route: '/production', icon: Icons.precision_manufacturing_outlined),
+      AdminSidebarItem(title: 'Sản phẩm Website', route: '/website-products', icon: Icons.web_rounded, adminOnly: true),
       AdminSidebarItem(title: 'Hàng đợi in', route: '/queue', icon: Icons.layers_outlined),
       AdminSidebarItem(title: 'Cài đặt máy in', route: '/printers', icon: Icons.print_outlined, adminOnly: true),
       AdminSidebarItem(title: 'Lịch sử đơn hàng', route: '/history', icon: Icons.history_rounded),

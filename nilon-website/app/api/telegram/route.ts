@@ -83,6 +83,11 @@ export async function POST(req: Request) {
             data: {
               name: prodName,
               sku,
+              slug: sku,
+              image: '',
+              category: 'Telegram',
+              categorySlug: 'telegram',
+              subCategory: '',
               price: 0,
               stock: 999,
             }

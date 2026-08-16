@@ -12,6 +12,8 @@ import { OrderHistoryPage } from '../pages/History/OrderHistoryPage';
 import { SettingsPage } from '../pages/Settings/SettingsPage';
 import { SupportPage } from '../pages/Support/SupportPage';
 import { InventoryPage } from '../pages/Inventory/InventoryPage';
+import { ProductionPage } from '../pages/Production/ProductionPage';
+import { SafetyEquipmentPage } from '../pages/SafetyEquipment/SafetyEquipmentPage';
 import { useAuthStore } from '../stores/authStore';
 
 // Main authentication guard
@@ -62,10 +64,12 @@ export const AppRouter: React.FC = () => {
           <Route path="dashboard" element={<RoleRoute allowedRoles={['admin', 'staff']}><DashboardPage /></RoleRoute>} />
           <Route path="orders" element={<RoleRoute allowedRoles={['admin', 'staff']}><RealtimeOrdersPage /></RoleRoute>} />
           <Route path="inventory" element={<RoleRoute allowedRoles={['admin', 'staff']}><InventoryPage /></RoleRoute>} />
+          <Route path="production" element={<RoleRoute allowedRoles={['admin', 'staff']}><ProductionPage /></RoleRoute>} />
           <Route path="queue" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintQueuePage /></RoleRoute>} />
           <Route path="printers" element={<RoleRoute allowedRoles={['admin', 'staff']}><PrintersPage /></RoleRoute>} />
           <Route path="history" element={<RoleRoute allowedRoles={['admin', 'staff']}><OrderHistoryPage /></RoleRoute>} />
           <Route path="preview" element={<RoleRoute allowedRoles={['admin', 'staff']}><InvoicePreviewPage /></RoleRoute>} />
+          <Route path="safety-equipment" element={<RoleRoute allowedRoles={['admin', 'staff']}><SafetyEquipmentPage /></RoleRoute>} />
           <Route path="settings" element={<RoleRoute allowedRoles={['admin', 'staff']}><SettingsPage /></RoleRoute>} />
           <Route path="support" element={<RoleRoute allowedRoles={['admin', 'staff']}><SupportPage /></RoleRoute>} />
         </Route>

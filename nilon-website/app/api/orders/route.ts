@@ -112,6 +112,11 @@ export async function POST(req: NextRequest) {
                 id: item.productId || item.id || `prod-${Date.now()}`,
                 name: item.productName,
                 sku,
+                slug: sku,
+                image: '',
+                category: 'Khác',
+                categorySlug: 'khac',
+                subCategory: '',
                 price: item.price,
                 stock: 999,
               }

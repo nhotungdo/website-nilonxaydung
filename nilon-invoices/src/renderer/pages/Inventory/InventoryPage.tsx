@@ -16,9 +16,8 @@ import {
 } from 'lucide-react';
 import { useInventoryStore } from '../../stores/inventoryStore';
 import { InventoryTable } from './components/InventoryTable';
-import { ProductionLogTable } from './components/ProductionLogTable';
+import { StockInTable } from './components/StockInTable';
 import { StockInModal } from './components/StockInModal';
-import { DailyProductionModal } from './components/DailyProductionModal';
 import { ProductCategory } from '../../../shared/types/inventory';
 
 export const InventoryPage: React.FC = () => {
@@ -31,11 +30,10 @@ export const InventoryPage: React.FC = () => {
     setSearchQuery,
     categoryFilter,
     setCategoryFilter,
-    setIsStockInModalOpen,
-    setIsProductionModalOpen
+    setIsStockInModalOpen
   } = useInventoryStore();
 
-  const [activeTab, setActiveTab] = useState<'inventory' | 'production' | 'history'>('inventory');
+  const [activeTab, setActiveTab] = useState<'inventory' | 'stockin' | 'history'>('inventory');
 
   // Stats Calculations
   const totalStockCount = items.reduce((sum, item) => sum + item.current_stock, 0);
@@ -56,6 +54,7 @@ export const InventoryPage: React.FC = () => {
     'Nilon Trong Suốt',
     'Bạt Dứa / Bạt Sọc',
     'Màng Vấn Màng Co',
+    'Bảo Hộ Lao Động',
     'Vật Liệu Khác'
   ];
 
@@ -82,13 +81,6 @@ export const InventoryPage: React.FC = () => {
             className="px-4 py-2.5 rounded-xl bg-[#005B52] text-white font-bold text-xs hover:bg-[#004740] shadow-md shadow-[#005B52]/20 transition-all flex items-center gap-2 active:scale-95"
           >
             <PackagePlus className="h-4 w-4" /> Thêm Hàng Vào Kho
-          </button>
-
-          <button
-            onClick={() => setIsProductionModalOpen(true)}
-            className="px-4 py-2.5 rounded-xl bg-blue-700 text-white font-bold text-xs hover:bg-blue-800 shadow-md shadow-blue-700/20 transition-all flex items-center gap-2 active:scale-95"
-          >
-            <Factory className="h-4 w-4" /> Ghi Nhận Sản Xuất
           </button>
         </div>
       </div>
@@ -200,14 +192,14 @@ export const InventoryPage: React.FC = () => {
           </button>
 
           <button
-            onClick={() => setActiveTab('production')}
+            onClick={() => setActiveTab('stockin')}
             className={`px-4 py-2 rounded-lg transition-all flex items-center gap-2 ${
-              activeTab === 'production'
-                ? 'bg-white text-blue-700 shadow-sm font-black'
+              activeTab === 'stockin'
+                ? 'bg-white text-indigo-700 shadow-sm font-black'
                 : 'text-slate-600 hover:text-slate-900'
             }`}
           >
-            <Factory className="h-4 w-4" /> Nhật Ký Sản Xuất ({productionLogs.length})
+            <PackagePlus className="h-4 w-4" /> Lịch Sử Nhập Kho ({stockInReceipts.length})
           </button>
 
           <button
@@ -260,7 +252,7 @@ export const InventoryPage: React.FC = () => {
       {/* Tab View Contents */}
       {activeTab === 'inventory' && <InventoryTable />}
 
-      {activeTab === 'production' && <ProductionLogTable />}
+      {activeTab === 'stockin' && <StockInTable />}
 
       {activeTab === 'history' && (
         <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden p-4">
@@ -324,7 +316,7 @@ export const InventoryPage: React.FC = () => {
 
       {/* Render Modals */}
       <StockInModal />
-      <DailyProductionModal />
+
     </div>
   );
 };

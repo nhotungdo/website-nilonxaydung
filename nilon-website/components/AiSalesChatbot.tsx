@@ -10,7 +10,6 @@ import {
   Download, 
   User, 
   CheckCircle2, 
-  ShieldCheck, 
   Building2, 
   Maximize2, 
   Minimize2, 

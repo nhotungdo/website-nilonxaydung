@@ -21,13 +21,24 @@ model Customer {
 }
 
 model Product {
-  id         String      @id @default(uuid())
-  name       String
-  sku        String      @unique
-  price      Float
-  stock      Int
-  createdAt  DateTime    @default(now()) @map("created_at")
-  orderItems OrderItem[]
+  id           String      @id @default(uuid())
+  name         String
+  sku          String      @unique
+  slug         String      @unique
+  description  String?
+  image        String
+  images       Json?
+  price        Float
+  stock        Int         @default(0)
+  unit         String      @default("Cái")
+  category     String
+  categorySlug String      @map("category_slug")
+  subCategory  String      @map("sub_category")
+  isBestSeller Boolean     @default(false) @map("is_best_seller")
+  isNew        Boolean     @default(false) @map("is_new")
+  specs        Json?
+  createdAt    DateTime    @default(now()) @map("created_at")
+  orderItems   OrderItem[]
 
   @@map("products")
 }

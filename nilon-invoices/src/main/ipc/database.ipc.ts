@@ -142,4 +142,45 @@ export function registerDatabaseIpcHandlers(): void {
       return { success: false, error: err.message };
     }
   });
+
+  // 10. createProduct()
+  ipcMain.handle('db:create-product', async (_event, productData: any) => {
+    logger.ipc('db:create-product', productData);
+    try {
+      const { db } = await import('../database/postgres');
+      // Generate a simple slug
+      const slug = productData.name ? productData.name.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '') : 'new-product';
+      
+      const query = `
+        INSERT INTO products (
+          id, name, sku, slug, description, image, price, stock, unit, 
+          category, category_slug, sub_category, is_best_seller, is_new, created_at
+        ) VALUES (
+          gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, NOW()
+        ) RETURNING *;
+      `;
+      
+      const values = [
+        productData.name || 'Sản phẩm mới',
+        productData.sku || `SKU-${Date.now()}`,
+        productData.slug || slug || `slug-${Date.now()}`,
+        productData.description || '',
+        productData.image || '',
+        productData.price || 0,
+        productData.stock || 0,
+        productData.unit || 'Cái',
+        productData.category || 'Bảo hộ lao động',
+        productData.categorySlug || 'bao-ho-lao-dong',
+        productData.subCategory || 'Khác',
+        productData.isBestSeller || false,
+        productData.isNew || true
+      ];
+      
+      const result = await db.executeQuery(query, values);
+      return { success: true, data: result.rows[0] };
+    } catch (err: any) {
+      logger.error(`[IPC db:create-product] Failed: ${err.message}`);
+      return { success: false, error: err.message };
+    }
+  });
 }

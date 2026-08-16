@@ -56,6 +56,11 @@ export async function POST(req: Request) {
             data: {
               name: prodName,
               sku,
+              slug: sku,
+              image: '',
+              category: 'Liên hệ',
+              categorySlug: 'lien-he',
+              subCategory: '',
               price: 0,
               stock: 999,
             }

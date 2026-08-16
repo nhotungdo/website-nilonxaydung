@@ -14,6 +14,25 @@ import { usePrinterStore } from '../../stores/printerStore';
 import { useOrderStore } from '../../stores/orderStore';
 import { useTranslation } from '../../locales';
 
+declare global {
+  interface Window {
+    html2pdf: any;
+  }
+}
+
+const loadHtml2Pdf = (): Promise<any> => {
+  return new Promise((resolve) => {
+    if (window.html2pdf) {
+      resolve(window.html2pdf);
+      return;
+    }
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js';
+    script.onload = () => resolve(window.html2pdf);
+    document.body.appendChild(script);
+  });
+};
+
 export const InvoicePreviewPage: React.FC = () => {
   const { t } = useTranslation();
   const printers = usePrinterStore((s) => s.printers);
@@ -26,6 +45,7 @@ export const InvoicePreviewPage: React.FC = () => {
   }, []);
 
   const [zoom, setZoom] = useState(100);
+  const receiptRef = React.useRef<HTMLDivElement>(null);
   const [selectedPrinterId, setSelectedPrinterId] = useState(
     printers.find((p) => p.is_default === 1)?.id || printers[0]?.id || ''
   );
@@ -49,6 +69,21 @@ export const InvoicePreviewPage: React.FC = () => {
     alert(t('preview.printDispatched', {
       name: printers.find((p) => p.id === selectedPrinterId)?.name || t('common.defaultSpooler')
     }));
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!receiptRef.current) return;
+    const html2pdf = await loadHtml2Pdf();
+    const opt = {
+      margin:       0,
+      filename:     `HoaDon_${activeOrder.orderCode}.pdf`,
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2 },
+      jsPDF:        { unit: 'mm', format: [80, 200], orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(receiptRef.current).save().then(() => {
+      alert(t('preview.pdfDownloadSuccess'));
+    });
   };
 
   const formatCurrency = (val: number) => {
@@ -131,7 +166,7 @@ export const InvoicePreviewPage: React.FC = () => {
               </button>
               
               <button
-                onClick={() => alert(t('preview.downloadSuccess'))}
+                onClick={handleDownloadPdf}
                 className="w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-slate-300 hover:text-white text-xs flex items-center justify-center gap-1 transition-colors"
               >
                 <Download className="h-3.5 w-3.5" />
@@ -155,6 +190,7 @@ export const InvoicePreviewPage: React.FC = () => {
           
           {/* Mock K80 Receipt slip */}
           <div 
+            ref={receiptRef}
             className="bg-white text-black p-6 w-[340px] shadow-2xl transition-all duration-200 select-none font-mono"
             style={{ 
               transform: `scale(${zoom / 100})`,

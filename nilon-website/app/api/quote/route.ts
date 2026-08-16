@@ -122,6 +122,11 @@ export async function POST(req: Request) {
                 id: item.id || `cust-${Date.now()}`,
                 name: item.name,
                 sku,
+                slug: sku,
+                image: '',
+                category: 'Báo giá',
+                categorySlug: 'bao-gia',
+                subCategory: '',
                 price: item.price || 0,
                 stock: 999,
               }

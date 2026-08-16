@@ -1,30 +1,50 @@
 import { notFound } from 'next/navigation';
-import { products } from '@/data/products';
+import { prisma } from '@/lib/prisma';
 import { formatPrice } from '@/lib/formatPrice';
 import { generateSEO } from '@/lib/seo';
 import ProductDetailActions from '@/components/ProductDetailActions';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = products.find((p) => p.slug === resolvedParams.slug || p.id === resolvedParams.slug);
+  const product = await prisma.product.findUnique({
+    where: { slug: resolvedParams.slug },
+  });
   
   if (!product) return {};
 
   return generateSEO({
     title: product.name,
-    description: product.description,
+    description: product.description || '',
     image: product.image,
   });
 }
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = products.find((p) => p.slug === resolvedParams.slug || p.id === resolvedParams.slug);
+  let product = await prisma.product.findUnique({
+    where: { slug: resolvedParams.slug },
+  });
+
+  if (!product) {
+    // Fallback search by id
+    product = await prisma.product.findUnique({
+      where: { id: resolvedParams.slug },
+    });
+  }
 
   if (!product) {
     notFound();
   }
 
+  // Parse specs if they exist as JSON
+  let parsedSpecs: {label: string, value: string}[] = [];
+  if (product.specs) {
+    try {
+      parsedSpecs = typeof product.specs === 'string' 
+        ? JSON.parse(product.specs) 
+        : product.specs as {label: string, value: string}[];
+    } catch { }
+  }
 
   return (
     <div className="py-12 bg-white">
@@ -59,13 +79,13 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               <p>{product.description}</p>
             </div>
 
-            {product.specs && product.specs.length > 0 && (
+            {parsedSpecs.length > 0 && (
               <div className="mb-8">
                 <h3 className="text-lg font-bold text-gray-900 mb-4 border-b pb-2">Thông số kỹ thuật</h3>
                 <div className="bg-gray-50 rounded-lg p-4">
                   <table className="w-full text-sm">
                     <tbody>
-                      {product.specs.map((spec, index) => (
+                      {parsedSpecs.map((spec, index) => (
                         <tr key={index} className={index % 2 === 0 ? 'bg-white' : ''}>
                           <td className="py-2 px-3 font-medium text-gray-700 w-1/3">{spec.label}</td>
                           <td className="py-2 px-3 text-gray-600">{spec.value}</td>

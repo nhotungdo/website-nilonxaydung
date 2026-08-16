@@ -218,9 +218,6 @@ export async function POST(request: Request) {
           });
         }
 
-        const unitStr = quoteCalc.unitLabel || 'cái';
-        const isNilon = !quoteCalc.isSafetyEquipment;
-
         const variantsListStr = quoteCalc.allVariants && quoteCalc.allVariants.length > 0
           ? quoteCalc.allVariants.map((v) => `- ${v.name}: ${v.price.toLocaleString('vi-VN')} VNĐ / ${v.unit} (${v.description || 'Tiêu chuẩn công trình'})`).join('\n')
           : `- ${quoteCalc.product.name}: ${quoteCalc.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / ${quoteCalc.unitLabel || 'kg'}`;
@@ -351,7 +348,7 @@ Anh/Chị cần lấy mẫu nào hay muốn em tính thử số kg theo diện t
  * Fallback AI Sales Assistant Logic when API Key is missing or network fails
  */
 function handleFallbackBot(userPrompt: string) {
-  const promptLower = userPrompt.toLowerCase();
+
 
   // Guard: off-topic check in fallback too
   if (detectOffTopic(userPrompt)) {

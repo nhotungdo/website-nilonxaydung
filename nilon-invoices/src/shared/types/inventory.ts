@@ -4,6 +4,7 @@ export type ProductCategory =
   | 'Nilon Trong Suốt'
   | 'Bạt Dứa / Bạt Sọc'
   | 'Màng Vấn Màng Co'
+  | 'Bảo Hộ Lao Động'
   | 'Vật Liệu Khác';
 
 export interface IInventoryItem {
@@ -11,7 +12,7 @@ export interface IInventoryItem {
   sku: string;
   name: string;
   category: ProductCategory;
-  unit: 'Cuộn' | 'Kg' | 'm²' | 'Tấm' | 'Bao';
+  unit: 'Cuộn' | 'Kg' | 'm²' | 'Tấm' | 'Bao' | 'Cái' | 'Đôi' | 'Bộ' | 'Mét' | 'Bình' | 'm2' | 'Tờ' | 'Chai' | 'Tuýp' | 'kg' | 'Cây';
   current_stock: number;
   min_stock_alert: number;
   import_price: number; // Giá vốn nhập kho
