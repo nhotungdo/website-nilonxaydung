@@ -18,7 +18,7 @@ async function main() {
     console.error("Eval error", e);
   }
 
-  const safetyProducts = products.filter(p => p.category === 'bao-ho-lao-dong' || p.categorySlug === 'bao-ho-lao-dong');
+  const safetyProducts = products.filter((p: any) => p.category === 'bao-ho-lao-dong' || p.categorySlug === 'bao-ho-lao-dong');
   
   console.log(`Found ${safetyProducts.length} safety products to sync.`);
 
