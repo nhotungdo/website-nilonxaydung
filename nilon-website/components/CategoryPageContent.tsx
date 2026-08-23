@@ -47,7 +47,7 @@ const CategoryIcon = ({ id, className }: { id: string, className?: string }) => 
   }
 };
 
-export default function CategoryPageContent({ initialProducts = PRODUCTS }: { initialProducts?: any[] }) {
+export default function CategoryPageContent({ initialProducts = PRODUCTS }: { initialProducts?: Product[] }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("all");
   const [showAllCategories, setShowAllCategories] = useState(false);
@@ -69,7 +69,7 @@ export default function CategoryPageContent({ initialProducts = PRODUCTS }: { in
       const matchesCategory = activeCategory === "all" || product.subCategory === activeCategory;
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, activeCategory]);
+  }, [searchTerm, activeCategory, initialProducts]);
 
   // Group products by category for the main display
   const categoriesWithProducts = useMemo(() => {

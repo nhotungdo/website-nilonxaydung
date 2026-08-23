@@ -9,7 +9,7 @@ async function main() {
   
   const startIdx = dataStr.indexOf('export const PRODUCTS: Product[] = [');
   const endIdx = dataStr.indexOf('];', startIdx);
-  let productsStr = dataStr.substring(startIdx + 'export const PRODUCTS: Product[] = '.length, endIdx + 1);
+  const productsStr = dataStr.substring(startIdx + 'export const PRODUCTS: Product[] = '.length, endIdx + 1);
 
   let products = [];
   try {
@@ -18,6 +18,7 @@ async function main() {
     console.error("Eval error", e);
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const safetyProducts = products.filter((p: any) => p.category === 'bao-ho-lao-dong' || p.categorySlug === 'bao-ho-lao-dong');
   
   console.log(`Found ${safetyProducts.length} safety products to sync.`);

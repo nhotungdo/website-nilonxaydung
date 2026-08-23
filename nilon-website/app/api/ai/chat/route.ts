@@ -10,7 +10,7 @@ export interface ChatMessage {
   content: string;
   name?: string;
   tool_call_id?: string;
-  tool_calls?: any[];
+  tool_calls?: Record<string, unknown>[];
 }
 
 const groqApiKey = process.env.GROQ_API_KEY;
@@ -118,7 +118,7 @@ CHÍNH SÁCH CHUNG:
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    let messages: any[] = body.messages || [];
+    const messages: ChatMessage[] = body.messages || [];
 
     if (!messages || messages.length === 0) {
       return NextResponse.json({ error: 'Danh sách tin nhắn không hợp lệ' }, { status: 400 });
@@ -131,7 +131,7 @@ export async function POST(request: Request) {
     const systemPrompt = buildSystemPrompt();
     
     // Inject system prompt if not present, otherwise it's just handled implicitly by Groq
-    let apiMessages = [
+    const apiMessages = [
       { role: 'system', content: systemPrompt },
       ...messages
     ];
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
       const functionName = toolCall.function.name;
       const args = JSON.parse(toolCall.function.arguments || '{}');
 
-      let toolResult: any = {};
+      let toolResult: Record<string, unknown> = {};
       let pdfData = null;
       let quoteSummary = null;
       let quoteDataForUI = null;

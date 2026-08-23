@@ -291,7 +291,7 @@ export function getProductDetailDB(productId: string) {
     };
 }
 
-export function calculateQuoteDetails(productId: string, quantityKg: number, destinationRegion?: string) {
+export function calculateQuoteDetails(productId: string, quantityKg: number) {
   const primaryMatched = PRODUCTS.find(p => p.id === productId);
   
   if (!primaryMatched) {
