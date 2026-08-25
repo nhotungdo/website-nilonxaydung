@@ -27,5 +27,5 @@ export default async function BaoHoLaoDongPage() {
     }
   });
 
-  return <CategoryPageContent initialProducts={dbProducts} />;
+  return <CategoryPageContent initialProducts={dbProducts as any} />;
 }

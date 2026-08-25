@@ -131,7 +131,7 @@ export async function POST(request: Request) {
     const systemPrompt = buildSystemPrompt();
     
     // Inject system prompt if not present, otherwise it's just handled implicitly by Groq
-    const apiMessages = [
+    const apiMessages: any[] = [
       { role: 'system', content: systemPrompt },
       ...messages
     ];
@@ -154,7 +154,7 @@ export async function POST(request: Request) {
       const functionName = toolCall.function.name;
       const args = JSON.parse(toolCall.function.arguments || '{}');
 
-      let toolResult: Record<string, unknown> = {};
+      let toolResult: any = {};
       let pdfData = null;
       let quoteSummary = null;
       let quoteDataForUI = null;
