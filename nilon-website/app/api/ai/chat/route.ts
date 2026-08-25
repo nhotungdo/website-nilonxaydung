@@ -143,7 +143,7 @@ export async function POST(request: Request) {
     ];
 
     const groqResponse = await groq.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
+      model: process.env.GROQ_MODEL || 'qwen/qwen3.6-27b',
       messages: apiMessages,
       tools: GROQ_TOOLS,
       tool_choice: 'auto',
@@ -245,7 +245,7 @@ export async function POST(request: Request) {
       });
 
       const secondResponse = await groq.chat.completions.create({
-        model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
+        model: process.env.GROQ_MODEL || 'qwen/qwen3.6-27b',
         messages: apiMessages,
         temperature: 0.3,
         max_completion_tokens: 1024
