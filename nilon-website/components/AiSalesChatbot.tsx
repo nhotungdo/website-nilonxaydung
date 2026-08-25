@@ -71,14 +71,49 @@ export default function AiSalesChatbot() {
   const [leadProduct, setLeadProduct] = useState('Nilon lót sàn 4zem');
   const [leadKg, setLeadKg] = useState('500');
 
-  const [messages, setMessages] = useState<ChatMsg[]>([
-    {
+  const [messages, setMessages] = useState<ChatMsg[]>([]);
+
+  // Load chat history from localStorage on mount
+  useEffect(() => {
+    const savedChat = localStorage.getItem('ai_sales_chat_history');
+    if (savedChat) {
+      try {
+        const parsed = JSON.parse(savedChat);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          setMessages(parsed);
+          return;
+        }
+      } catch (e) {
+        console.error("Error parsing chat history:", e);
+      }
+    }
+    // Default welcome message if no history
+    setMessages([{
       id: 'welcome-msg',
       role: 'assistant',
       content: 'Dạ xin chào Anh/Chị! Em là AI Sales Assistant (Tư vấn 24/7) của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 Tư vấn Nilon lót sàn & Màng PE: 2zem - 10zem, độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001.\n- ⛑️ Trang thiết bị Bảo hộ lao động: Mũ bảo hộ công trình, Găng tay chống cắt, Giày mũi lót thép (CE S3), Áo phản quang, Bạt che công trình...\n- 📊 Tính giá sỉ theo kg/cuộn/bộ & phí giao công trình.\n- 📄 Tự động xuất File Báo Giá PDF Tạm Tính ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin hoặc báo giá vật tư nào cho công trình ạ?',
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+    }]);
+  }, []);
+
+  // Save chat history to localStorage whenever it changes
+  useEffect(() => {
+    if (messages.length > 0) {
+      localStorage.setItem('ai_sales_chat_history', JSON.stringify(messages));
     }
-  ]);
+  }, [messages]);
+
+  const handleClearChat = () => {
+    if (window.confirm("Anh/chị có chắc muốn xóa lịch sử trò chuyện không?")) {
+      localStorage.removeItem('ai_sales_chat_history');
+      setMessages([{
+        id: 'welcome-msg',
+        role: 'assistant',
+        content: 'Dạ xin chào Anh/Chị! Em là AI Sales Assistant (Tư vấn 24/7) của Nilon Xây Dựng.\n\nEm có thể giúp Anh/Chị:\n- 📜 Tư vấn Nilon lót sàn & Màng PE: 2zem - 10zem, độ xé rách ASTM D1922, tiêu chuẩn ISO 9001/14001.\n- ⛑️ Trang thiết bị Bảo hộ lao động: Mũ bảo hộ công trình, Găng tay chống cắt, Giày mũi lót thép (CE S3), Áo phản quang, Bạt che công trình...\n- 📊 Tính giá sỉ theo kg/cuộn/bộ & phí giao công trình.\n- 📄 Tự động xuất File Báo Giá PDF Tạm Tính ngay trong đoạn chat.\n\nAnh/Chị cần hỗ trợ thông tin hoặc báo giá vật tư nào cho công trình ạ?',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }]);
+    }
+  };
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -247,6 +282,14 @@ export default function AiSalesChatbot() {
               </div>
 
               <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={handleClearChat}
+                  className="p-1.5 text-slate-400 hover:text-red-400 rounded-lg hover:bg-slate-800 transition-colors"
+                  title="Xóa lịch sử chat"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </button>
                 <button
                   type="button"
                   onClick={() => setIsExpanded(!isExpanded)}

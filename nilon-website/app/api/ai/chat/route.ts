@@ -160,14 +160,14 @@ export async function POST(request: Request) {
       let quoteDataForUI = null;
 
       if (functionName === 'search_products') {
-        toolResult = searchProductsDB(args.keyword, args.useCase);
+        toolResult = await searchProductsDB(args.keyword, args.useCase);
       } else if (functionName === 'get_product_detail') {
-        toolResult = getProductDetailDB(args.productId);
+        toolResult = await getProductDetailDB(args.productId);
       } else if (functionName === 'calculate_provisional_quote') {
-        toolResult = calculateQuoteDetails(args.productId, args.quantityKg);
+        toolResult = await calculateQuoteDetails(args.productId, args.quantityKg);
         quoteDataForUI = toolResult; // Send back to UI for rich rendering
       } else if (functionName === 'create_sales_lead_and_pdf') {
-        const quoteCalc = calculateQuoteDetails(args.productId, args.quantityKg);
+        const quoteCalc = await calculateQuoteDetails(args.productId, args.quantityKg);
         if (!quoteCalc.notFound && quoteCalc.product) {
           const quoteCode = `BG-${Date.now().toString().slice(-6)}`;
           const pdfDataInput: QuotePDFData = {

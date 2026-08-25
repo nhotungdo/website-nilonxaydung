@@ -3,6 +3,7 @@
  */
 
 import { PRODUCTS } from '@/data/products';
+import { prisma } from '@/lib/prisma';
 
 export interface ProductSpec {
   id: string;
@@ -228,71 +229,73 @@ const normalizeStr = (str: string) =>
      .replace(/\s+/g, ' ')
      .trim();
 
-export function searchProductsDB(keyword: string, useCase?: string) {
-  const normalizedTerm = normalizeStr(keyword || '');
-  const normalizedUseCase = normalizeStr(useCase || '');
-  
-  const allVariants: CatalogVariant[] = [];
-  
-  for (const p of PRODUCTS) {
-    const pNameNorm = normalizeStr(p.name);
-    
-    let isMatch = false;
-    if (normalizedTerm && pNameNorm.includes(normalizedTerm)) {
-      isMatch = true;
-    }
-    
-    // Also match category
-    const catNorm = normalizeStr(p.category || '');
-    if (normalizedTerm && catNorm.includes(normalizedTerm)) {
-      isMatch = true;
-    }
+export async function searchProductsDB(keyword: string, useCase?: string) {
+  const term = keyword?.trim() || '';
+  const uCase = useCase?.trim() || '';
 
-    if (normalizedUseCase) {
-       const descNorm = normalizeStr(p.description || '');
-       if (descNorm.includes(normalizedUseCase) || pNameNorm.includes(normalizedUseCase)) {
-         isMatch = true;
-       }
-    }
-    
-    // Default fallback if no keyword provided but useCase is
-    if (!normalizedTerm && normalizedUseCase && isMatch) {
-        // keep isMatch true
-    } else if (!normalizedTerm && !normalizedUseCase) {
-       // do nothing
-    }
-    
-    if (isMatch) {
-       allVariants.push({
-          id: p.id,
-          name: p.name,
-          price: p.price,
-          unit: p.unit,
-          category: p.category,
-          description: p.description
-        });
-    }
+  const whereConditions: any = {};
+  const OR: any[] = [];
+
+  if (term) {
+    OR.push({ name: { contains: term, mode: 'insensitive' } });
+    OR.push({ category: { contains: term, mode: 'insensitive' } });
   }
-  
-  return allVariants.slice(0, 5); // Return top 5 matches
+
+  if (uCase) {
+    OR.push({ name: { contains: uCase, mode: 'insensitive' } });
+    OR.push({ description: { contains: uCase, mode: 'insensitive' } });
+  }
+
+  if (OR.length > 0) {
+    whereConditions.OR = OR;
+  }
+
+  try {
+    const dbProducts = await prisma.product.findMany({
+      where: whereConditions,
+      take: 5,
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        unit: true,
+        category: true,
+        description: true
+      }
+    });
+    return dbProducts;
+  } catch (error) {
+    console.error("AI DB Search Error:", error);
+    return [];
+  }
 }
 
-export function getProductDetailDB(productId: string) {
-    const product = PRODUCTS.find(p => p.id === productId);
-    if (!product) return null;
-    return {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        unit: product.unit,
-        category: product.category,
-        description: product.description,
-        specs: product.specs || []
-    };
+export async function getProductDetailDB(productId: string) {
+    try {
+      const product = await prisma.product.findUnique({ where: { id: productId } });
+      if (!product) return null;
+      return {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          unit: product.unit,
+          category: product.category,
+          description: product.description,
+          specs: product.specs || []
+      };
+    } catch (error) {
+      console.error("AI DB GetDetail Error:", error);
+      return null;
+    }
 }
 
-export function calculateQuoteDetails(productId: string, quantityKg: number) {
-  const primaryMatched = PRODUCTS.find(p => p.id === productId);
+export async function calculateQuoteDetails(productId: string, quantityKg: number) {
+  let primaryMatched = null;
+  try {
+    primaryMatched = await prisma.product.findUnique({ where: { id: productId } });
+  } catch (error) {
+    console.error("AI DB Quote Error:", error);
+  }
   
   if (!primaryMatched) {
     return { notFound: true };
