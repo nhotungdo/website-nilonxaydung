@@ -143,7 +143,7 @@ export async function POST(request: Request) {
     ];
 
     const groqResponse = await groq.chat.completions.create({
-      model: 'llama-3.3-70b-versatile',
+      model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
       messages: apiMessages,
       tools: GROQ_TOOLS,
       tool_choice: 'auto',
@@ -245,7 +245,7 @@ export async function POST(request: Request) {
       });
 
       const secondResponse = await groq.chat.completions.create({
-        model: 'llama-3.3-70b-versatile',
+        model: process.env.GROQ_MODEL || 'llama-3.1-8b-instant',
         messages: apiMessages,
         temperature: 0.3,
         max_completion_tokens: 1024
