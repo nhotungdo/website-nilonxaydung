@@ -13,8 +13,7 @@ export interface ChatMessage {
   tool_calls?: Record<string, unknown>[];
 }
 
-const groqApiKey = process.env.GROQ_API_KEY;
-const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null;
+
 
 function sanitizeNoAsterisks(text: string): string {
   if (!text) return '';
@@ -124,8 +123,15 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Danh sách tin nhắn không hợp lệ' }, { status: 400 });
     }
 
+    const groqApiKey = process.env.GROQ_API_KEY;
+    const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null;
+
     if (!groq) {
-      return handleFallbackBot();
+      console.error('[Groq AI] GROQ_API_KEY is not set or loaded.');
+      return NextResponse.json({
+        role: 'assistant',
+        content: 'Lỗi hệ thống: Chưa cấu hình khóa API Groq hoặc chưa tải được biến môi trường. Vui lòng kiểm tra lại file .env và restart server.'
+      });
     }
 
     const systemPrompt = buildSystemPrompt();
@@ -261,9 +267,12 @@ export async function POST(request: Request) {
       content: sanitizeNoAsterisks(assistantMessage?.content || '')
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('[Groq AI Chat API Error]:', error);
-    return handleFallbackBot();
+    return NextResponse.json({
+      role: 'assistant',
+      content: sanitizeNoAsterisks(`Lỗi hệ thống: ${error?.message || error}. Vui lòng thử lại.`)
+    });
   }
 }
 
