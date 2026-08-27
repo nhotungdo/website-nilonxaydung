@@ -28,5 +28,6 @@ export default async function BaoHoLaoDongPage() {
     }
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <CategoryPageContent initialProducts={dbProducts as any} />;
 }

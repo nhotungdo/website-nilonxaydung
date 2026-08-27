@@ -220,21 +220,21 @@ export interface CatalogVariant {
   description?: string;
 }
 
-const normalizeStr = (str: string) => 
-  str.toLowerCase()
-     .normalize('NFD')
-     .replace(/[\u0300-\u036f]/g, '')
-     .replace(/đ/g, 'd')
-     .replace(/[^a-z0-9]/g, ' ')
-     .replace(/\s+/g, ' ')
-     .trim();
+// const normalizeStr = (str: string) =>
+//   str.toLowerCase()
+//     .normalize('NFD')
+//     .replace(/[\u0300-\u036f]/g, '')
+//     .replace(/đ/g, 'd')
+//     .replace(/[^a-z0-9]/g, ' ')
+//     .replace(/\s+/g, ' ')
+//     .trim();
 
 export async function searchProductsDB(keyword: string, useCase?: string) {
   const term = keyword?.trim() || '';
   const uCase = useCase?.trim() || '';
 
-  const whereConditions: any = {};
-  const OR: any[] = [];
+  const whereConditions: Record<string, unknown> = {};
+  const OR: Record<string, unknown>[] = [];
 
   if (term) {
     OR.push({ name: { contains: term, mode: 'insensitive' } });
@@ -271,22 +271,22 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
 }
 
 export async function getProductDetailDB(productId: string) {
-    try {
-      const product = await prisma.product.findUnique({ where: { id: productId } });
-      if (!product) return null;
-      return {
-          id: product.id,
-          name: product.name,
-          price: product.price,
-          unit: product.unit,
-          category: product.category,
-          description: product.description,
-          specs: product.specs || []
-      };
-    } catch (error) {
-      console.error("AI DB GetDetail Error:", error);
-      return null;
-    }
+  try {
+    const product = await prisma.product.findUnique({ where: { id: productId } });
+    if (!product) return null;
+    return {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      unit: product.unit,
+      category: product.category,
+      description: product.description,
+      specs: product.specs || []
+    };
+  } catch (error) {
+    console.error("AI DB GetDetail Error:", error);
+    return null;
+  }
 }
 
 export async function calculateQuoteDetails(productId: string, quantityKg: number) {
@@ -296,7 +296,7 @@ export async function calculateQuoteDetails(productId: string, quantityKg: numbe
   } catch (error) {
     console.error("AI DB Quote Error:", error);
   }
-  
+
   if (!primaryMatched) {
     return { notFound: true };
   }

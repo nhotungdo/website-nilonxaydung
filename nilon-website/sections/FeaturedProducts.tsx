@@ -96,11 +96,11 @@ export default function FeaturedProducts() {
               className={`bg-white rounded-[12px] shadow-1 border ${product.featured ? 'border-[#2b6cb0] shadow-2 relative lg:-translate-y-2 z-10' : 'border-slate-200'} overflow-hidden flex flex-col group hover:shadow-2 transition-all duration-instant`}
             >
               <Link href={`/san-pham/${product.slug}`} className="relative h-52 bg-slate-100 overflow-hidden block">
-                <Image 
-                  src={product.image} 
-                  alt={product.title} 
+                <Image
+                  src={product.image}
+                  alt={product.title}
                   fill
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 {product.badge && (
                   <div className={`absolute top-4 left-4 px-3 py-1 text-xs font-semibold rounded-[12px] tracking-wider uppercase backdrop-blur-md shadow-1 ${product.badgeColor}`}>

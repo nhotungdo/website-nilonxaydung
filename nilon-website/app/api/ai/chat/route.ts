@@ -122,10 +122,10 @@ export async function POST(request: Request) {
     const systemPrompt = buildSystemPrompt();
 
     // Chuyển đổi định dạng message từ UI sang định dạng Gemini content
-    const contents: any[] = [];
+    const contents: Record<string, unknown>[] = [];
     for (const m of messages) {
       if (m.role === 'system') continue;
-      
+
       if (m.role === 'user') {
         contents.push({ role: 'user', parts: [{ text: m.content }] });
       } else if (m.role === 'assistant') {
@@ -135,8 +135,8 @@ export async function POST(request: Request) {
           for (const tc of m.tool_calls) {
             parts.push({
               functionCall: {
-                name: (tc as any).function.name,
-                args: JSON.parse((tc as any).function.arguments || '{}')
+                name: (tc as Record<string, Record<string, string>>).function.name,
+                args: JSON.parse((tc as Record<string, Record<string, string>>).function.arguments || '{}')
               }
             });
           }
@@ -178,7 +178,7 @@ export async function POST(request: Request) {
       const functionName = call.name;
       const args = call.args || {};
 
-      let toolResult: any = {};
+      let toolResult: Record<string, unknown> | Record<string, unknown>[] | null = {};
       let pdfData = null;
       let quoteSummary = null;
       let quoteDataForUI = null;
@@ -210,7 +210,7 @@ export async function POST(request: Request) {
             estimatedAreaSqM: quoteCalc.estimatedAreaSqM,
             notes: (args.notes as string) || 'Báo giá tự động AI Sales Assistant'
           };
-          
+
           pdfData = generateQuotePDF(pdfDataInput);
           quoteSummary = pdfDataInput;
 
@@ -280,19 +280,19 @@ export async function POST(request: Request) {
       let finalContent = '';
       try {
         finalContent = secondResponse.text || '';
-      } catch (e) {
+      } catch {
         console.warn('secondResponse.text threw an error (likely due to non-text parts)');
       }
 
       if (!finalContent) {
         const parts = secondResponse.candidates?.[0]?.content?.parts || [];
-        const textPart = parts.find((p: any) => p.text);
+        const textPart = parts.find((p) => p.text);
         if (textPart && textPart.text) {
-           finalContent = textPart.text;
+          finalContent = textPart.text;
         } else {
-           if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
-           else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
-           else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
+          if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
+          else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
+          else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
         }
       }
 
@@ -321,7 +321,7 @@ export async function POST(request: Request) {
       content: sanitizeNoAsterisks(response.text || '')
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('[Gemini AI Chat API Error]:', error);
     return handleFallbackBot();
   }

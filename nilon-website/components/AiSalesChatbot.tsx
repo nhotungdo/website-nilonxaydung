@@ -1,18 +1,18 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { 
-  Bot, 
-  X, 
-  Send, 
-  Sparkles, 
-  FileText, 
-  Download, 
-  User, 
-  CheckCircle2, 
-  Building2, 
-  Maximize2, 
-  Minimize2, 
+import {
+  Bot,
+  X,
+  Send,
+  Sparkles,
+  FileText,
+  Download,
+  User,
+  CheckCircle2,
+  Building2,
+  Maximize2,
+  Minimize2,
   RefreshCw
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,7 +62,7 @@ export default function AiSalesChatbot() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   // Lead Form Modal State inside Chat
   const [showLeadForm, setShowLeadForm] = useState(false);
   const [leadName, setLeadName] = useState('');
@@ -258,11 +258,10 @@ export default function AiSalesChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className={`bg-slate-950 text-slate-100 shadow-2xl border border-slate-800 overflow-hidden flex flex-col transition-all duration-300 z-[100] ${
-              isExpanded 
-                ? 'fixed inset-0 w-full h-[100dvh] rounded-none sm:relative sm:w-[800px] sm:h-[85vh] sm:rounded-2xl' 
+            className={`bg-slate-950 text-slate-100 shadow-2xl border border-slate-800 overflow-hidden flex flex-col transition-all duration-300 z-[100] ${isExpanded
+                ? 'fixed inset-0 w-full h-[100dvh] rounded-none sm:relative sm:w-[800px] sm:h-[85vh] sm:rounded-2xl'
                 : 'fixed bottom-0 left-0 w-full h-[85dvh] rounded-t-2xl rounded-b-none sm:relative sm:bottom-auto sm:left-auto sm:w-[420px] sm:h-[600px] sm:max-h-[82vh] sm:rounded-2xl'
-            }`}
+              }`}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-slate-900 via-blue-950 to-slate-900 px-4 py-3.5 border-b border-slate-800 flex items-center justify-between shrink-0">
@@ -323,11 +322,10 @@ export default function AiSalesChatbot() {
                   )}
 
                   <div
-                    className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md ${
-                      msg.role === 'user'
+                    className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-md ${msg.role === 'user'
                         ? 'bg-blue-600 text-white rounded-br-none'
                         : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-bl-none'
-                    }`}
+                      }`}
                   >
                     {/* Role Tag & Time */}
                     <div className="flex items-center justify-between text-[10px] text-slate-400 mb-1 gap-2">
@@ -534,9 +532,8 @@ export default function AiSalesChatbot() {
               <button
                 type="button"
                 onClick={() => setShowLeadForm(!showLeadForm)}
-                className={`p-2 rounded-xl transition-colors ${
-                  showLeadForm ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:text-white'
-                }`}
+                className={`p-2 rounded-xl transition-colors ${showLeadForm ? 'bg-blue-600 text-white' : 'bg-slate-800 text-slate-300 hover:text-white'
+                  }`}
                 title="Mở Form xuất PDF Báo giá"
               >
                 <FileText className="w-5 h-5 text-amber-400" />
