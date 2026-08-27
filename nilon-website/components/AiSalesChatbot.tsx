@@ -258,10 +258,10 @@ export default function AiSalesChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.2 }}
-            className={`bg-slate-950 text-slate-100 rounded-2xl shadow-2xl border border-slate-800 overflow-hidden flex flex-col transition-all duration-300 ${
+            className={`bg-slate-950 text-slate-100 shadow-2xl border border-slate-800 overflow-hidden flex flex-col transition-all duration-300 z-[100] ${
               isExpanded 
-                ? 'w-[95vw] sm:w-[800px] h-[85vh]' 
-                : 'w-[92vw] sm:w-[420px] h-[600px] max-h-[82vh]'
+                ? 'fixed inset-0 w-full h-[100dvh] rounded-none sm:relative sm:w-[800px] sm:h-[85vh] sm:rounded-2xl' 
+                : 'fixed bottom-0 left-0 w-full h-[85dvh] rounded-t-2xl rounded-b-none sm:relative sm:bottom-auto sm:left-auto sm:w-[420px] sm:h-[600px] sm:max-h-[82vh] sm:rounded-2xl'
             }`}
           >
             {/* Header */}

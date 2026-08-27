@@ -102,7 +102,7 @@ export default function Header() {
 
         {/* Mobile & Tablet Navigation Menu */}
         {isMobileMenuOpen && (
-          <div className="lg:hidden py-4 border-t border-slate-200 space-y-1.5 bg-white rounded-b-2xl shadow-xl px-2">
+          <div className="lg:hidden py-4 border-t border-slate-200 space-y-1.5 bg-white rounded-b-2xl shadow-xl px-2 max-h-[calc(100vh-64px)] overflow-y-auto">
             {navLinks.map((link) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (

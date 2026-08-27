@@ -115,10 +115,7 @@ export async function POST(request: Request) {
 
     if (!geminiApiKey) {
       console.error('[Gemini AI] GEMINI_API_KEY is not set or loaded.');
-      return NextResponse.json({
-        role: 'assistant',
-        content: 'Lỗi hệ thống: Chưa cấu hình khóa API Gemini. Vui lòng kiểm tra lại file .env và restart server.'
-      });
+      return handleFallbackBot();
     }
 
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
@@ -306,10 +303,7 @@ export async function POST(request: Request) {
 
   } catch (error: any) {
     console.error('[Gemini AI Chat API Error]:', error);
-    return NextResponse.json({
-      role: 'assistant',
-      content: sanitizeNoAsterisks(`Lỗi hệ thống: ${error?.message || error}. Vui lòng thử lại.`)
-    });
+    return handleFallbackBot();
   }
 }
 

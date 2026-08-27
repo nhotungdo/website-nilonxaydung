@@ -210,7 +210,7 @@ export default function CategoryPageContent({ initialProducts = PRODUCTS }: { in
             </div>
 
             {/* Responsive Grid: 5 cols Desktop, 3 Tablet, 2 Mobile */}
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
               {initialProducts.filter(p => p.isBestSeller).slice(0, 5).map(product => (
                 <ProductItem key={`featured-${product.id}`} product={product} onAddToCart={handleAddToCart} />
               ))}
@@ -385,7 +385,7 @@ function CategorySection({
       </div>
 
       {/* Grid: 5 cols on Desktop, 3 on Tablet, 2 on Mobile */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
         {products.map((product) => (
           <ProductItem key={product.id} product={product} onAddToCart={onAddToCart} />
         ))}
