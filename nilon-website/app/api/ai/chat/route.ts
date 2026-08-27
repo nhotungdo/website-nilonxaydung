@@ -150,7 +150,10 @@ export async function POST(request: Request) {
           parts: [{
             functionResponse: {
               name: m.name || '',
-              response: JSON.parse(m.content || '{}')
+              response: (() => {
+                const parsed = JSON.parse(m.content || '{}');
+                return Array.isArray(parsed) ? { results: parsed } : parsed;
+              })()
             }
           }]
         });
@@ -158,7 +161,7 @@ export async function POST(request: Request) {
     }
 
     const modelParams = {
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.6-flash',
       contents: contents,
       config: {
         systemInstruction: systemPrompt,
@@ -259,14 +262,14 @@ export async function POST(request: Request) {
           parts: [{
             functionResponse: {
               name: functionName,
-              response: toolResult
+              response: Array.isArray(toolResult) ? { results: toolResult } : toolResult
             }
           }]
         }
       ];
 
       const secondResponse = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+        model: 'gemini-3.6-flash',
         contents: nextContents,
         config: {
           systemInstruction: systemPrompt,
@@ -274,7 +277,24 @@ export async function POST(request: Request) {
         }
       });
 
-      const finalContent = secondResponse.text || '';
+      let finalContent = '';
+      try {
+        finalContent = secondResponse.text || '';
+      } catch (e) {
+        console.warn('secondResponse.text threw an error (likely due to non-text parts)');
+      }
+
+      if (!finalContent) {
+        const parts = secondResponse.candidates?.[0]?.content?.parts || [];
+        const textPart = parts.find((p: any) => p.text);
+        if (textPart && textPart.text) {
+           finalContent = textPart.text;
+        } else {
+           if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
+           else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
+           else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
+        }
+      }
 
       // Create a compatible tool_calls array for the frontend
       const frontendToolCalls = [{

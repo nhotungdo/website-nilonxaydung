@@ -408,9 +408,8 @@ function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: 
           fill 
           className="object-cover group-hover:scale-105 transition-transform duration-300 ease-out"
         />
-        
         {product.isBestSeller && (
-          <div className="absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5 bg-red-500 md:bg-[#2b6cb0] text-white text-[10px] md:text-[11px] font-semibold px-1.5 md:px-2 py-0.5 rounded-sm md:rounded-[12px] shadow-sm flex items-center md:gap-1 uppercase tracking-wider font-heading z-10">
+          <div className="absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5 bg-[#2b6cb0] text-white text-[10px] md:text-[11px] font-semibold px-1.5 md:px-2 py-0.5 rounded-sm md:rounded-[12px] shadow-sm flex items-center md:gap-1 uppercase tracking-wider font-heading z-10">
             <TrendingUp className="w-2.5 h-2.5 hidden md:block" />
             <span>Bán chạy</span>
           </div>
@@ -430,14 +429,14 @@ function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: 
         <div className="pt-1.5 md:pt-3 border-t border-slate-100 flex flex-row md:flex-col items-center md:items-stretch justify-between md:gap-2 mt-auto">
           <div className="flex flex-col md:flex-row md:items-baseline md:justify-between">
             <span className="hidden md:inline text-xs text-slate-400 font-medium">Giá từ</span>
-            <span className="text-red-500 md:text-[#2b6cb0] font-bold text-sm md:text-lg font-mono tracking-tight">
+            <span className="text-[#2b6cb0] font-bold text-sm md:text-lg font-mono tracking-tight">
               {product.price ? formatPrice(product.price) : "Liên hệ"}
             </span>
           </div>
           
           <button 
             onClick={() => onAddToCart(product)}
-            className="md:w-full w-7 h-7 md:min-h-[44px] md:py-2.5 bg-red-500 md:bg-[#2b6cb0] hover:bg-red-600 md:hover:bg-[#3182ce] text-white rounded-full md:rounded-[12px] font-semibold text-base shadow-sm transition-colors flex items-center justify-center gap-0 md:gap-2 shrink-0"
+            className="md:w-full w-7 h-7 md:min-h-[44px] md:py-2.5 bg-[#2b6cb0] hover:bg-[#3182ce] text-white rounded-full md:rounded-[12px] font-semibold text-base shadow-sm transition-colors flex items-center justify-center gap-0 md:gap-2 shrink-0"
             aria-label="Thêm vào báo giá"
           >
             <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4" />
