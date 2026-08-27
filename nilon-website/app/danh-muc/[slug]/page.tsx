@@ -4,6 +4,7 @@ import { categories } from '@/data/categories';
 import ProductCard from '@/components/ProductCard';
 import { generateSEO } from '@/lib/seo';
 
+export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const category = categories.find((c) => c.slug === resolvedParams.slug);

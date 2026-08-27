@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import Groq from 'groq-sdk';
+import { GoogleGenAI, Type, Tool } from '@google/genai';
 import { calculateQuoteDetails, searchProductsDB, getProductDetailDB } from '@/data/ai-knowledge-base';
 import { generateQuotePDF, QuotePDFData } from '@/lib/pdf-quote-generator';
 import { sendTelegramMessage, escapeHTML } from '@/lib/telegram';
@@ -13,77 +13,65 @@ export interface ChatMessage {
   tool_calls?: Record<string, unknown>[];
 }
 
-
-
 function sanitizeNoAsterisks(text: string): string {
   if (!text) return '';
   return text.replace(/\*/g, '');
 }
 
-const GROQ_TOOLS = [
-  {
-    type: 'function' as const,
-    function: {
+const GEMINI_TOOLS: Tool[] = [{
+  functionDeclarations: [
+    {
       name: 'search_products',
       description: 'Tìm kiếm sản phẩm trong cơ sở dữ liệu theo từ khóa hoặc nhu cầu sử dụng. Trả về danh sách thu gọn các sản phẩm phù hợp.',
       parameters: {
-        type: 'object',
+        type: Type.OBJECT,
         properties: {
-          keyword: { type: 'string', description: 'Từ khóa tên sản phẩm (vd: màng pe, nilon, giày)' },
-          useCase: { type: 'string', description: 'Mục đích sử dụng (vd: quấn pallet, lót sàn, bảo hộ)' }
+          keyword: { type: Type.STRING, description: 'Từ khóa tên sản phẩm (vd: màng pe, nilon, giày)' },
+          useCase: { type: Type.STRING, description: 'Mục đích sử dụng (vd: quấn pallet, lót sàn, bảo hộ)' }
         }
       }
-    }
-  },
-  {
-    type: 'function' as const,
-    function: {
+    },
+    {
       name: 'get_product_detail',
       description: 'Lấy chi tiết giá, quy cách và thông tin kỹ thuật của một mã sản phẩm cụ thể (cần dùng sau khi đã tìm kiếm).',
       parameters: {
-        type: 'object',
+        type: Type.OBJECT,
         properties: {
-          productId: { type: 'string', description: 'ID của sản phẩm (vd: mang-pe-2zem)' }
+          productId: { type: Type.STRING, description: 'ID của sản phẩm (vd: mang-pe-2zem)' }
         },
         required: ['productId']
       }
-    }
-  },
-  {
-    type: 'function' as const,
-    function: {
+    },
+    {
       name: 'calculate_provisional_quote',
       description: 'Tính toán chi tiết báo giá tạm tính (có chiết khấu khối lượng) cho một mã sản phẩm cụ thể.',
       parameters: {
-        type: 'object',
+        type: Type.OBJECT,
         properties: {
-          productId: { type: 'string', description: 'ID của sản phẩm' },
-          quantityKg: { type: 'number', description: 'Số lượng / Khối lượng tính bằng kg hoặc cái' }
+          productId: { type: Type.STRING, description: 'ID của sản phẩm' },
+          quantityKg: { type: Type.NUMBER, description: 'Số lượng / Khối lượng tính bằng kg hoặc cái' }
         },
         required: ['productId', 'quantityKg']
       }
-    }
-  },
-  {
-    type: 'function' as const,
-    function: {
+    },
+    {
       name: 'create_sales_lead_and_pdf',
       description: 'Thu thập thông tin khách hàng B2B để xuất File Báo giá PDF và gửi Lead cho Sales. CHỈ GỌI KHI KHÁCH ĐÃ ĐỒNG Ý BÁO GIÁ TẠM TÍNH.',
       parameters: {
-        type: 'object',
+        type: Type.OBJECT,
         properties: {
-          customerName: { type: 'string' },
-          phone: { type: 'string' },
-          address: { type: 'string' },
-          productId: { type: 'string' },
-          quantityKg: { type: 'number' },
-          notes: { type: 'string' }
+          customerName: { type: Type.STRING },
+          phone: { type: Type.STRING },
+          address: { type: Type.STRING },
+          productId: { type: Type.STRING },
+          quantityKg: { type: Type.NUMBER },
+          notes: { type: Type.STRING }
         },
         required: ['customerName', 'phone', 'address', 'productId', 'quantityKg']
       }
     }
-  }
-];
+  ]
+}];
 
 const ZALO_CONTACT_URL = 'https://zalo.me/nilonxaydung';
 
@@ -123,42 +111,72 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Danh sách tin nhắn không hợp lệ' }, { status: 400 });
     }
 
-    const groqApiKey = process.env.GROQ_API_KEY;
-    const groq = groqApiKey ? new Groq({ apiKey: groqApiKey }) : null;
+    const geminiApiKey = process.env.GEMINI_API_KEY;
 
-    if (!groq) {
-      console.error('[Groq AI] GROQ_API_KEY is not set or loaded.');
+    if (!geminiApiKey) {
+      console.error('[Gemini AI] GEMINI_API_KEY is not set or loaded.');
       return NextResponse.json({
         role: 'assistant',
-        content: 'Lỗi hệ thống: Chưa cấu hình khóa API Groq hoặc chưa tải được biến môi trường. Vui lòng kiểm tra lại file .env và restart server.'
+        content: 'Lỗi hệ thống: Chưa cấu hình khóa API Gemini. Vui lòng kiểm tra lại file .env và restart server.'
       });
     }
 
+    const ai = new GoogleGenAI({ apiKey: geminiApiKey });
     const systemPrompt = buildSystemPrompt();
-    
-    // Inject system prompt if not present, otherwise it's just handled implicitly by Groq
-    const apiMessages: any[] = [
-      { role: 'system', content: systemPrompt },
-      ...messages
-    ];
 
-    const groqResponse = await groq.chat.completions.create({
-      model: process.env.GROQ_MODEL || 'qwen/qwen3.6-27b',
-      messages: apiMessages,
-      tools: GROQ_TOOLS,
-      tool_choice: 'auto',
-      temperature: 0.3,
-      max_completion_tokens: 1024
-    });
+    // Chuyển đổi định dạng message từ UI sang định dạng Gemini content
+    const contents: any[] = [];
+    for (const m of messages) {
+      if (m.role === 'system') continue;
+      
+      if (m.role === 'user') {
+        contents.push({ role: 'user', parts: [{ text: m.content }] });
+      } else if (m.role === 'assistant') {
+        const parts = [];
+        if (m.content) parts.push({ text: m.content });
+        if (m.tool_calls && m.tool_calls.length > 0) {
+          for (const tc of m.tool_calls) {
+            parts.push({
+              functionCall: {
+                name: (tc as any).function.name,
+                args: JSON.parse((tc as any).function.arguments || '{}')
+              }
+            });
+          }
+        }
+        if (parts.length > 0) {
+          contents.push({ role: 'model', parts });
+        }
+      } else if (m.role === 'tool') {
+        contents.push({
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: m.name || '',
+              response: JSON.parse(m.content || '{}')
+            }
+          }]
+        });
+      }
+    }
 
-    const choice = groqResponse.choices[0];
-    const assistantMessage = choice?.message;
+    const modelParams = {
+      model: 'gemini-2.5-flash',
+      contents: contents,
+      config: {
+        systemInstruction: systemPrompt,
+        tools: GEMINI_TOOLS,
+        temperature: 0.3
+      }
+    };
 
-    // IF AI CALLED A TOOL
-    if (assistantMessage?.tool_calls && assistantMessage.tool_calls.length > 0) {
-      const toolCall = assistantMessage.tool_calls[0];
-      const functionName = toolCall.function.name;
-      const args = JSON.parse(toolCall.function.arguments || '{}');
+    const response = await ai.models.generateContent(modelParams);
+
+    // Xử lý Function Call
+    if (response.functionCalls && response.functionCalls.length > 0) {
+      const call = response.functionCalls[0];
+      const functionName = call.name;
+      const args = call.args || {};
 
       let toolResult: any = {};
       let pdfData = null;
@@ -166,31 +184,31 @@ export async function POST(request: Request) {
       let quoteDataForUI = null;
 
       if (functionName === 'search_products') {
-        toolResult = await searchProductsDB(args.keyword, args.useCase);
+        toolResult = await searchProductsDB(args.keyword as string, args.useCase as string);
       } else if (functionName === 'get_product_detail') {
-        toolResult = await getProductDetailDB(args.productId);
+        toolResult = await getProductDetailDB(args.productId as string);
       } else if (functionName === 'calculate_provisional_quote') {
-        toolResult = await calculateQuoteDetails(args.productId, args.quantityKg);
-        quoteDataForUI = toolResult; // Send back to UI for rich rendering
+        toolResult = await calculateQuoteDetails(args.productId as string, args.quantityKg as number);
+        quoteDataForUI = toolResult;
       } else if (functionName === 'create_sales_lead_and_pdf') {
-        const quoteCalc = await calculateQuoteDetails(args.productId, args.quantityKg);
+        const quoteCalc = await calculateQuoteDetails(args.productId as string, args.quantityKg as number);
         if (!quoteCalc.notFound && quoteCalc.product) {
           const quoteCode = `BG-${Date.now().toString().slice(-6)}`;
           const pdfDataInput: QuotePDFData = {
             quoteCode,
-            customerName: args.customerName,
-            phone: args.phone,
-            address: args.address,
+            customerName: args.customerName as string,
+            phone: args.phone as string,
+            address: args.address as string,
             productName: quoteCalc.product.name,
             thicknessZem: quoteCalc.product.thicknessZem,
-            quantityKg: args.quantityKg,
+            quantityKg: args.quantityKg as number,
             unitPrice: quoteCalc.unitPriceAfterDiscount,
             subtotal: quoteCalc.subtotal,
             discountPercentage: quoteCalc.discountPercentage,
             shippingFee: quoteCalc.shippingFee,
             grandTotal: quoteCalc.grandTotal,
             estimatedAreaSqM: quoteCalc.estimatedAreaSqM,
-            notes: args.notes || 'Báo giá tự động AI Sales Assistant'
+            notes: (args.notes as string) || 'Báo giá tự động AI Sales Assistant'
           };
           
           pdfData = generateQuotePDF(pdfDataInput);
@@ -200,17 +218,17 @@ export async function POST(request: Request) {
             await prisma.quoteInquiry.create({
               data: {
                 quoteCode,
-                customerName: args.customerName,
-                phone: args.phone,
-                address: args.address,
+                customerName: args.customerName as string,
+                phone: args.phone as string,
+                address: args.address as string,
                 productName: quoteCalc.product.name,
                 thicknessZem: quoteCalc.product.thicknessZem,
-                quantityKg: args.quantityKg,
+                quantityKg: args.quantityKg as number,
                 unitPrice: quoteCalc.unitPriceAfterDiscount,
                 subtotal: quoteCalc.subtotal,
                 shippingFee: quoteCalc.shippingFee,
                 totalAmount: quoteCalc.grandTotal,
-                aiNotes: args.notes || 'Báo giá AI'
+                aiNotes: (args.notes as string) || 'Báo giá AI'
               }
             });
           } catch (dbErr) {
@@ -220,9 +238,9 @@ export async function POST(request: Request) {
           const telegramText = `
 🤖 <b>LEAD BÁO GIÁ AI CHATBOT MỚI</b>
 ━━━━━━━━━━━━━━━━━━
-👤 <b>Khách hàng:</b> ${escapeHTML(args.customerName)}
-📞 <b>SĐT:</b> ${escapeHTML(args.phone)}
-🏗️ <b>Công trình:</b> ${escapeHTML(args.address)}
+👤 <b>Khách hàng:</b> ${escapeHTML(args.customerName as string)}
+📞 <b>SĐT:</b> ${escapeHTML(args.phone as string)}
+🏗️ <b>Công trình:</b> ${escapeHTML(args.address as string)}
 📦 <b>Sản phẩm:</b> ${escapeHTML(quoteCalc.product.name)}
 ⚖️ <b>Khối lượng:</b> ${args.quantityKg} ${quoteCalc.unitLabel || 'kg'}
 💰 <b>Tổng tạm tính:</b> ${quoteCalc.grandTotal.toLocaleString('vi-VN')} VNĐ
@@ -235,40 +253,59 @@ export async function POST(request: Request) {
         }
       }
 
-      // SECOND LOOP: Feed tool result back to LLM to get a natural language response
-      apiMessages.push(assistantMessage);
-      apiMessages.push({
-        role: 'tool',
-        tool_call_id: toolCall.id,
-        name: functionName,
-        content: JSON.stringify(toolResult)
+      // Vòng lặp thứ 2: Gửi kết quả tool về cho LLM
+      const nextContents = [
+        ...contents,
+        { role: 'model', parts: response.candidates?.[0]?.content?.parts || [] },
+        {
+          role: 'user',
+          parts: [{
+            functionResponse: {
+              name: functionName,
+              response: toolResult
+            }
+          }]
+        }
+      ];
+
+      const secondResponse = await ai.models.generateContent({
+        model: 'gemini-2.5-flash',
+        contents: nextContents,
+        config: {
+          systemInstruction: systemPrompt,
+          temperature: 0.3
+        }
       });
 
-      const secondResponse = await groq.chat.completions.create({
-        model: process.env.GROQ_MODEL || 'qwen/qwen3.6-27b',
-        messages: apiMessages,
-        temperature: 0.3,
-        max_completion_tokens: 1024
-      });
+      const finalContent = secondResponse.text || '';
 
-      const finalContent = secondResponse.choices[0]?.message?.content || '';
+      // Create a compatible tool_calls array for the frontend
+      const frontendToolCalls = [{
+        id: `call_${Date.now()}`,
+        type: 'function',
+        function: {
+          name: functionName,
+          arguments: JSON.stringify(args)
+        }
+      }];
 
       return NextResponse.json({
         role: 'assistant',
         content: sanitizeNoAsterisks(finalContent),
+        tool_calls: frontendToolCalls,
         ...(pdfData && { pdfData, quoteSummary }),
         ...(quoteDataForUI && { quoteData: quoteDataForUI })
       });
     }
 
-    // IF AI RETURNED DIRECT TEXT
+    // NẾU AI TRẢ VỀ TEXT TRỰC TIẾP
     return NextResponse.json({
       role: 'assistant',
-      content: sanitizeNoAsterisks(assistantMessage?.content || '')
+      content: sanitizeNoAsterisks(response.text || '')
     });
 
   } catch (error: any) {
-    console.error('[Groq AI Chat API Error]:', error);
+    console.error('[Gemini AI Chat API Error]:', error);
     return NextResponse.json({
       role: 'assistant',
       content: sanitizeNoAsterisks(`Lỗi hệ thống: ${error?.message || error}. Vui lòng thử lại.`)

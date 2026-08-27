@@ -4,6 +4,7 @@ import { formatPrice } from '@/lib/formatPrice';
 import { generateSEO } from '@/lib/seo';
 import ProductDetailActions from '@/components/ProductDetailActions';
 
+export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const product = await prisma.product.findUnique({

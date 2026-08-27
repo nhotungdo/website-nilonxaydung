@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import CategoryPageContent from "@/components/CategoryPageContent";
 
+export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: "Bảo hộ lao động & Vật tư công trình | Giải pháp bảo vệ toàn diện",
   description: "Chuyên cung cấp mũ bảo hộ, găng tay, giày bảo hộ, quần áo phản quang và vật tư che chắn công trình. Sản phẩm chất lượng cao, giá tốt cho nhà thầu.",
