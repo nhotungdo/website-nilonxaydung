@@ -210,7 +210,7 @@ export default function CategoryPageContent({ initialProducts = PRODUCTS }: { in
             </div>
 
             {/* Responsive Grid: 5 cols Desktop, 3 Tablet, 2 Mobile */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
               {initialProducts.filter(p => p.isBestSeller).slice(0, 5).map(product => (
                 <ProductItem key={`featured-${product.id}`} product={product} onAddToCart={handleAddToCart} />
               ))}
@@ -385,7 +385,7 @@ function CategorySection({
       </div>
 
       {/* Grid: 5 cols on Desktop, 3 on Tablet, 2 on Mobile */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 lg:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 lg:gap-6">
         {products.map((product) => (
           <ProductItem key={product.id} product={product} onAddToCart={onAddToCart} />
         ))}
@@ -399,9 +399,9 @@ function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: 
     <motion.div 
       whileHover={{ y: -4 }}
       transition={{ duration: 0.2 }}
-      className="group bg-white rounded-[12px] border border-slate-200/80 overflow-hidden shadow-1 hover:shadow-2 hover:border-[#2b6cb0]/40 transition-all duration-instant flex flex-col h-full"
+      className="group bg-white rounded-md md:rounded-[12px] border border-slate-200/80 overflow-hidden shadow-sm hover:shadow-md hover:border-[#2b6cb0]/40 transition-all duration-instant flex flex-col h-full relative"
     >
-      <div className="relative aspect-[4/3] overflow-hidden bg-[#f4f9fc] border-b border-slate-100">
+      <div className="relative aspect-square md:aspect-[4/3] overflow-hidden bg-[#f4f9fc] border-b border-slate-100">
         <Image 
           src={product.image} 
           alt={product.name} 
@@ -410,37 +410,38 @@ function ProductItem({ product, onAddToCart }: { product: Product, onAddToCart: 
         />
         
         {product.isBestSeller && (
-          <div className="absolute top-2.5 left-2.5 bg-[#2b6cb0] text-white text-[11px] font-semibold px-2 py-0.5 rounded-[12px] shadow-1 flex items-center gap-1 uppercase tracking-wider font-heading">
-            <TrendingUp className="w-3 h-3" />
+          <div className="absolute top-1.5 left-1.5 md:top-2.5 md:left-2.5 bg-red-500 md:bg-[#2b6cb0] text-white text-[10px] md:text-[11px] font-semibold px-1.5 md:px-2 py-0.5 rounded-sm md:rounded-[12px] shadow-sm flex items-center md:gap-1 uppercase tracking-wider font-heading z-10">
+            <TrendingUp className="w-2.5 h-2.5 hidden md:block" />
             <span>Bán chạy</span>
           </div>
         )}
       </div>
       
-      <div className="p-4 flex flex-col flex-1 justify-between">
+      <div className="p-2 md:p-4 flex flex-col flex-1 justify-between gap-1 md:gap-0">
         <div>
           <Link href={`/san-pham/${product.slug || product.id}`}>
-            <h3 className="font-heading font-semibold text-slate-900 text-base mb-1.5 line-clamp-2 group-hover:text-[#2b6cb0] transition-colors leading-[1.2]">
+            <h3 className="font-heading font-medium md:font-semibold text-slate-800 md:text-slate-900 text-xs md:text-base mb-1 md:mb-1.5 line-clamp-2 group-hover:text-[#2b6cb0] transition-colors leading-snug md:leading-[1.2]">
               {product.name}
             </h3>
           </Link>
-          <p className="text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">{product.description || "Vật tư đạt tiêu chuẩn chất lượng công trình."}</p>
+          <p className="hidden md:block text-xs text-slate-500 mb-3 line-clamp-2 leading-relaxed">{product.description || "Vật tư đạt tiêu chuẩn chất lượng công trình."}</p>
         </div>
         
-        <div className="pt-3 border-t border-slate-100 flex flex-col gap-2 mt-auto">
-          <div className="flex items-baseline justify-between">
-            <span className="text-xs text-slate-400 font-medium">Giá từ</span>
-            <span className="text-[#2b6cb0] font-bold text-lg font-mono">
+        <div className="pt-1.5 md:pt-3 border-t border-slate-100 flex flex-row md:flex-col items-center md:items-stretch justify-between md:gap-2 mt-auto">
+          <div className="flex flex-col md:flex-row md:items-baseline md:justify-between">
+            <span className="hidden md:inline text-xs text-slate-400 font-medium">Giá từ</span>
+            <span className="text-red-500 md:text-[#2b6cb0] font-bold text-sm md:text-lg font-mono tracking-tight">
               {product.price ? formatPrice(product.price) : "Liên hệ"}
             </span>
           </div>
           
           <button 
             onClick={() => onAddToCart(product)}
-            className="w-full min-h-[44px] py-2.5 bg-[#2b6cb0] hover:bg-[#3182ce] text-white rounded-[12px] font-semibold text-base shadow-1 transition-colors flex items-center justify-center gap-2 leading-none"
+            className="md:w-full w-7 h-7 md:min-h-[44px] md:py-2.5 bg-red-500 md:bg-[#2b6cb0] hover:bg-red-600 md:hover:bg-[#3182ce] text-white rounded-full md:rounded-[12px] font-semibold text-base shadow-sm transition-colors flex items-center justify-center gap-0 md:gap-2 shrink-0"
+            aria-label="Thêm vào báo giá"
           >
-            <ShoppingCart className="w-4 h-4" />
-            <span>Thêm vào báo giá</span>
+            <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4" />
+            <span className="hidden md:inline">Thêm vào báo giá</span>
           </button>
         </div>
       </div>
