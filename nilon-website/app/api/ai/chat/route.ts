@@ -113,9 +113,12 @@ export async function POST(request: Request) {
 
     const geminiApiKey = process.env.GEMINI_API_KEY;
 
-    if (!geminiApiKey) {
+    if (!geminiApiKey || geminiApiKey.includes('your_gemini_api_key_here')) {
       console.error('[Gemini AI] GEMINI_API_KEY is not set or loaded.');
-      return handleFallbackBot();
+      return NextResponse.json({
+        role: 'assistant',
+        content: sanitizeNoAsterisks(`Dạ hệ thống AI đang thiếu cấu hình API Key. Anh/chị (hoặc Admin) vui lòng cập nhật GEMINI_API_KEY hợp lệ trong file .env.local để sử dụng tính năng này nhé!`)
+      });
     }
 
     const ai = new GoogleGenAI({ apiKey: geminiApiKey });
@@ -161,7 +164,7 @@ export async function POST(request: Request) {
     }
 
     const modelParams = {
-      model: 'gemini-3.6-flash',
+      model: 'gemini-2.0-flash',
       contents: contents,
       config: {
         systemInstruction: systemPrompt,
@@ -269,7 +272,7 @@ export async function POST(request: Request) {
       ];
 
       const secondResponse = await ai.models.generateContent({
-        model: 'gemini-3.6-flash',
+        model: 'gemini-2.0-flash',
         contents: nextContents,
         config: {
           systemInstruction: systemPrompt,
@@ -321,8 +324,17 @@ export async function POST(request: Request) {
       content: sanitizeNoAsterisks(response.text || '')
     });
 
-  } catch (error: unknown) {
+  } catch (error: any) {
     console.error('[Gemini AI Chat API Error]:', error);
+    
+    // Bắt lỗi Rate Limit hoặc Quota
+    if (error?.status === 429 || error?.message?.includes('429') || error?.message?.includes('quota')) {
+      return NextResponse.json({
+        role: 'assistant',
+        content: sanitizeNoAsterisks(`Dạ hiện tại hệ thống AI đang quá tải do có nhiều lượt truy cập hoặc đã hết hạn mức (Quota) miễn phí. Anh/chị vui lòng thử lại sau ít phút hoặc liên hệ Hotline/Zalo để được hỗ trợ nhé ạ!`)
+      });
+    }
+
     return handleFallbackBot();
   }
 }
