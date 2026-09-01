@@ -18,6 +18,27 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
+// Simple Typing Effect Component
+const TypingEffect = ({ text }: { text: string }) => {
+  const [displayedText, setDisplayedText] = useState('');
+
+  useEffect(() => {
+    let i = 0;
+    setDisplayedText('');
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        setDisplayedText((prev) => prev + text.charAt(i));
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 15); // ms per character
+    return () => clearInterval(timer);
+  }, [text]);
+
+  return <>{displayedText}</>;
+};
+
 export interface QuoteCalcResult {
   product: {
     name: string;
@@ -104,7 +125,26 @@ export default function AiSalesChatbot() {
     const timer = setTimeout(() => {
       setIsOpen(true);
       setHasOpenedBefore(true);
-      // Optional: push a proactive message to the state here if wanted.
+      
+      const path = window.location.pathname;
+      let proactiveText = 'Dạ anh/chị cần em hỗ trợ tư vấn hay báo giá vật tư nào không ạ?';
+      if (path.includes('/san-pham/')) {
+        proactiveText = 'Dạ em thấy anh/chị đang tham khảo sản phẩm này. Anh/chị có muốn lấy báo giá sỉ hoặc tư vấn thêm về thông số kỹ thuật không ạ?';
+      } else if (path.includes('bao-ho-lao-dong')) {
+        proactiveText = 'Dạ các mặt hàng Bảo Hộ Lao Động (Giày, Mũ, Găng tay) bên em đang có giá ưu đãi cho công trình. Anh/chị cần em gửi bảng giá sỉ không ạ?';
+      } else if (path.includes('nilon-lot-san') || path.includes('mang-pe')) {
+        proactiveText = 'Dạ với các dòng Nilon lót sàn/Màng PE, anh/chị chỉ cần cho em biết diện tích (m2), em sẽ tính chính xác số cuộn và số kg cần mua luôn ạ!';
+      }
+
+      setMessages(prev => [
+        ...prev,
+        {
+          id: `proactive-${Date.now()}`,
+          role: 'assistant',
+          content: proactiveText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        }
+      ]);
     }, 15000);
     return () => clearTimeout(timer);
   }, [hasOpenedBefore]);
@@ -362,7 +402,11 @@ export default function AiSalesChatbot() {
 
                     {/* Content text */}
                     <div className="text-sm whitespace-pre-wrap leading-relaxed font-sans">
-                      {msg.content}
+                      {msg.role === 'assistant' ? (
+                        <TypingEffect text={msg.content} />
+                      ) : (
+                        msg.content
+                      )}
                     </div>
 
                     {/* Calculated Quote Summary Box (If attached) */}
