@@ -5,6 +5,188 @@
 import { PRODUCTS } from '@/data/products';
 import { prisma } from '@/lib/prisma';
 
+export interface EstimateRequest {
+  areaSqM: number;
+  usageType: string;
+  usageTypeName?: string;
+  layersCount?: number;
+  peQualityGrade?: 'auto' | 'recycled' | 'virgin';
+  notes?: string;
+  projectDescription?: string;
+}
+
+export interface EstimateResult {
+  recommendedProduct: string;
+  thicknessZem: number;
+  thicknessMm: number;
+  color: string;
+  rollWidth: string;
+  layersCount: number;
+  effectiveAreaSqM: number;
+  exactWeightKg: number;
+  totalWeightKg: number;
+  rollCount: number;
+  peGradeName: string;
+  pricePerKg: number;
+  totalPriceExact: number;
+  estimatedPriceMin: number;
+  estimatedPriceMax: number;
+  overlapPercentage: number;
+  volumeTierLabel: string;
+  savingsVnd: number;
+  technicalTips: string[];
+  explanation: string;
+  isAiGenerated: boolean;
+}
+
+export function enforceStrictPhysicsEngine(
+  input: EstimateRequest,
+  aiParams?: {
+    recommendedProduct?: string;
+    thicknessZem?: number;
+    color?: string;
+    rollWidth?: string;
+    overlapPercentage?: number;
+    technicalTips?: string[];
+    explanation?: string;
+    peQualityGrade?: 'recycled' | 'virgin';
+  }
+): EstimateResult {
+  const areaSqM = Math.max(1, input.areaSqM || 1);
+  const layersCount = Math.max(1, input.layersCount || 1);
+  const usageType = input.usageType || 'lot-san-be-tong-mang';
+
+  let zem = aiParams?.thicknessZem || 4;
+  let overlapPct = aiParams?.overlapPercentage || 15;
+  let color = aiParams?.color || 'Màu đen / xám lót công trình';
+  let rollWidth = aiParams?.rollWidth || 'Khổ 2m (xòe 4m) x 100m';
+  let productName = aiParams?.recommendedProduct || 'Nilon lót sàn bê tông 4zem chống mất nước';
+  let isVirgin = input.peQualityGrade === 'virgin' || aiParams?.peQualityGrade === 'virgin';
+
+  if (!aiParams?.thicknessZem) {
+    if (usageType.includes('chong-tham') || usageType.includes('mong-sau')) {
+      zem = 10;
+      productName = 'Màng PE đen chống thấm chuyên dụng 10zem (0.10mm)';
+      rollWidth = 'Khổ 2m (xòe 4m) x 50m';
+      color = 'Màu đen bóng chống thấm';
+      overlapPct = 15;
+      isVirgin = false;
+    } else if (usageType.includes('nong-nghiep') || usageType.includes('nha-kinh')) {
+      zem = 7;
+      productName = 'Màng nilon phủ nông nghiệp & nhà kính 7zem';
+      rollWidth = 'Khổ 1.4m - 2m trong suốt';
+      color = 'Màu trong suốt phủ UV';
+      overlapPct = 10;
+      isVirgin = true;
+    } else if (usageType.includes('quan-pallet') || usageType.includes('boc-hang')) {
+      zem = 2;
+      productName = 'Màng PE quấn pallet & bọc hàng hóa 2zem (20 micron)';
+      rollWidth = 'Khổ 50cm (cuộn 3.8kg - 5kg)';
+      color = 'Màu trong suốt siêu dẻo';
+      overlapPct = 10;
+      isVirgin = true;
+    } else if (usageType.includes('dan-dung')) {
+      zem = areaSqM > 500 ? 4 : 2;
+      productName = `Nilon lót sàn bê tông nhà dân dụng ${zem}zem`;
+      overlapPct = 15;
+    } else if (areaSqM > 1000) {
+      zem = 6;
+      productName = 'Nilon lót sàn bê tông móng công trình lớn 6zem (0.06mm)';
+      overlapPct = 15;
+    }
+  }
+
+  if (input.peQualityGrade === 'recycled') isVirgin = false;
+  if (input.peQualityGrade === 'virgin') isVirgin = true;
+
+  const effectiveAreaSqM = Number((areaSqM * layersCount * (1 + overlapPct / 100)).toFixed(2));
+  const exactWeightKg = Number((effectiveAreaSqM * zem * 0.0093).toFixed(2));
+  const totalWeightKg = Math.max(1, Math.ceil(exactWeightKg));
+
+  const stdRollWeight = usageType.includes('quan-pallet') ? 5 : 50;
+  const rollCount = Math.max(1, Math.ceil(totalWeightKg / stdRollWeight));
+
+  let pricePerKgRecycled = 36000;
+  let pricePerKgVirgin = 45000;
+  let volumeTierLabel = 'Báo giá bán lẻ';
+
+  if (usageType.includes('quan-pallet')) {
+    pricePerKgRecycled = totalWeightKg >= 50 ? 38000 : 42000;
+    pricePerKgVirgin = pricePerKgRecycled;
+    volumeTierLabel = totalWeightKg >= 50 ? 'Bán sỉ quấn pallet' : 'Bán lẻ quấn pallet';
+  } else {
+    if (totalWeightKg >= 1000) {
+      pricePerKgRecycled = 30000;
+      volumeTierLabel = 'Giá sỉ xuất xưởng (> 1 Tấn)';
+    } else if (totalWeightKg >= 200) {
+      pricePerKgRecycled = 32000;
+      volumeTierLabel = 'Giá đại lý công trình (> 200kg)';
+    } else if (totalWeightKg >= 50) {
+      pricePerKgRecycled = 34000;
+      volumeTierLabel = 'Giá sỉ theo cuộn (> 50kg)';
+    } else {
+      pricePerKgRecycled = 36000;
+      volumeTierLabel = 'Giá lẻ dưới 50kg';
+    }
+
+    if (totalWeightKg >= 1000) {
+      pricePerKgVirgin = 36000;
+    } else if (totalWeightKg >= 200) {
+      pricePerKgVirgin = 39000;
+    } else if (totalWeightKg >= 50) {
+      pricePerKgVirgin = 42000;
+    } else {
+      pricePerKgVirgin = 45000;
+    }
+  }
+
+  const selectedPricePerKg = isVirgin ? pricePerKgVirgin : pricePerKgRecycled;
+  const peGradeName = isVirgin ? 'Nhựa PE Nguyên Sinh Trắng Trong' : 'Nhựa PE Tái Sinh Chuyên Lót Bê Tông';
+
+  const totalPriceExact = totalWeightKg * selectedPricePerKg;
+  const estimatedPriceMin = totalWeightKg * pricePerKgRecycled;
+  const estimatedPriceMax = totalWeightKg * pricePerKgVirgin;
+
+  const retailBasePrice = isVirgin ? 45000 : 36000;
+  const savingsVnd = Math.max(0, (retailBasePrice - selectedPricePerKg) * totalWeightKg);
+
+  const technicalTips = aiParams?.technicalTips && aiParams.technicalTips.length > 0
+    ? aiParams.technicalTips
+    : [
+        `Gối chồng mí giữa 2 dải nilon tối thiểu ${overlapPct}cm để ngăn nước xi măng thấm mất vào đất móng.`,
+        `Trải nilon ${layersCount > 1 ? `thành ${layersCount} lớp chồng chéo` : 'phủ kín diện tích'}, dán kín các mép giáp ranh bằng băng dính xây dựng.`,
+        'Kiểm tra mặt bằng dọn dẹp vật sắc nhọn trước khi trải màng để tránh đâm thủng.'
+      ];
+
+  const explanation = aiParams?.explanation
+    ? aiParams.explanation
+    : `Dự toán tính toán chính xác cho diện tích ${areaSqM.toLocaleString('vi-VN')} m² (${layersCount} lớp nilon), độ dày ${zem}zem (${(zem / 100).toFixed(2)}mm), gối mí ${overlapPct}%. Khối lượng vật lý PE chuẩn là ${totalWeightKg} kg (~${rollCount} cuộn).`;
+
+  return {
+    recommendedProduct: productName,
+    thicknessZem: zem,
+    thicknessMm: Number((zem / 100).toFixed(2)),
+    color: color,
+    rollWidth: rollWidth,
+    layersCount: layersCount,
+    effectiveAreaSqM: effectiveAreaSqM,
+    exactWeightKg: exactWeightKg,
+    totalWeightKg: totalWeightKg,
+    rollCount: rollCount,
+    peGradeName: peGradeName,
+    pricePerKg: selectedPricePerKg,
+    totalPriceExact: totalPriceExact,
+    estimatedPriceMin: estimatedPriceMin,
+    estimatedPriceMax: estimatedPriceMax,
+    overlapPercentage: overlapPct,
+    volumeTierLabel: volumeTierLabel,
+    savingsVnd: savingsVnd,
+    technicalTips: technicalTips,
+    explanation: explanation,
+    isAiGenerated: false
+  };
+}
+
 export interface ProductSpec {
   id: string;
   name: string;
@@ -260,7 +442,8 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
         price: true,
         unit: true,
         category: true,
-        description: true
+        description: true,
+        image: true
       }
     });
     return dbProducts;

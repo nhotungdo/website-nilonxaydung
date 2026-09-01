@@ -49,6 +49,7 @@ export interface ChatMsg {
     filename: string;
     quoteCode?: string;
   };
+  productsList?: any[];
 }
 
 const QUICK_PROMPTS = [
@@ -62,6 +63,7 @@ export default function AiSalesChatbot() {
   const [isExpanded, setIsExpanded] = useState(false);
   const [inputMessage, setInputMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [hasOpenedBefore, setHasOpenedBefore] = useState(false);
 
   // Lead Form Modal State inside Chat
   const [showLeadForm, setShowLeadForm] = useState(false);
@@ -95,6 +97,17 @@ export default function AiSalesChatbot() {
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }]);
   }, []);
+
+  // Proactive chat pop-up after 10 seconds of inactivity on a page
+  useEffect(() => {
+    if (hasOpenedBefore) return;
+    const timer = setTimeout(() => {
+      setIsOpen(true);
+      setHasOpenedBefore(true);
+      // Optional: push a proactive message to the state here if wanted.
+    }, 15000);
+    return () => clearTimeout(timer);
+  }, [hasOpenedBefore]);
 
   // Save chat history to localStorage whenever it changes
   useEffect(() => {
@@ -151,7 +164,10 @@ export default function AiSalesChatbot() {
       const res = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history })
+        body: JSON.stringify({ 
+          messages: history,
+          currentUrl: window.location.href
+        })
       });
 
       if (!res.ok) {
@@ -167,6 +183,7 @@ export default function AiSalesChatbot() {
         content: sanitizedContent,
         quoteData: data.quoteData,
         pdfData: data.pdfData,
+        productsList: data.productsList,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
 
@@ -230,7 +247,7 @@ export default function AiSalesChatbot() {
           animate={{ scale: 1, opacity: 1 }}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
-          onClick={() => setIsOpen(true)}
+          onClick={() => { setIsOpen(true); setHasOpenedBefore(true); }}
           className="relative group flex items-center gap-3 bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-700 text-white px-5 py-3.5 rounded-full shadow-2xl hover:shadow-blue-500/50 border border-blue-400/30 transition-all duration-300"
         >
           <div className="relative">
@@ -369,6 +386,28 @@ export default function AiSalesChatbot() {
                             <div>Đơn giá 1 sản phẩm: <strong className="text-emerald-400 font-mono text-sm">{msg.quoteData.unitPriceBeforeDiscount.toLocaleString('vi-VN')} VNĐ / {msg.quoteData.unitLabel || 'cái'}</strong></div>
                           </div>
                         )}
+                      </div>
+                    )}
+
+                    {/* Products List Rendering */}
+                    {msg.productsList && msg.productsList.length > 0 && (
+                      <div className="mt-3 grid grid-cols-1 gap-2">
+                        {msg.productsList.map((prod, idx) => (
+                          <a key={idx} href={`/san-pham/${prod.id}`} target="_blank" rel="noreferrer" className="flex items-center gap-3 p-2.5 bg-slate-950/60 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-colors group">
+                            {prod.image ? (
+                              <img src={prod.image} alt={prod.name} className="w-12 h-12 object-cover rounded-lg shrink-0 border border-slate-800" />
+                            ) : (
+                              <div className="w-12 h-12 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 border border-slate-700">
+                                <Sparkles className="w-5 h-5 text-slate-500" />
+                              </div>
+                            )}
+                            <div className="flex-1 min-w-0">
+                              <div className="text-xs font-bold text-slate-200 truncate group-hover:text-blue-400">{prod.name}</div>
+                              <div className="text-[10px] text-slate-400 truncate">{prod.category}</div>
+                              <div className="text-xs font-mono text-emerald-400 mt-0.5">{prod.price?.toLocaleString('vi-VN')} VNĐ/{prod.unit}</div>
+                            </div>
+                          </a>
+                        ))}
                       </div>
                     )}
 

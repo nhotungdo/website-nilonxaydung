@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { GoogleGenAI, Type, Tool } from '@google/genai';
-import { calculateQuoteDetails, searchProductsDB, getProductDetailDB } from '@/data/ai-knowledge-base';
+import Groq from 'groq-sdk';
+import { calculateQuoteDetails, searchProductsDB, getProductDetailDB, AI_KNOWLEDGE_BASE, enforceStrictPhysicsEngine } from '@/data/ai-knowledge-base';
 import { generateQuotePDF, QuotePDFData } from '@/lib/pdf-quote-generator';
 import { sendTelegramMessage, escapeHTML } from '@/lib/telegram';
 import { prisma } from '@/lib/prisma';
@@ -10,7 +10,7 @@ export interface ChatMessage {
   content: string;
   name?: string;
   tool_call_id?: string;
-  tool_calls?: Record<string, unknown>[];
+  tool_calls?: any[];
 }
 
 function sanitizeNoAsterisks(text: string): string {
@@ -18,87 +18,119 @@ function sanitizeNoAsterisks(text: string): string {
   return text.replace(/\*/g, '');
 }
 
-const GEMINI_TOOLS: Tool[] = [{
-  functionDeclarations: [
-    {
+const GROQ_TOOLS: any[] = [
+  {
+    type: 'function',
+    function: {
       name: 'search_products',
       description: 'Tìm kiếm sản phẩm trong cơ sở dữ liệu theo từ khóa hoặc nhu cầu sử dụng. Trả về danh sách thu gọn các sản phẩm phù hợp.',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
-          keyword: { type: Type.STRING, description: 'Từ khóa tên sản phẩm (vd: màng pe, nilon, giày)' },
-          useCase: { type: Type.STRING, description: 'Mục đích sử dụng (vd: quấn pallet, lót sàn, bảo hộ)' }
+          keyword: { type: 'string', description: 'Từ khóa tên sản phẩm (vd: màng pe, nilon, giày)' },
+          useCase: { type: 'string', description: 'Mục đích sử dụng (vd: quấn pallet, lót sàn, bảo hộ)' }
         }
       }
-    },
-    {
+    }
+  },
+  {
+    type: 'function',
+    function: {
       name: 'get_product_detail',
       description: 'Lấy chi tiết giá, quy cách và thông tin kỹ thuật của một mã sản phẩm cụ thể (cần dùng sau khi đã tìm kiếm).',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
-          productId: { type: Type.STRING, description: 'ID của sản phẩm (vd: mang-pe-2zem)' }
+          productId: { type: 'string', description: 'ID của sản phẩm (vd: mang-pe-2zem)' }
         },
         required: ['productId']
       }
-    },
-    {
+    }
+  },
+  {
+    type: 'function',
+    function: {
       name: 'calculate_provisional_quote',
       description: 'Tính toán chi tiết báo giá tạm tính (có chiết khấu khối lượng) cho một mã sản phẩm cụ thể.',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
-          productId: { type: Type.STRING, description: 'ID của sản phẩm' },
-          quantityKg: { type: Type.NUMBER, description: 'Số lượng / Khối lượng tính bằng kg hoặc cái' }
+          productId: { type: 'string', description: 'ID của sản phẩm' },
+          quantityKg: { type: 'number', description: 'Số lượng / Khối lượng tính bằng kg hoặc cái' }
         },
         required: ['productId', 'quantityKg']
       }
-    },
-    {
+    }
+  },
+  {
+    type: 'function',
+    function: {
+      name: 'estimate_material_requirement',
+      description: 'Tính toán vật lý chính xác lượng vật tư nilon/màng PE cần thiết dựa trên diện tích công trình.',
+      parameters: {
+        type: 'object',
+        properties: {
+          areaSqM: { type: 'number', description: 'Diện tích thi công (m2)' },
+          usageType: { type: 'string', description: 'Mục đích sử dụng (vd: lot-san-be-tong-mang, chong-tham-mong-sau, quan-pallet-boc-hang)' },
+          layersCount: { type: 'number', description: 'Số lớp lót dự kiến (thường là 1)' }
+        },
+        required: ['areaSqM']
+      }
+    }
+  },
+  {
+    type: 'function',
+    function: {
       name: 'create_sales_lead_and_pdf',
       description: 'Thu thập thông tin khách hàng B2B để xuất File Báo giá PDF và gửi Lead cho Sales. CHỈ GỌI KHI KHÁCH ĐÃ ĐỒNG Ý BÁO GIÁ TẠM TÍNH.',
       parameters: {
-        type: Type.OBJECT,
+        type: 'object',
         properties: {
-          customerName: { type: Type.STRING },
-          phone: { type: Type.STRING },
-          address: { type: Type.STRING },
-          productId: { type: Type.STRING },
-          quantityKg: { type: Type.NUMBER },
-          notes: { type: Type.STRING }
+          customerName: { type: 'string' },
+          phone: { type: 'string' },
+          address: { type: 'string' },
+          productId: { type: 'string' },
+          quantityKg: { type: 'number' },
+          notes: { type: 'string' }
         },
         required: ['customerName', 'phone', 'address', 'productId', 'quantityKg']
       }
     }
-  ]
-}];
+  }
+];
 
 const ZALO_CONTACT_URL = 'https://zalo.me/nilonxaydung';
 
-function buildSystemPrompt(): string {
+function buildSystemPrompt(currentUrl?: string): string {
+  const kbData = JSON.stringify({
+    commercialPolicies: AI_KNOWLEDGE_BASE.commercialPolicies,
+    shippingFees: AI_KNOWLEDGE_BASE.shippingFees,
+    wholesalePricingTiers: AI_KNOWLEDGE_BASE.wholesalePricingTiers,
+    technicalGlossary: AI_KNOWLEDGE_BASE.technicalGlossary
+  }, null, 2);
+
+  const contextInstruction = currentUrl 
+    ? `\nNGỮ CẢNH HIỆN TẠI (CONTEXT): Khách hàng đang xem trang web tại đường dẫn: ${currentUrl}. Hãy dựa vào đó để chủ động tư vấn đúng sản phẩm nếu cần thiết.` 
+    : '';
+
   return `
 Bạn là "AI Sales Assistant" - Chuyên gia tư vấn kỹ thuật & báo giá tự động 24/7 của CÔNG TY TNHH SX & TM NILON XÂY DỰNG.
 Phong cách giao tiếp: Thân thiện, lịch sự, chuyên nghiệp, tự nhiên và KHÔNG ÉP BUỘC khách mua hàng.
 TRẢ LỜI NGẮN GỌN, TRỌNG TÂM.
+${contextInstruction}
 
 QUY TẮC QUAN TRỌNG NHẤT:
 1. KHÔNG SỬ DỤNG DẤU SAO '*': Tuyệt đối không dùng * để bôi đậm hay in nghiêng. Hãy dùng chữ HOA hoặc gạch đầu dòng (-).
 2. KHÔNG TỰ BỊA GIÁ, TỒN KHO: Nếu khách hỏi giá, BẮT BUỘC dùng tool get_product_detail hoặc calculate_provisional_quote. Nếu khách tìm sản phẩm, dùng tool search_products.
-3. QUY TRÌNH BÁO GIÁ: 
+3. KHI KHÁCH YÊU CẦU DỰ TOÁN VẬT TƯ: Bắt buộc gọi tool estimate_material_requirement để hệ thống vật lý tính toán độ dày, số cuộn, số kg chính xác thay vì tự tính.
+4. QUY TRÌNH BÁO GIÁ: 
    - Tư vấn -> Chốt số lượng -> Tính giá tạm bằng Tool -> Cho khách xem giá -> Nếu khách đồng ý, xin Tên, SĐT, Địa chỉ -> Tạo PDF bằng Tool.
    - KHÔNG tự động tạo PDF nếu khách chưa cho thông tin hoặc chưa chốt số lượng.
-4. TỪ CHỐI KHÉO LÉO: Nếu khách hỏi chuyện ngoài lề (code, nấu ăn, bóng đá, crypto...), hãy từ chối khéo léo và gợi ý các sản phẩm nilon lót sàn, màng PE, đồ bảo hộ lao động.
+5. TỪ CHỐI KHÉO LÉO: Nếu khách hỏi chuyện ngoài lề, hãy từ chối khéo léo.
 
-DANH MỤC KINH DOANH CHÍNH:
-- Nilon lót sàn móng, lót đường, chống thấm
-- Màng PE quấn hàng, quấn pallet, nhà kính
-- Bạt che công trình, băng keo
-- Thiết bị bảo hộ lao động: Giày, mũ, găng tay, áo phản quang
-
-CHÍNH SÁCH CHUNG:
-- Vận chuyển: Hỏa tốc TPHCM/Bình Dương 2h-4h. Gửi chành xe đi tỉnh. Vận chuyển xe Container/Tàu hỏa đi Bắc (2-4 ngày).
-- Thanh toán: Đặt cọc 30%, thanh toán 70% khi nhận. Hỗ trợ VAT 10%.
-- Đổi trả: 1 đổi 1 trong 7 ngày nếu lỗi sản xuất/vận chuyển.
+DỮ LIỆU CÔNG TY (KNOWLEDGE BASE):
+Sử dụng các thông tin chính thức sau đây để trả lời các câu hỏi về chính sách vận chuyển, chiết khấu, VAT, kỹ thuật (tuyệt đối không bịa số liệu):
+${kbData}
 `;
 }
 
@@ -106,93 +138,78 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     const messages: ChatMessage[] = body.messages || [];
+    const currentUrl: string | undefined = body.currentUrl;
 
     if (!messages || messages.length === 0) {
       return NextResponse.json({ error: 'Danh sách tin nhắn không hợp lệ' }, { status: 400 });
     }
 
-    const geminiApiKey = process.env.GEMINI_API_KEY;
+    const groqApiKey = process.env.GROQ_API_KEY;
 
-    if (!geminiApiKey || geminiApiKey.includes('your_gemini_api_key_here')) {
-      console.error('[Gemini AI] GEMINI_API_KEY is not set or loaded.');
+    if (!groqApiKey || groqApiKey.includes('your_groq_api_key_here')) {
+      console.error('[Groq AI] GROQ_API_KEY is not set or loaded.');
       return NextResponse.json({
         role: 'assistant',
-        content: sanitizeNoAsterisks(`Dạ hệ thống AI đang thiếu cấu hình API Key. Anh/chị (hoặc Admin) vui lòng cập nhật GEMINI_API_KEY hợp lệ trong file .env.local để sử dụng tính năng này nhé!`)
+        content: sanitizeNoAsterisks(`Dạ hệ thống AI đang thiếu cấu hình API Key. Anh/chị (hoặc Admin) vui lòng cập nhật GROQ_API_KEY hợp lệ trong file .env.local để sử dụng tính năng này nhé!`)
       });
     }
 
-    const ai = new GoogleGenAI({ apiKey: geminiApiKey });
-    const systemPrompt = buildSystemPrompt();
+    const groq = new Groq({ apiKey: groqApiKey });
+    const systemPrompt = buildSystemPrompt(currentUrl);
 
-    // Chuyển đổi định dạng message từ UI sang định dạng Gemini content
-    const contents: Record<string, unknown>[] = [];
+    // Chuyển đổi định dạng message từ UI sang định dạng Groq content
+    const groqMessages: any[] = [
+      { role: 'system', content: systemPrompt }
+    ];
+
     for (const m of messages) {
       if (m.role === 'system') continue;
-
-      if (m.role === 'user') {
-        contents.push({ role: 'user', parts: [{ text: m.content }] });
-      } else if (m.role === 'assistant') {
-        const parts = [];
-        if (m.content) parts.push({ text: m.content });
-        if (m.tool_calls && m.tool_calls.length > 0) {
-          for (const tc of m.tool_calls) {
-            parts.push({
-              functionCall: {
-                name: (tc as Record<string, Record<string, string>>).function.name,
-                args: JSON.parse((tc as Record<string, Record<string, string>>).function.arguments || '{}')
-              }
-            });
-          }
-        }
-        if (parts.length > 0) {
-          contents.push({ role: 'model', parts });
-        }
-      } else if (m.role === 'tool') {
-        contents.push({
-          role: 'user',
-          parts: [{
-            functionResponse: {
-              name: m.name || '',
-              response: (() => {
-                const parsed = JSON.parse(m.content || '{}');
-                return Array.isArray(parsed) ? { results: parsed } : parsed;
-              })()
-            }
-          }]
-        });
-      }
+      // UI only sends user and assistant text messages
+      groqMessages.push({
+        role: m.role === 'assistant' ? 'assistant' : 'user',
+        content: m.content || ''
+      });
     }
 
     const modelParams = {
-      model: 'gemini-2.0-flash',
-      contents: contents,
-      config: {
-        systemInstruction: systemPrompt,
-        tools: GEMINI_TOOLS,
-        temperature: 0.3
-      }
+      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      messages: groqMessages,
+      tools: GROQ_TOOLS,
+      tool_choice: 'auto' as const,
+      temperature: 0.3
     };
 
-    const response = await ai.models.generateContent(modelParams);
+    const completion = await groq.chat.completions.create(modelParams);
+    const responseMessage = completion.choices[0]?.message;
 
     // Xử lý Function Call
-    if (response.functionCalls && response.functionCalls.length > 0) {
-      const call = response.functionCalls[0];
-      const functionName = call.name;
-      const args = call.args || {};
+    if (responseMessage?.tool_calls && responseMessage.tool_calls.length > 0) {
+      const toolCall = responseMessage.tool_calls[0];
+      const functionName = toolCall.function.name;
+      const args = JSON.parse(toolCall.function.arguments || '{}');
 
-      let toolResult: Record<string, unknown> | Record<string, unknown>[] | null = {};
+      let toolResult: any = {};
       let pdfData = null;
       let quoteSummary = null;
       let quoteDataForUI = null;
+      let productsList = null;
 
       if (functionName === 'search_products') {
         toolResult = await searchProductsDB(args.keyword as string, args.useCase as string);
+        productsList = toolResult;
       } else if (functionName === 'get_product_detail') {
         toolResult = await getProductDetailDB(args.productId as string);
       } else if (functionName === 'calculate_provisional_quote') {
         toolResult = await calculateQuoteDetails(args.productId as string, args.quantityKg as number);
         quoteDataForUI = toolResult;
+      } else if (functionName === 'estimate_material_requirement') {
+        const estimateReq = {
+          areaSqM: args.areaSqM,
+          usageType: args.usageType || 'lot-san-be-tong-mang',
+          layersCount: args.layersCount || 1
+        };
+        const estimateRes = enforceStrictPhysicsEngine(estimateReq);
+        toolResult = estimateRes;
       } else if (functionName === 'create_sales_lead_and_pdf') {
         const quoteCalc = await calculateQuoteDetails(args.productId as string, args.quantityKg as number);
         if (!quoteCalc.notFound && quoteCalc.product) {
@@ -257,75 +274,45 @@ export async function POST(request: Request) {
       }
 
       // Vòng lặp thứ 2: Gửi kết quả tool về cho LLM
-      const nextContents = [
-        ...contents,
-        { role: 'model', parts: response.candidates?.[0]?.content?.parts || [] },
-        {
-          role: 'user',
-          parts: [{
-            functionResponse: {
-              name: functionName,
-              response: Array.isArray(toolResult) ? { results: toolResult } : toolResult
-            }
-          }]
-        }
-      ];
-
-      const secondResponse = await ai.models.generateContent({
-        model: 'gemini-2.0-flash',
-        contents: nextContents,
-        config: {
-          systemInstruction: systemPrompt,
-          temperature: 0.3
-        }
+      groqMessages.push(responseMessage);
+      groqMessages.push({
+        role: 'tool',
+        tool_call_id: toolCall.id,
+        name: functionName,
+        content: JSON.stringify(toolResult)
       });
 
-      let finalContent = '';
-      try {
-        finalContent = secondResponse.text || '';
-      } catch {
-        console.warn('secondResponse.text threw an error (likely due to non-text parts)');
-      }
+      const secondResponse = await groq.chat.completions.create({
+        model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+        messages: groqMessages,
+        temperature: 0.3
+      });
+
+      let finalContent = secondResponse.choices[0]?.message?.content || '';
 
       if (!finalContent) {
-        const parts = secondResponse.candidates?.[0]?.content?.parts || [];
-        const textPart = parts.find((p) => p.text);
-        if (textPart && textPart.text) {
-          finalContent = textPart.text;
-        } else {
-          if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
-          else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
-          else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
-        }
+        if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
+        else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
+        else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
       }
-
-      // Create a compatible tool_calls array for the frontend
-      const frontendToolCalls = [{
-        id: `call_${Date.now()}`,
-        type: 'function',
-        function: {
-          name: functionName,
-          arguments: JSON.stringify(args)
-        }
-      }];
 
       return NextResponse.json({
         role: 'assistant',
         content: sanitizeNoAsterisks(finalContent),
-        tool_calls: frontendToolCalls,
         ...(pdfData && { pdfData, quoteSummary }),
-        ...(quoteDataForUI && { quoteData: quoteDataForUI })
+        ...(quoteDataForUI && { quoteData: quoteDataForUI }),
+        ...(productsList && { productsList })
       });
     }
 
     // NẾU AI TRẢ VỀ TEXT TRỰC TIẾP
     return NextResponse.json({
       role: 'assistant',
-      content: sanitizeNoAsterisks(response.text || '')
+      content: sanitizeNoAsterisks(responseMessage?.content || '')
     });
 
   } catch (error: any) {
-    console.error('[Gemini AI Chat API Error]:', error);
+    console.error('[Groq AI Chat API Error]:', error);
     
     // Bắt lỗi Rate Limit hoặc Quota
     if (error?.status === 429 || error?.message?.includes('429') || error?.message?.includes('quota')) {
