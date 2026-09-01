@@ -27,7 +27,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 import QuickQuoteModal from '@/components/QuickQuoteModal';
-import type { EstimateResult } from '@/app/api/ai/estimate-material/route';
+import type { EstimateResult } from '@/data/ai-knowledge-base';
 
 const USAGE_OPTIONS = [
   {
