@@ -15,7 +15,10 @@ export interface ChatMessage {
 
 function sanitizeNoAsterisks(text: string): string {
   if (!text) return '';
-  return text.replace(/\*/g, '');
+  let cleaned = text.replace(/\*/g, '');
+  cleaned = cleaned.replace(/<think>[\s\S]*?<\/think>/g, '');
+  cleaned = cleaned.replace(/<tool_call>[\s\S]*?<\/tool_call>/g, '');
+  return cleaned.trim();
 }
 
 const GROQ_TOOLS: any[] = [
@@ -172,7 +175,7 @@ export async function POST(request: Request) {
     }
 
     const modelParams = {
-      model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+      model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
       messages: groqMessages,
       tools: GROQ_TOOLS,
       tool_choice: 'auto' as const,
@@ -283,22 +286,23 @@ export async function POST(request: Request) {
       });
 
       const secondResponse = await groq.chat.completions.create({
-        model: process.env.GROQ_MODEL || 'llama-3.3-70b-versatile',
+        model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
         messages: groqMessages,
         temperature: 0.3
       });
 
       let finalContent = secondResponse.choices[0]?.message?.content || '';
+      let sanitizedContent = sanitizeNoAsterisks(finalContent);
 
-      if (!finalContent) {
-        if (functionName === 'search_products') finalContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
-        else if (functionName === 'calculate_provisional_quote') finalContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
-        else finalContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
+      if (!sanitizedContent) {
+        if (functionName === 'search_products') sanitizedContent = "Dạ đây là các sản phẩm phù hợp em tìm được ạ.";
+        else if (functionName === 'calculate_provisional_quote') sanitizedContent = "Dạ bảng tính dự toán của anh/chị đây ạ.";
+        else sanitizedContent = "Dạ em đã xử lý xong yêu cầu của anh/chị ạ.";
       }
 
       return NextResponse.json({
         role: 'assistant',
-        content: sanitizeNoAsterisks(finalContent),
+        content: sanitizedContent,
         ...(pdfData && { pdfData, quoteSummary }),
         ...(quoteDataForUI && { quoteData: quoteDataForUI }),
         ...(productsList && { productsList })

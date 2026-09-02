@@ -18,26 +18,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import toast from 'react-hot-toast';
 
-// Simple Typing Effect Component
-const TypingEffect = ({ text }: { text: string }) => {
-  const [displayedText, setDisplayedText] = useState('');
 
-  useEffect(() => {
-    let i = 0;
-    setDisplayedText('');
-    const timer = setInterval(() => {
-      if (i < text.length) {
-        setDisplayedText((prev) => prev + text.charAt(i));
-        i++;
-      } else {
-        clearInterval(timer);
-      }
-    }, 15); // ms per character
-    return () => clearInterval(timer);
-  }, [text]);
-
-  return <>{displayedText}</>;
-};
 
 export interface QuoteCalcResult {
   product: {
@@ -402,11 +383,7 @@ export default function AiSalesChatbot() {
 
                     {/* Content text */}
                     <div className="text-sm whitespace-pre-wrap leading-relaxed font-sans">
-                      {msg.role === 'assistant' ? (
-                        <TypingEffect text={msg.content} />
-                      ) : (
-                        msg.content
-                      )}
+                      {msg.content}
                     </div>
 
                     {/* Calculated Quote Summary Box (If attached) */}
