@@ -55,7 +55,7 @@ export interface ChatMsg {
 }
 
 const QUICK_PROMPTS = [
-  { label: '📊 Hỏi giá sỉ Nilon 4zem/6zem', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình TPHCM.' },
+  { label: '📊 Hỏi giá sỉ Nilon 4zem/6zem', prompt: 'Tôi cần báo giá sỉ cho 1000 kg nilon lót sàn 4zem giao công trình Hà Nội.' },
   { label: '⛑️ Hỏi giá Bảo hộ lao động', prompt: 'Tôi muốn tư vấn giá sỉ Mũ bảo hộ công trình, Găng tay chống cắt và Giày bảo hộ mũi thép.' },
   { label: '📄 Xuất PDF Báo Giá', prompt: 'Tôi muốn nhập thông tin để xuất File Báo Giá PDF Tạm Tính.' }
 ];

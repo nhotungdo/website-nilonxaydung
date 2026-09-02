@@ -223,7 +223,7 @@ export const AI_KNOWLEDGE_BASE = {
     shortName: "Nilon Xây Dựng",
     hotline: "0901.234.567 / 0988.999.888",
     email: "baogia@nilonxaydung.vn",
-    address: "KCN Tân Bình, TPHCM & KCN Sóng Thần, Bình Dương",
+    address: "KCN Tân Bình, Hà Nội & KCN Sóng Thần, Bình Dương",
     isoCertificates: [
       {
         code: "ISO 9001:2015",
@@ -373,7 +373,7 @@ export const AI_KNOWLEDGE_BASE = {
   ] as PriceTier[],
 
   shippingFees: [
-    { region: "Nội thành TP.HCM / Bình Dương / Đồng Nai", estimatedFee: "200.000đ - 350.000đ / chuyến xe tải (Giao hỏa tốc 2h - 4h)", freeShippingMinKg: 1000 },
+    { region: "Nội thành Hà Nội / Bình Dương / Đồng Nai", estimatedFee: "200.000đ - 350.000đ / chuyến xe tải (Giao hỏa tốc 2h - 4h)", freeShippingMinKg: 1000 },
     { region: "Tỉnh Miền Tây & Đông Nam Bộ (Long An, Tiền Giang, Tây Ninh...)", estimatedFee: "500đ - 800đ / kg (Gửi xe chành hoặc xe tải giao tận công trình trong ngày)", freeShippingMinKg: 3000 },
     { region: "Tỉnh Tây Nguyên & Miền Trung (Lâm Đồng, Đắc Lắk, Bình Thuận...)", estimatedFee: "800đ - 1.200đ / kg (Thời gian giao 1 - 2 ngày)", freeShippingMinKg: 5000 },
     { region: "Các tỉnh Miền Bắc & Hà Nội (Hà Nội, Hải Phòng, Bắc Ninh, Quảng Ninh...)", estimatedFee: "1.200đ - 1.800đ / kg (Vận chuyển xe Container chuyên dụng / Tàu hỏa Bắc Nam 2 - 4 ngày). Hỗ trợ 50-100% cước cho đơn > 5 tấn, miễn phí giao tận kho cho đơn > 10 tấn.", freeShippingMinKg: 10000 }
