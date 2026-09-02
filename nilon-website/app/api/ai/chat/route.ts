@@ -175,7 +175,7 @@ export async function POST(request: Request) {
     }
 
     const modelParams = {
-      model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
+      model: 'qwen/qwen3.8-27b', // Forced model to avoid Vercel cached env errors
       messages: groqMessages,
       tools: GROQ_TOOLS,
       tool_choice: 'auto' as const,
@@ -286,7 +286,7 @@ export async function POST(request: Request) {
       });
 
       const secondResponse = await groq.chat.completions.create({
-        model: process.env.GROQ_MODEL || 'qwen/qwen3.8-27b',
+        model: 'qwen/qwen3.8-27b', // Forced model
         messages: groqMessages,
         temperature: 0.3
       });
@@ -326,13 +326,14 @@ export async function POST(request: Request) {
       });
     }
 
-    return handleFallbackBot();
+    return handleFallbackBot(error?.message || 'Lỗi không xác định');
   }
 }
 
-function handleFallbackBot() {
+function handleFallbackBot(errorMessage?: string) {
+  const debugInfo = errorMessage ? ` [Chi tiết lỗi: ${errorMessage}]` : '';
   return NextResponse.json({
     role: 'assistant',
-    content: sanitizeNoAsterisks(`Dạ em là AI Sales Assistant của Nilon Xây Dựng! Hiện tại hệ thống tư vấn sâu đang bận, anh/chị vui lòng liên hệ Zalo OA: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc Hotline: 0931982568 để được hỗ trợ nhanh nhất nhé ạ!`)
+    content: sanitizeNoAsterisks(`Dạ em là AI Sales Assistant của Nilon Xây Dựng! Hiện tại hệ thống tư vấn sâu đang bận, anh/chị vui lòng liên hệ Zalo OA: [Nilon Xây Dựng](${ZALO_CONTACT_URL}) hoặc Hotline: 0931982568 để được hỗ trợ nhanh nhất nhé ạ!${debugInfo}`)
   });
 }
