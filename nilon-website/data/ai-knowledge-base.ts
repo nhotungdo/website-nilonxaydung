@@ -419,7 +419,11 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
   const OR: Record<string, unknown>[] = [];
 
   if (term) {
-    OR.push({ name: { contains: term, mode: 'insensitive' } });
+    const terms = term.split(' ').filter(Boolean);
+    const andConditions = terms.map(t => ({
+      name: { contains: t, mode: 'insensitive' }
+    }));
+    OR.push({ AND: andConditions });
     OR.push({ category: { contains: term, mode: 'insensitive' } });
   }
 
@@ -432,8 +436,9 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
     whereConditions.OR = OR;
   }
 
+  let dbProducts: any[] = [];
   try {
-    const dbProducts = await prisma.product.findMany({
+    dbProducts = await prisma.product.findMany({
       where: whereConditions,
       take: 5,
       select: {
@@ -446,16 +451,50 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
         image: true
       }
     });
-    return dbProducts;
   } catch (error) {
     console.error("AI DB Search Error:", error);
-    return [];
   }
+
+  if (dbProducts.length === 0 && term) {
+    const terms = term.split(' ').filter(Boolean).map(t => t.toLowerCase());
+    const matched = PRODUCTS.filter(p => {
+      const pName = p.name.toLowerCase();
+      const pCat = p.category.toLowerCase();
+      return terms.every(t => pName.includes(t) || pCat.includes(t));
+    }).slice(0, 5).map(p => ({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      unit: p.unit,
+      category: p.category,
+      description: p.description || '',
+      image: p.image
+    }));
+    return matched;
+  }
+
+  return dbProducts;
 }
 
 export async function getProductDetailDB(productId: string) {
   try {
-    const product = await prisma.product.findUnique({ where: { id: productId } });
+    let product: any = await prisma.product.findUnique({ where: { id: productId } });
+    
+    if (!product) {
+      const staticProd = PRODUCTS.find(p => p.id === productId || p.slug === productId);
+      if (staticProd) {
+        product = {
+          id: staticProd.id,
+          name: staticProd.name,
+          price: staticProd.price,
+          unit: staticProd.unit,
+          category: staticProd.category,
+          description: staticProd.description || '',
+          specs: staticProd.specs || []
+        };
+      }
+    }
+
     if (!product) return null;
     return {
       id: product.id,
@@ -473,11 +512,34 @@ export async function getProductDetailDB(productId: string) {
 }
 
 export async function calculateQuoteDetails(productId: string, quantityKg: number) {
-  let primaryMatched = null;
+  let primaryMatched: any = null;
   try {
     primaryMatched = await prisma.product.findUnique({ where: { id: productId } });
   } catch (error) {
     console.error("AI DB Quote Error:", error);
+  }
+
+  if (!primaryMatched) {
+    let staticProd = PRODUCTS.find(p => p.id === productId || p.slug === productId);
+    
+    if (!staticProd) {
+      const terms = productId.split(' ').filter(Boolean).map(t => t.toLowerCase());
+      staticProd = PRODUCTS.find(p => {
+        const pName = p.name.toLowerCase();
+        return terms.every(t => pName.includes(t));
+      });
+    }
+
+    if (staticProd) {
+      primaryMatched = {
+        id: staticProd.id,
+        name: staticProd.name,
+        price: staticProd.price,
+        unit: staticProd.unit,
+        category: staticProd.category,
+        description: staticProd.description || ''
+      };
+    }
   }
 
   if (!primaryMatched) {
