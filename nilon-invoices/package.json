@@ -58,6 +58,7 @@
   "build": {
     "appId": "com.nilonxaydung.invoices",
     "productName": "Nilon Invoices",
+    "artifactName": "Nilon-Invoices-Setup-${version}.${ext}",
     "directories": {
       "output": "release"
     },
