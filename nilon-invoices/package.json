@@ -1,6 +1,6 @@
 {
   "name": "nilon-invoices",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Real-time Thermal Invoice Auto-Printing Desktop Application for Nilon Construction",
   "main": "dist/main/main.js",
   "author": "Google Deepmind team",
@@ -13,7 +13,8 @@
     "compile": "tsc",
     "lint": "eslint . --ext .ts,.tsx",
     "db:migrate": "ts-node src/main/database/migrate.ts",
-    "db:seed": "ts-node src/main/database/seed.ts"
+    "db:seed": "ts-node src/main/database/seed.ts",
+    "serve-updates": "npx serve release -p 8080"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.4.0",
@@ -88,8 +89,9 @@
       "runAfterFinish": true
     },
     "publish": {
-      "provider": "generic",
-      "url": "https://api.nilonxaydung.vn/app-updates"
+      "provider": "github",
+      "owner": "nhotungdo",
+      "repo": "website-nilonxaydung"
     }
   },
   "pnpm": {
