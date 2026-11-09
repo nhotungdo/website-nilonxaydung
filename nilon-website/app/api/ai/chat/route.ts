@@ -3,7 +3,7 @@ import Groq from 'groq-sdk';
 import { calculateQuoteDetails, searchProductsDB, getProductDetailDB, AI_KNOWLEDGE_BASE, enforceStrictPhysicsEngine } from '@/data/ai-knowledge-base';
 import { generateQuotePDF, QuotePDFData } from '@/lib/pdf-quote-generator';
 import { sendTelegramMessage, escapeHTML } from '@/lib/telegram';
-import { prisma } from '@/lib/prisma';
+import { createQuoteInquiry } from '@/lib/firestore/quotes';
 
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system' | 'tool';
@@ -242,21 +242,19 @@ export async function POST(request: Request) {
           quoteSummary = pdfDataInput;
 
           try {
-            await prisma.quoteInquiry.create({
-              data: {
-                quoteCode,
-                customerName: args.customerName as string,
-                phone: args.phone as string,
-                address: args.address as string,
-                productName: quoteCalc.product.name,
-                thicknessZem: quoteCalc.product.thicknessZem,
-                quantityKg: args.quantityKg as number,
-                unitPrice: quoteCalc.unitPriceAfterDiscount,
-                subtotal: quoteCalc.subtotal,
-                shippingFee: quoteCalc.shippingFee,
-                totalAmount: quoteCalc.grandTotal,
-                aiNotes: (args.notes as string) || 'Báo giá AI'
-              }
+            await createQuoteInquiry({
+              quoteCode,
+              customerName: args.customerName as string,
+              phone: args.phone as string,
+              address: args.address as string,
+              productName: quoteCalc.product.name,
+              thicknessZem: quoteCalc.product.thicknessZem,
+              quantityKg: args.quantityKg as number,
+              unitPrice: quoteCalc.unitPriceAfterDiscount,
+              subtotal: quoteCalc.subtotal,
+              shippingFee: quoteCalc.shippingFee,
+              totalAmount: quoteCalc.grandTotal,
+              aiNotes: (args.notes as string) || 'Báo giá AI'
             });
           } catch (dbErr) {
             console.warn('[AI DB Error]', dbErr);

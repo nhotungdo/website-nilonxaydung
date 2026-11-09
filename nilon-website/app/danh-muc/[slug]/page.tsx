@@ -1,14 +1,15 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { getProductsByCategory } from '@/lib/firestore/products';
 import { categories } from '@/data/categories';
 import ProductCard from '@/components/ProductCard';
 import { generateSEO } from '@/lib/seo';
 
 export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const category = categories.find((c) => c.slug === resolvedParams.slug);
-  
+
   if (!category) return {};
 
   return generateSEO({
@@ -25,9 +26,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ slug:
     notFound();
   }
 
-  const categoryProducts = await prisma.product.findMany({
-    where: { categorySlug: category.slug },
-  });
+  const categoryProducts = await getProductsByCategory(category.slug);
 
   return (
     <div className="py-12 bg-white">

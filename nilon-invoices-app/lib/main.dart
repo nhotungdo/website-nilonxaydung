@@ -12,7 +12,7 @@ import 'providers/production_provider.dart';
 import 'providers/system_notification_provider.dart';
 
 
-import 'services/supabase_service.dart';
+import 'services/firebase_service.dart';
 import 'services/notification_service.dart';
 
 import 'theme/app_theme.dart';
@@ -37,9 +37,8 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await initializeDateFormatting('vi_VN', null);
 
-  // Initialize Supabase before runApp
-  // ⚠️  Set your ANON KEY in lib/services/supabase_service.dart
-  await SupabaseService.initialize();
+  // Initialize Firebase Cloud Firestore
+  await FirebaseService.initialize();
 
   // Initialize local push notification service
   await NotificationService.initialize();

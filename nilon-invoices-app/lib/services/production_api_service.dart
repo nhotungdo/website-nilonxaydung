@@ -1,28 +1,42 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/production_log_model.dart';
 import '../models/inventory_item_model.dart';
 import '../models/inventory_transaction_model.dart';
-import 'supabase_service.dart';
+import 'firebase_service.dart';
 
 class ProductionApiService {
-  static SupabaseClient get _db => SupabaseService.client;
+  static FirebaseFirestore get _db => FirebaseService.db;
+  static CollectionReference get _logsCol => _db.collection('daily_production_logs');
+  static CollectionReference get _itemsCol => _db.collection('inventory_items');
+  static CollectionReference get _txCol => _db.collection('inventory_transactions');
 
   // ─────────────────────────────────────────────
-  // FETCH PRODUCTION LOGS (From Supabase Only)
+  // FETCH PRODUCTION LOGS
   // ─────────────────────────────────────────────
   static Future<List<DailyProductionLogModel>> fetchProductionLogs() async {
     try {
-      final res = await _db.from('daily_production_logs').select('*').order('created_at', ascending: false);
-      return (res as List).map((json) => DailyProductionLogModel.fromJson(json)).toList();
+      final snap = await _logsCol.orderBy('created_at', descending: true).get();
+      return snap.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return DailyProductionLogModel.fromJson({'id': doc.id, ...data});
+      }).toList();
     } catch (e) {
-      debugPrint('[ProductionApiService] fetchProductionLogs error: $e');
-      rethrow;
+      try {
+        final snap = await _logsCol.get();
+        return snap.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return DailyProductionLogModel.fromJson({'id': doc.id, ...data});
+        }).toList();
+      } catch (inner) {
+        debugPrint('[ProductionApiService] fetchProductionLogs error: $e');
+        rethrow;
+      }
     }
   }
 
   // ─────────────────────────────────────────────
-  // CREATE PRODUCTION LOG (Optionally adds to inventory stock)
+  // CREATE PRODUCTION LOG
   // ─────────────────────────────────────────────
   static Future<DailyProductionLogModel> createProductionLog({
     required DailyProductionLogModel log,
@@ -30,15 +44,17 @@ class ProductionApiService {
   }) async {
     try {
       // 1. Insert production log
-      await _db.from('daily_production_logs').insert(log.toJson());
+      final logData = log.toJson();
+      logData['created_at'] = FieldValue.serverTimestamp();
+      await _logsCol.doc(log.id).set(logData);
 
       // 2. If autoAddedToStock & product exists -> update stock & add transaction log
       if (log.autoAddedToStock && targetProduct != null) {
         final newStock = targetProduct.currentStock + log.producedQuantity;
-        await _db.from('inventory_items').update({
+        await _itemsCol.doc(targetProduct.id).update({
           'current_stock': newStock,
-          'last_updated': DateTime.now().toIso8601String(),
-        }).eq('id', targetProduct.id);
+          'last_updated': FieldValue.serverTimestamp(),
+        });
 
         final tx = InventoryTransactionModel(
           id: 'TX-${DateTime.now().millisecondsSinceEpoch}',
@@ -52,7 +68,9 @@ class ProductionApiService {
           createdAt: DateTime.now(),
           createdBy: log.operatorName,
         );
-        await _db.from('inventory_transactions').insert(tx.toJson());
+        final txData = tx.toJson();
+        txData['created_at'] = FieldValue.serverTimestamp();
+        await _txCol.doc(tx.id).set(txData);
       }
 
       return log;

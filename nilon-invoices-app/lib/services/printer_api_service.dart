@@ -1,25 +1,21 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/printer_model.dart';
-import 'supabase_service.dart';
+import 'firebase_service.dart';
 
-/// Service to interact with printers table on Supabase
+/// Service to interact with printers collection on Cloud Firestore
 class PrinterApiService {
-  static SupabaseClient get _db => SupabaseService.client;
+  static FirebaseFirestore get _db => FirebaseService.db;
+  static CollectionReference get _printersCol => _db.collection('printers');
 
   // ─────────────────────────────────────────────
   // FETCH ALL PRINTERS
   // ─────────────────────────────────────────────
   static Future<List<PrinterModel>> fetchPrinters() async {
     try {
-      final data = await _db
-          .from('printers')
-          .select()
-          .eq('is_active', true)
-          .order('is_default', ascending: false)
-          .order('created_at', ascending: true);
-
-      return data
-          .map((json) => PrinterModel.fromSupabase(json))
+      final snap = await _printersCol.get();
+      return snap.docs
+          .map((doc) => PrinterModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .where((p) => p.status != 'OFFLINE')
           .toList();
     } catch (e) {
       throw Exception('[PrinterApiService] fetchPrinters failed: $e');
@@ -31,13 +27,11 @@ class PrinterApiService {
   // ─────────────────────────────────────────────
   static Future<PrinterModel> addPrinter(PrinterModel printer) async {
     try {
-      final data = await _db
-          .from('printers')
-          .insert(printer.toSupabase())
-          .select()
-          .single();
-
-      return PrinterModel.fromSupabase(data);
+      final docId = printer.id.isNotEmpty ? printer.id : _printersCol.doc().id;
+      final data = printer.toMap();
+      data['createdAt'] = FieldValue.serverTimestamp();
+      await _printersCol.doc(docId).set(data);
+      return printer.copyWith(id: docId);
     } catch (e) {
       throw Exception('[PrinterApiService] addPrinter failed: $e');
     }
@@ -48,10 +42,7 @@ class PrinterApiService {
   // ─────────────────────────────────────────────
   static Future<void> updatePrinter(PrinterModel printer) async {
     try {
-      await _db
-          .from('printers')
-          .update(printer.toSupabase())
-          .eq('id', printer.id);
+      await _printersCol.doc(printer.id).set(printer.toMap(), SetOptions(merge: true));
     } catch (e) {
       throw Exception('[PrinterApiService] updatePrinter failed: $e');
     }
@@ -62,28 +53,26 @@ class PrinterApiService {
   // ─────────────────────────────────────────────
   static Future<void> setDefaultPrinter(String printerId) async {
     try {
-      // First, unset all defaults
-      await _db.from('printers').update({'is_default': false}).neq('id', '');
-
-      // Then set the selected one as default
-      await _db
-          .from('printers')
-          .update({'is_default': true})
-          .eq('id', printerId);
+      final snap = await _printersCol.get();
+      final batch = _db.batch();
+      for (final doc in snap.docs) {
+        batch.update(doc.reference, {'isDefault': doc.id == printerId, 'is_default': doc.id == printerId});
+      }
+      await batch.commit();
     } catch (e) {
       throw Exception('[PrinterApiService] setDefaultPrinter failed: $e');
     }
   }
 
   // ─────────────────────────────────────────────
-  // DELETE PRINTER (soft delete — set is_active = false)
+  // DELETE PRINTER (soft delete)
   // ─────────────────────────────────────────────
   static Future<void> deletePrinter(String printerId) async {
     try {
-      await _db
-          .from('printers')
-          .update({'is_active': false})
-          .eq('id', printerId);
+      await _printersCol.doc(printerId).update({
+        'isActive': false,
+        'is_active': false,
+      });
     } catch (e) {
       throw Exception('[PrinterApiService] deletePrinter failed: $e');
     }

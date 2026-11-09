@@ -1,16 +1,15 @@
 import { notFound } from 'next/navigation';
-import { prisma } from '@/lib/prisma';
+import { getProductBySlug } from '@/lib/firestore/products';
 import { formatPrice } from '@/lib/formatPrice';
 import { generateSEO } from '@/lib/seo';
 import ProductDetailActions from '@/components/ProductDetailActions';
 
 export const dynamic = 'force-dynamic';
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  const product = await prisma.product.findUnique({
-    where: { slug: resolvedParams.slug },
-  });
-  
+  const product = await getProductBySlug(resolvedParams.slug);
+
   if (!product) return {};
 
   return generateSEO({
@@ -22,29 +21,16 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
-  let product = await prisma.product.findUnique({
-    where: { slug: resolvedParams.slug },
-  });
-
-  if (!product) {
-    // Fallback search by id
-    product = await prisma.product.findUnique({
-      where: { id: resolvedParams.slug },
-    });
-  }
+  const product = await getProductBySlug(resolvedParams.slug);
 
   if (!product) {
     notFound();
   }
 
-  // Parse specs if they exist as JSON
-  let parsedSpecs: {label: string, value: string}[] = [];
+  // Parse specs if they exist
+  let parsedSpecs: { label: string; value: string }[] = [];
   if (product.specs) {
-    try {
-      parsedSpecs = typeof product.specs === 'string' 
-        ? JSON.parse(product.specs) 
-        : product.specs as {label: string, value: string}[];
-    } catch { }
+    parsedSpecs = Array.isArray(product.specs) ? product.specs : [];
   }
 
   return (
@@ -71,9 +57,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
-            
+
             <div className="text-3xl font-bold text-[#2b6cb0] mb-6">
-              {formatPrice(product.price)} <span className="text-lg font-normal text-gray-500">/{product.unit}</span>
+              {formatPrice(product.price)}{' '}
+              <span className="text-lg font-normal text-gray-500">/{product.unit}</span>
             </div>
 
             <div className="prose prose-blue mb-8 text-gray-600">

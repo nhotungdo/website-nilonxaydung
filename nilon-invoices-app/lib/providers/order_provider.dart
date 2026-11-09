@@ -1,5 +1,5 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 import '../models/order_model.dart';
 import '../models/system_notification_model.dart';
 import '../services/order_api_service.dart';
@@ -10,7 +10,7 @@ class OrderProvider extends ChangeNotifier {
   List<OrderModel> _orders = [];
   bool _isLoading = false;
   String? _error;
-  RealtimeChannel? _realtimeChannel;
+  StreamSubscription? _orderSubscription;
   OrderModel? _previewOrder;
 
   List<OrderModel> get orders => _orders;
@@ -28,7 +28,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   // ─────────────────────────────────────────────
-  // INITIALIZE — Load from Supabase + Subscribe Realtime
+  // INITIALIZE — Load from Firestore + Subscribe Realtime
   // ─────────────────────────────────────────────
   Future<void> _initialize() async {
     await fetchOrders();
@@ -36,7 +36,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   // ─────────────────────────────────────────────
-  // FETCH ORDERS FROM SUPABASE
+  // FETCH ORDERS FROM FIRESTORE
   // ─────────────────────────────────────────────
   Future<void> fetchOrders() async {
     _isLoading = true;
@@ -58,14 +58,14 @@ class OrderProvider extends ChangeNotifier {
   // REALTIME SUBSCRIPTION — Listen for new/updated orders
   // ─────────────────────────────────────────────
   void _subscribeRealtime() {
-    _realtimeChannel = OrderApiService.subscribeToNewOrders(
+    _orderSubscription?.cancel();
+    _orderSubscription = OrderApiService.subscribeToOrders(
       onNewOrder: (order) {
-        // Chỉ xử lý INSERT (đơn hàng mới)
         final existingIndex = _orders.indexWhere((o) => o.id == order.id);
         if (existingIndex < 0) {
           _orders.insert(0, order);
           NotificationService.showNewOrderNotification(order);
-          
+
           // Dispatch in-app notification history
           SystemNotificationProvider.dispatch(SystemNotificationModel(
             title: 'Đơn hàng mới',
@@ -73,20 +73,18 @@ class OrderProvider extends ChangeNotifier {
             type: 'info',
             payloadRoute: '/orders',
           ));
-          
-          debugPrint('[OrderProvider] New order received — notification sent: ${order.orderCode}');
+
+          debugPrint('[OrderProvider] New order received via Firestore Realtime: ${order.orderCode}');
           notifyListeners();
         }
       },
       onOrderUpdated: (orderId, updatedFields) {
-        // Xử lý UPDATE (nhận payload từ DB và cập nhật local model mà không fetch lại)
         final existingIndex = _orders.indexWhere((o) => o.id == orderId);
         if (existingIndex >= 0) {
           final oldOrder = _orders[existingIndex];
           _orders[existingIndex] = oldOrder.copyWith(
-            printStatus: updatedFields['print_status'] as String?,
-            orderStatus: updatedFields['order_status'] as String?,
-            // Thêm các fields khác nếu cần update realtime
+            printStatus: (updatedFields['printStatus'] ?? updatedFields['print_status']) as String?,
+            orderStatus: (updatedFields['orderStatus'] ?? updatedFields['order_status']) as String?,
           );
           notifyListeners();
         }
@@ -98,7 +96,7 @@ class OrderProvider extends ChangeNotifier {
   }
 
   // ─────────────────────────────────────────────
-  // CREATE ORDER (via REST API / nilon-website handles this)
+  // CREATE ORDER
   // ─────────────────────────────────────────────
   Future<bool> createOrder({
     required String orderCode,
@@ -114,7 +112,6 @@ class OrderProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      // Optimistically add to local list while waiting for Realtime confirmation
       final tempOrder = OrderModel(
         id: 'temp-${DateTime.now().millisecondsSinceEpoch}',
         orderCode: orderCode,
@@ -153,7 +150,6 @@ class OrderProvider extends ChangeNotifier {
     try {
       await OrderApiService.deleteOrder(id);
     } catch (e) {
-      // Revert on failure
       _orders = prevOrders;
       _error = 'Không thể xóa đơn hàng: $e';
       notifyListeners();
@@ -167,7 +163,6 @@ class OrderProvider extends ChangeNotifier {
     final index = _orders.indexWhere((o) => o.id == id || o.orderCode == id);
     if (index == -1) return;
 
-    // Optimistic update
     _orders[index] = _orders[index].copyWith(
       printStatus: 'printed',
       orderStatus: 'paid',
@@ -181,21 +176,15 @@ class OrderProvider extends ChangeNotifier {
     }
   }
 
-  // ─────────────────────────────────────────────
-  // GENERATE ORDER CODE
-  // ─────────────────────────────────────────────
   String generateOrderCode() {
     final rnd = DateTime.now().millisecondsSinceEpoch;
     final code = rnd.toString().substring(rnd.toString().length - 6);
     return 'NL-$code';
   }
 
-  // ─────────────────────────────────────────────
-  // CLEANUP
-  // ─────────────────────────────────────────────
   @override
   void dispose() {
-    _realtimeChannel?.unsubscribe();
+    _orderSubscription?.cancel();
     super.dispose();
   }
 }

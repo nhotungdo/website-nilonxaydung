@@ -82,7 +82,16 @@ export class PrinterQueue {
     console.log(`[Queue-${this.printerName}] Physical print success for Job: ${job.id}`);
     this.updateJobStatus(job.id, 'SUCCESS', new Date().toISOString());
 
-    // Update the shared PostgreSQL database state
+    // Update Firestore order print status
+    try {
+      const { FirestoreOrderSync } = require('../database/services/firestore-order-sync');
+      await FirestoreOrderSync.markOrderAsPrinted(job.order_id);
+      console.log(`[Queue-${this.printerName}] ✅ Updated Firestore order printStatus to "printed" for order: ${job.order_id}`);
+    } catch (fErr: any) {
+      console.warn(`[Queue-${this.printerName}] Failed to update Firestore: ${fErr.message}`);
+    }
+
+    // Update the shared PostgreSQL database state (if active)
     try {
       const { OrderRepository } = require('../database/repositories/order.repository');
       const orderRepo = new OrderRepository();

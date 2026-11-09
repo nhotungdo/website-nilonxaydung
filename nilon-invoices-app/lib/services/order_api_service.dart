@@ -1,72 +1,41 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'dart:async';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/order_model.dart';
-import 'supabase_service.dart';
+import 'firebase_service.dart';
 
-/// Service to interact with orders & order_items tables on Supabase
+/// Service to interact with orders on Cloud Firestore
 class OrderApiService {
-  static SupabaseClient get _db => SupabaseService.client;
+  static FirebaseFirestore get _db => FirebaseService.db;
+  static CollectionReference get _ordersCol => _db.collection('orders');
 
   // ─────────────────────────────────────────────
-  // FETCH ORDERS (with customer + items join)
+  // FETCH ORDERS
   // ─────────────────────────────────────────────
-  /// Fetch all orders joined with customer info and order items.
-  /// Orders are sorted newest-first.
   static Future<List<OrderModel>> fetchOrders({
     int limit = 50,
     String? printStatus,
   }) async {
     try {
-      List<Map<String, dynamic>> data;
-
-      const String selectQuery = '''
-            id,
-            order_code,
-            subtotal,
-            shipping_fee,
-            total,
-            payment_method,
-            payment_status,
-            order_status,
-            print_status,
-            note,
-            created_at,
-            updated_at,
-            printed_at,
-            printed_by,
-            customers (
-              id,
-              full_name,
-              phone,
-              address
-            ),
-            order_items (
-              id,
-              product_id,
-              product_name,
-              price,
-              quantity,
-              total
-            )
-          ''';
-
+      Query query = _ordersCol;
       if (printStatus != null) {
-        data = await _db
-            .from('orders')
-            .select(selectQuery)
-            .eq('print_status', printStatus)
-            .order('created_at', ascending: false)
-            .limit(limit);
-      } else {
-        data = await _db
-            .from('orders')
-            .select(selectQuery)
-            .order('created_at', ascending: false)
-            .limit(limit);
+        query = query.where('printStatus', isEqualTo: printStatus);
       }
 
-      return data.map((json) => OrderModel.fromSupabase(json)).toList();
+      // Order by createdAt descending
+      query = query.orderBy('createdAt', descending: true).limit(limit);
+
+      final snap = await query.get();
+      return snap.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
     } catch (e) {
-      throw Exception('[OrderApiService] fetchOrders failed: $e');
+      // If composite index is pending, fallback without orderBy
+      try {
+        final fallbackSnap = await _ordersCol.limit(limit).get();
+        final list = fallbackSnap.docs.map((doc) => OrderModel.fromFirestore(doc)).toList();
+        list.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        return list;
+      } catch (innerErr) {
+        throw Exception('[OrderApiService] fetchOrders failed: $e ($innerErr)');
+      }
     }
   }
 
@@ -75,29 +44,9 @@ class OrderApiService {
   // ─────────────────────────────────────────────
   static Future<OrderModel?> fetchOrderById(String orderId) async {
     try {
-      final data = await _db
-          .from('orders')
-          .select('''
-            id,
-            order_code,
-            subtotal,
-            shipping_fee,
-            total,
-            payment_method,
-            payment_status,
-            order_status,
-            print_status,
-            note,
-            created_at,
-            updated_at,
-            customers (id, full_name, phone, address),
-            order_items (id, product_id, product_name, price, quantity, total)
-          ''')
-          .eq('id', orderId)
-          .maybeSingle();
-
-      if (data == null) return null;
-      return OrderModel.fromSupabase(data);
+      final doc = await _ordersCol.doc(orderId).get();
+      if (!doc.exists) return null;
+      return OrderModel.fromFirestore(doc);
     } catch (e) {
       throw Exception('[OrderApiService] fetchOrderById failed: $e');
     }
@@ -114,17 +63,17 @@ class OrderApiService {
   }) async {
     try {
       final Map<String, dynamic> updates = {
-        'updated_at': DateTime.now().toIso8601String(),
+        'updatedAt': FieldValue.serverTimestamp(),
       };
 
-      if (orderStatus != null) updates['order_status'] = orderStatus;
-      if (printStatus != null) updates['print_status'] = printStatus;
+      if (orderStatus != null) updates['orderStatus'] = orderStatus;
+      if (printStatus != null) updates['printStatus'] = printStatus;
       if (printedBy != null) {
-        updates['printed_by'] = printedBy;
-        updates['printed_at'] = DateTime.now().toIso8601String();
+        updates['printedBy'] = printedBy;
+        updates['printedAt'] = FieldValue.serverTimestamp();
       }
 
-      await _db.from('orders').update(updates).eq('id', orderId);
+      await _ordersCol.doc(orderId).update(updates);
     } catch (e) {
       throw Exception('[OrderApiService] updateOrderStatus failed: $e');
     }
@@ -147,7 +96,7 @@ class OrderApiService {
   // ─────────────────────────────────────────────
   static Future<void> deleteOrder(String orderId) async {
     try {
-      await _db.from('orders').delete().eq('id', orderId);
+      await _ordersCol.doc(orderId).delete();
     } catch (e) {
       throw Exception('[OrderApiService] deleteOrder failed: $e');
     }
@@ -156,51 +105,35 @@ class OrderApiService {
   // ─────────────────────────────────────────────
   // REALTIME SUBSCRIPTION
   // ─────────────────────────────────────────────
-  /// Subscribe to real-time INSERT events on orders table.
-  /// Returns a RealtimeChannel that should be unsubscribed when done.
-  static RealtimeChannel subscribeToNewOrders({
+  /// Returns a StreamSubscription for orders collection
+  static StreamSubscription<QuerySnapshot> subscribeToOrders({
     required void Function(OrderModel order) onNewOrder,
     required void Function(String orderId, Map<String, dynamic> updatedFields) onOrderUpdated,
     required void Function(String error) onError,
   }) {
-    final channel = _db
-        .channel('orders-realtime')
-        .onPostgresChanges(
-          event: PostgresChangeEvent.insert,
-          schema: 'public',
-          table: 'orders',
-          callback: (payload) async {
-            try {
-              // Fetch full order with items when new order arrives
-              final orderId = payload.newRecord['id'] as String?;
-              if (orderId == null) return;
-
-              final order = await fetchOrderById(orderId);
-              if (order != null) {
-                onNewOrder(order);
-              }
-            } catch (e) {
-              onError('Realtime fetch error: $e');
+    return _ordersCol
+        .orderBy('createdAt', descending: true)
+        .limit(100)
+        .snapshots()
+        .listen(
+      (snapshot) {
+        for (final change in snapshot.docChanges) {
+          try {
+            if (change.type == DocumentChangeType.added) {
+              final order = OrderModel.fromFirestore(change.doc);
+              onNewOrder(order);
+            } else if (change.type == DocumentChangeType.modified) {
+              final data = change.doc.data() as Map<String, dynamic>? ?? {};
+              onOrderUpdated(change.doc.id, data);
             }
-          },
-        )
-        .onPostgresChanges(
-          event: PostgresChangeEvent.update,
-          schema: 'public',
-          table: 'orders',
-          callback: (payload) {
-            // Optimistically update the UI based on payload without fetching the full joined order again
-            try {
-              final orderId = payload.newRecord['id'] as String?;
-              if (orderId == null) return;
-              onOrderUpdated(orderId, payload.newRecord);
-            } catch (e) {
-              onError('Realtime update error: $e');
-            }
-          },
-        )
-        .subscribe();
-
-    return channel;
+          } catch (e) {
+            onError('Process snapshot change error: $e');
+          }
+        }
+      },
+      onError: (err) {
+        onError('Firestore Realtime error: $err');
+      },
+    );
   }
 }

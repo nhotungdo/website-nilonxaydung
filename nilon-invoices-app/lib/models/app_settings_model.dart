@@ -15,7 +15,7 @@ class AppSettingsModel {
     required this.runOnStartup,
   });
 
-  /// Default settings when no row exists in Supabase yet
+  /// Default settings when no doc exists in Firestore yet
   factory AppSettingsModel.defaults() {
     return AppSettingsModel(
       apiUrl: 'https://api.nilonxaydung.vn',
@@ -27,29 +27,36 @@ class AppSettingsModel {
     );
   }
 
-  /// Parse from Supabase app_settings row (snake_case columns)
-  factory AppSettingsModel.fromSupabase(Map<String, dynamic> json) {
+  factory AppSettingsModel.fromMap(Map<String, dynamic> json) {
     return AppSettingsModel(
-      apiUrl: json['api_url'] as String? ?? 'https://api.nilonxaydung.vn',
-      branchId: json['socket_url'] as String? ?? 'NILON-CN1', // reuse socket_url for branchId
-      apiKey: json['api_token'] as String? ?? '',
-      autoPrint: json['notification_sound'] as bool? ?? true,
-      soundAlert: json['notification_sound'] as bool? ?? true,
-      runOnStartup: json['auto_startup'] as bool? ?? false,
+      apiUrl: json['apiUrl'] ?? json['api_url'] ?? 'https://api.nilonxaydung.vn',
+      branchId: json['branchId'] ?? json['socket_url'] ?? 'NILON-CN1',
+      apiKey: json['apiKey'] ?? json['api_token'] ?? '',
+      autoPrint: json['autoPrint'] ?? json['notification_sound'] ?? true,
+      soundAlert: json['soundAlert'] ?? json['notification_sound'] ?? true,
+      runOnStartup: json['autoStartup'] ?? json['auto_startup'] ?? false,
     );
   }
 
-  /// Convert to Supabase insert/update map (maps Flutter fields → DB columns)
-  Map<String, dynamic> toSupabase() {
+  factory AppSettingsModel.fromSupabase(Map<String, dynamic> json) => AppSettingsModel.fromMap(json);
+
+  Map<String, dynamic> toMap() {
     return {
+      'apiUrl': apiUrl,
       'api_url': apiUrl,
+      'branchId': branchId,
       'socket_url': branchId,
+      'apiKey': apiKey,
       'api_token': apiKey,
+      'autoStartup': runOnStartup,
       'auto_startup': runOnStartup,
+      'soundAlert': soundAlert,
       'notification_sound': soundAlert,
-      'dark_mode': true,
+      'autoPrint': autoPrint,
     };
   }
+
+  Map<String, dynamic> toSupabase() => toMap();
 
   AppSettingsModel copyWith({
     String? apiUrl,

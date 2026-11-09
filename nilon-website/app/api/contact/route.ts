@@ -2,16 +2,16 @@ import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validations/contact.schema";
 import { sendTelegramMessage, escapeHTML } from "@/lib/telegram";
 import { MailService } from "@/services/mail.service";
-import { prisma } from "@/lib/prisma";
+import { createOrder } from "@/lib/firestore/orders";
 import { PrinterService } from "@/services/printer.service";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    
+
     // 1. Validate data
     const result = contactSchema.safeParse(body);
-    
+
     if (!result.success) {
       const issueMsg = result.error.issues[0]?.message || "Dữ liệu không hợp lệ";
       return NextResponse.json(
@@ -23,93 +23,50 @@ export async function POST(req: Request) {
     const { name, phone, email, need, message, company } = result.data;
     const phoneClean = phone.trim().replace(/\s/g, '');
 
-    // 2. Save quote inquiry / order to database for nilon-invoices app
+    // 2. Save contact / quote inquiry to Firestore
     const orderCode = `BG-${Date.now()}`;
-    let createdOrderId: string | null = null;
+    const prodName = need || 'Yêu cầu tư vấn & báo giá';
+    const noteText = [
+      need ? `Nhu cầu: ${need}` : '',
+      company ? `Công ty: ${company}` : '',
+      email ? `Email: ${email}` : '',
+      message ? `Ghi chú: ${message}` : '',
+    ]
+      .filter(Boolean)
+      .join(' | ');
 
     try {
-      const order = await prisma.$transaction(async (tx) => {
-        // Find or create customer based on phone
-        let dbCustomer = await tx.customer.findUnique({
-          where: { phone: phoneClean }
-        });
-
-        if (!dbCustomer) {
-          dbCustomer = await tx.customer.create({
-            data: {
-              fullName: name,
-              phone: phoneClean,
-              address: company ? `Cty: ${company}` : 'Website User',
-            }
-          });
-        }
-
-        // Fallback product for contact / quick quote inquiry
-        const prodName = need || 'Yêu cầu tư vấn & báo giá';
-        let product = await tx.product.findFirst({
-          where: { name: prodName }
-        });
-
-        if (!product) {
-          const sku = `SKU-CONTACT-${Date.now()}`;
-          product = await tx.product.create({
-            data: {
-              name: prodName,
-              sku,
-              slug: sku,
-              image: '',
-              category: 'Liên hệ',
-              categorySlug: 'lien-he',
-              subCategory: '',
-              price: 0,
-              stock: 999,
-            }
-          });
-        }
-
-        const noteText = [
-          need ? `Nhu cầu: ${need}` : '',
-          company ? `Công ty: ${company}` : '',
-          message ? `Ghi chú: ${message}` : ''
-        ].filter(Boolean).join(' | ');
-
-        const newOrder = await tx.order.create({
-          data: {
-            orderCode,
-            customerId: dbCustomer.id,
-            subtotal: 0,
-            shippingFee: 0,
+      const order = await createOrder({
+        orderCode,
+        customer: {
+          fullName: name,
+          phone: phoneClean,
+          address: company ? `Cty: ${company}` : 'Website User',
+        },
+        items: [
+          {
+            productId: 'contact-inquiry',
+            productName: prodName,
+            price: 0,
+            quantity: 1,
+            unit: 'Lượt',
             total: 0,
-            paymentMethod: 'COD',
-            paymentStatus: 'pending',
-            orderStatus: 'pending',
-            printStatus: 'waiting',
-            note: noteText,
-            items: {
-              create: [
-                {
-                  productId: product.id,
-                  productName: prodName,
-                  price: 0,
-                  quantity: 1,
-                  total: 0
-                }
-              ]
-            }
-          }
-        });
-
-        return newOrder;
+          },
+        ],
+        subtotal: 0,
+        shippingFee: 0,
+        total: 0,
+        paymentMethod: 'COD',
+        paymentStatus: 'pending',
+        orderStatus: 'pending',
+        printStatus: 'waiting',
+        note: noteText,
       });
 
-      createdOrderId = order.id;
-      console.log(`[DB] ✅ Saved contact quote request to database: ${order.orderCode}`);
-
-      if (createdOrderId) {
-        await PrinterService.sendToPrinter(createdOrderId);
-      }
+      console.log(`[Firestore] ✅ Saved contact inquiry: ${order.orderCode}`);
+      await PrinterService.sendToPrinter(order.id, order);
     } catch (dbErr) {
-      console.error('[DB Save Contact Error]:', dbErr);
+      console.error('[Firestore Save Contact Error]:', dbErr);
     }
 
     // 3. Send Telegram Notification
@@ -128,13 +85,13 @@ ${escapeHTML(message || '')}
 
     // 4. Send Email Notification to Admin
     try {
-      await MailService.sendContactNotification({ 
-        name, 
-        phone: phoneClean, 
-        email: email || undefined, 
-        company: company || undefined, 
-        need: need || undefined, 
-        content: message || undefined 
+      await MailService.sendContactNotification({
+        name,
+        phone: phoneClean,
+        email: email || undefined,
+        company: company || undefined,
+        need: need || undefined,
+        content: message || undefined,
       });
     } catch (mailErr) {
       console.error('[Contact API Email Error]:', mailErr);
@@ -145,7 +102,6 @@ ${escapeHTML(message || '')}
       orderCode,
       message: "Gửi liên hệ thành công. Chúng tôi sẽ phản hồi sớm nhất!",
     });
-
   } catch (error) {
     console.error("API Contact Error:", error);
     return NextResponse.json(
@@ -154,4 +110,3 @@ ${escapeHTML(message || '')}
     );
   }
 }
-

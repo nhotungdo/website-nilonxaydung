@@ -3,7 +3,7 @@
  */
 
 import { PRODUCTS } from '@/data/products';
-import { prisma } from '@/lib/prisma';
+import { getAllProducts, getProductBySlug } from '@/lib/firestore/products';
 
 export interface EstimateRequest {
   areaSqM: number;
@@ -438,29 +438,14 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
 
   let dbProducts: any[] = [];
   try {
-    dbProducts = await prisma.product.findMany({
-      where: whereConditions,
-      take: 5,
-      select: {
-        id: true,
-        name: true,
-        price: true,
-        unit: true,
-        category: true,
-        description: true,
-        image: true
-      }
-    });
-  } catch (error) {
-    console.error("AI DB Search Error:", error);
-  }
+    const allProducts = await getAllProducts();
+    const queryTerm = (term || '').toLowerCase();
+    const queryCat = (uCase || '').toLowerCase();
 
-  if (dbProducts.length === 0 && term) {
-    const terms = term.split(' ').filter(Boolean).map(t => t.toLowerCase());
-    const matched = PRODUCTS.filter(p => {
-      const pName = p.name.toLowerCase();
-      const pCat = p.category.toLowerCase();
-      return terms.every(t => pName.includes(t) || pCat.includes(t));
+    dbProducts = allProducts.filter(p => {
+      const matchCat = !queryCat || p.categorySlug?.toLowerCase().includes(queryCat) || p.category?.toLowerCase().includes(queryCat);
+      const matchTerm = !queryTerm || p.name?.toLowerCase().includes(queryTerm) || p.description?.toLowerCase().includes(queryTerm);
+      return matchCat && matchTerm;
     }).slice(0, 5).map(p => ({
       id: p.id,
       name: p.name,
@@ -470,7 +455,8 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
       description: p.description || '',
       image: p.image
     }));
-    return matched;
+  } catch (error) {
+    console.error("AI DB Search Error:", error);
   }
 
   return dbProducts;
@@ -478,22 +464,7 @@ export async function searchProductsDB(keyword: string, useCase?: string) {
 
 export async function getProductDetailDB(productId: string) {
   try {
-    let product: any = await prisma.product.findUnique({ where: { id: productId } });
-    
-    if (!product) {
-      const staticProd = PRODUCTS.find(p => p.id === productId || p.slug === productId);
-      if (staticProd) {
-        product = {
-          id: staticProd.id,
-          name: staticProd.name,
-          price: staticProd.price,
-          unit: staticProd.unit,
-          category: staticProd.category,
-          description: staticProd.description || '',
-          specs: staticProd.specs || []
-        };
-      }
-    }
+    let product: any = await getProductBySlug(productId);
 
     if (!product) return null;
     return {
@@ -514,7 +485,7 @@ export async function getProductDetailDB(productId: string) {
 export async function calculateQuoteDetails(productId: string, quantityKg: number) {
   let primaryMatched: any = null;
   try {
-    primaryMatched = await prisma.product.findUnique({ where: { id: productId } });
+    primaryMatched = await getProductBySlug(productId);
   } catch (error) {
     console.error("AI DB Quote Error:", error);
   }

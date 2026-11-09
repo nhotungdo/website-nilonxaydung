@@ -19,32 +19,40 @@ class PrinterModel {
     required this.isDefault,
   });
 
-  /// Parse from Supabase printers row (snake_case)
-  factory PrinterModel.fromSupabase(Map<String, dynamic> json) {
+  factory PrinterModel.fromMap(String id, Map<String, dynamic> json) {
     return PrinterModel(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      paperSize: json['paper_size'] as String? ?? 'K80',
-      connectionType: json['connection_type'] as String? ?? 'USB',
-      ipAddress: json['ip_address'] as String?,
-      port: null, // port not stored in DB schema
-      status: (json['is_active'] as bool? ?? true) ? 'ONLINE' : 'OFFLINE',
-      isDefault: json['is_default'] as bool? ?? false,
+      id: id,
+      name: json['name'] as String? ?? 'Máy in',
+      paperSize: json['paperSize'] ?? json['paper_size'] ?? 'K80',
+      connectionType: json['connectionType'] ?? json['connection_type'] ?? 'USB',
+      ipAddress: json['ipAddress'] ?? json['ip_address'] as String?,
+      port: json['port'] as int?,
+      status: (json['isActive'] ?? json['is_active'] as bool? ?? true) ? 'ONLINE' : 'OFFLINE',
+      isDefault: json['isDefault'] ?? json['is_default'] as bool? ?? false,
     );
   }
 
-  /// Convert to Supabase insert/update map
-  Map<String, dynamic> toSupabase() {
+  factory PrinterModel.fromSupabase(Map<String, dynamic> json) {
+    return PrinterModel.fromMap(json['id']?.toString() ?? '', json);
+  }
+
+  Map<String, dynamic> toMap() {
     return {
-      'id': id.isEmpty ? 'pr-${DateTime.now().millisecondsSinceEpoch}' : id,
       'name': name,
+      'paperSize': paperSize,
       'paper_size': paperSize,
+      'connectionType': connectionType,
       'connection_type': connectionType,
+      'ipAddress': ipAddress,
       'ip_address': ipAddress,
+      'isDefault': isDefault,
       'is_default': isDefault,
+      'isActive': status != 'OFFLINE',
       'is_active': status != 'OFFLINE',
     };
   }
+
+  Map<String, dynamic> toSupabase() => toMap();
 
   PrinterModel copyWith({
     String? id,

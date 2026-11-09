@@ -7,7 +7,7 @@ class Logger {
 
   constructor() {
     let storageDir = '';
-    const isDev = !app.isPackaged;
+    const isDev = !app?.isPackaged;
 
     try {
       if (isDev) {

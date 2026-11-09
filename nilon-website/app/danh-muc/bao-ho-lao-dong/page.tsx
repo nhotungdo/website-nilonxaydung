@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import CategoryPageContent from "@/components/CategoryPageContent";
+import { getProductsByCategory } from "@/lib/firestore/products";
 
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
@@ -12,21 +13,8 @@ export const metadata: Metadata = {
   },
 };
 
-import { prisma } from "@/lib/prisma";
-
 export default async function BaoHoLaoDongPage() {
-  // Fetch from DB instead of static file
-  const dbProducts = await prisma.product.findMany({
-    where: {
-      OR: [
-        { category: "Bảo hộ lao động" },
-        { categorySlug: "bao-ho-lao-dong" }
-      ]
-    },
-    orderBy: {
-      createdAt: 'desc'
-    }
-  });
+  const dbProducts = await getProductsByCategory("bao-ho-lao-dong");
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return <CategoryPageContent initialProducts={dbProducts as any} />;

@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class OrderItemModel {
   final String? productId;
   final String name;
@@ -16,33 +18,33 @@ class OrderItemModel {
   double get totalPrice => quantity * price;
 
   factory OrderItemModel.fromJson(Map<String, dynamic> json) {
+    return OrderItemModel.fromMap(json);
+  }
+
+  factory OrderItemModel.fromMap(Map<String, dynamic> json) {
     return OrderItemModel(
-      productId: json['productId'],
-      name: json['name'] ?? '',
-      quantity: json['quantity'] ?? 1,
-      price: (json['price'] ?? 0).toDouble(),
+      productId: json['productId'] ?? json['product_id'],
+      name: json['productName'] ?? json['name'] ?? json['product_name'] ?? '',
+      quantity: (json['quantity'] as num?)?.toInt() ?? 1,
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
       unit: json['unit'] ?? 'sp',
     );
   }
 
-  /// Parse from Supabase order_items row (uses snake_case column names)
+  /// Backward compatibility for legacy tests
   factory OrderItemModel.fromSupabase(Map<String, dynamic> json) {
-    return OrderItemModel(
-      productId: json['product_id'] as String?,
-      name: json['product_name'] as String? ?? '',
-      quantity: (json['quantity'] as int?) ?? 1,
-      price: (json['price'] as num?)?.toDouble() ?? 0.0,
-      unit: 'sp', // unit is not stored in DB, default
-    );
+    return OrderItemModel.fromMap(json);
   }
 
   Map<String, dynamic> toJson() {
     return {
       'productId': productId,
+      'productName': name,
       'name': name,
       'quantity': quantity,
       'price': price,
       'unit': unit,
+      'total': totalPrice,
     };
   }
 }
@@ -76,29 +78,44 @@ class OrderModel {
     required this.items,
   });
 
-  /// Parse from Supabase SELECT with joined customers + order_items
-  factory OrderModel.fromSupabase(Map<String, dynamic> json) {
-    final customer = json['customers'] as Map<String, dynamic>?;
-    final rawItems = json['order_items'] as List<dynamic>? ?? [];
+  factory OrderModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>? ?? {};
+    return OrderModel.fromMap(doc.id, data);
+  }
+
+  factory OrderModel.fromMap(String id, Map<String, dynamic> data) {
+    final customer = data['customer'] as Map<String, dynamic>? ??
+        data['customers'] as Map<String, dynamic>?;
+    final rawItems = (data['items'] ?? data['order_items']) as List<dynamic>? ?? [];
+
+    DateTime parseDate(dynamic val) {
+      if (val == null) return DateTime.now();
+      if (val is Timestamp) return val.toDate();
+      if (val is String) return DateTime.tryParse(val)?.toLocal() ?? DateTime.now();
+      return DateTime.now();
+    }
 
     return OrderModel(
-      id: json['id'] as String,
-      orderCode: json['order_code'] as String? ?? '',
-      customerName: customer?['full_name'] as String? ?? 'Khách lẻ',
-      customerPhone: customer?['phone'] as String? ?? '',
-      customerAddress: customer?['address'] as String? ?? '',
-      totalAmount: (json['total'] as num?)?.toDouble() ?? 0.0,
-      note: json['note'] as String? ?? '',
-      paymentMethod: json['payment_method'] as String? ?? 'COD',
-      printStatus: json['print_status'] as String? ?? 'waiting',
-      orderStatus: json['order_status'] as String? ?? 'pending',
-      createdAt: json['created_at'] != null
-          ? DateTime.parse(json['created_at'] as String).toLocal()
-          : DateTime.now(),
+      id: id,
+      orderCode: data['orderCode'] ?? data['order_code'] ?? id,
+      customerName: customer?['fullName'] ?? customer?['full_name'] ?? data['customerName'] ?? 'Khách lẻ',
+      customerPhone: customer?['phone'] ?? data['customerPhone'] ?? '',
+      customerAddress: customer?['address'] ?? data['customerAddress'] ?? '',
+      totalAmount: ((data['total'] ?? data['totalAmount']) as num?)?.toDouble() ?? 0.0,
+      note: data['note'] ?? '',
+      paymentMethod: data['paymentMethod'] ?? data['payment_method'] ?? 'COD',
+      printStatus: data['printStatus'] ?? data['print_status'] ?? 'waiting',
+      orderStatus: data['orderStatus'] ?? data['order_status'] ?? 'pending',
+      createdAt: parseDate(data['createdAt'] ?? data['created_at']),
       items: rawItems
-          .map((item) => OrderItemModel.fromSupabase(item as Map<String, dynamic>))
+          .map((item) => OrderItemModel.fromMap(item as Map<String, dynamic>))
           .toList(),
     );
+  }
+
+  /// Backward compatibility
+  factory OrderModel.fromSupabase(Map<String, dynamic> json) {
+    return OrderModel.fromMap(json['id']?.toString() ?? '', json);
   }
 
   OrderModel copyWith({

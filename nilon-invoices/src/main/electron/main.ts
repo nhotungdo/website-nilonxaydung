@@ -48,12 +48,21 @@ if (!isSingleInstance) {
     // 1. Initialize local SQLite Database & seeding
     initDatabase();
 
-    // 2. Initialize PostgreSQL connection (Auto-migrations and seeds disabled to prevent schema overwrites and sync issues)
+    // 2. Initialize Firestore real-time listener for orders
+    try {
+      const { FirestoreOrderSync } = require('../database/services/firestore-order-sync');
+      FirestoreOrderSync.startListening();
+      logger.info('[Main] ✅ Firestore real-time order listener active.');
+    } catch (fErr: any) {
+      logger.warn(`[Main] Firestore startup warning: ${fErr.message}`);
+    }
+
+    // 3. PostgreSQL connection (Optional fallback)
     try {
       await postgresDb.connectDatabase();
-      logger.info('[Main] PostgreSQL database connection established successfully.');
+      logger.info('[Main] PostgreSQL database connection established.');
     } catch (dbErr: any) {
-      logger.error('[Main] CRITICAL PostgreSQL Startup Error:', dbErr.message);
+      logger.warn('[Main] PostgreSQL connection skipped or unavailable (using Firestore).');
     }
 
     // 3. Initialize active physical printer queues

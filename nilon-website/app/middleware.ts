@@ -37,7 +37,7 @@ export function middleware(request: NextRequest) {
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
       "font-src 'self' https://fonts.gstatic.com",
       "img-src 'self' data: https: blob:",
-      "connect-src 'self' https://api.telegram.org https://*.supabase.co wss://*.supabase.co",
+      "connect-src 'self' https://api.telegram.org https://*.firebaseio.com https://*.googleapis.com wss://*.firebaseio.com",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

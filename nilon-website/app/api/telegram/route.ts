@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { sendTelegramMessage, escapeHTML } from "@/lib/telegram";
 import { VN_PHONE_REGEX, VN_PHONE_ERROR_MSG } from '@/lib/validations/phone';
 import { rateLimit, getClientIdentifier, rateLimitConfigs } from '@/lib/ratelimit';
-import { prisma } from '@/lib/prisma';
+import { createOrder } from '@/lib/firestore/orders';
 import { PrinterService } from '@/services/printer.service';
 
 const formSchema = z.object({
@@ -55,89 +55,53 @@ export async function POST(req: Request) {
     const orderCode = `BG-${Date.now()}`;
     let createdOrderId: string | null = null;
 
-    // Save quote request to database for nilon-invoices app
+    // Save quote request to Firestore
     try {
-      const order = await prisma.$transaction(async (tx) => {
-        let dbCustomer = await tx.customer.findUnique({
-          where: { phone: phoneClean }
-        });
+      const prodName = product || 'Nilon lót sàn xây dựng';
+      const qtyNum = parseInt(quantity.replace(/[^0-9]/g, ''), 10) || 1;
+      const noteText = [
+        company ? `Công ty: ${company}` : '',
+        quantity ? `Số lượng yêu cầu: ${quantity}` : '',
+        message ? `Ghi chú: ${message}` : '',
+      ]
+        .filter(Boolean)
+        .join(' | ');
 
-        if (!dbCustomer) {
-          dbCustomer = await tx.customer.create({
-            data: {
-              fullName,
-              phone: phoneClean,
-              address: company ? `Công ty: ${company}` : 'N/A',
-            }
-          });
-        }
-
-        const prodName = product || 'Nilon lót sàn xây dựng';
-        let dbProduct = await tx.product.findFirst({
-          where: { name: prodName }
-        });
-
-        if (!dbProduct) {
-          const sku = `SKU-QUOTE-${Date.now()}`;
-          dbProduct = await tx.product.create({
-            data: {
-              name: prodName,
-              sku,
-              slug: sku,
-              image: '',
-              category: 'Telegram',
-              categorySlug: 'telegram',
-              subCategory: '',
-              price: 0,
-              stock: 999,
-            }
-          });
-        }
-
-        const qtyNum = parseInt(quantity.replace(/[^0-9]/g, ''), 10) || 1;
-        const noteText = [
-          company ? `Công ty: ${company}` : '',
-          quantity ? `Số lượng yêu cầu: ${quantity}` : '',
-          message ? `Ghi chú: ${message}` : ''
-        ].filter(Boolean).join(' | ');
-
-        const newOrder = await tx.order.create({
-          data: {
-            orderCode,
-            customerId: dbCustomer.id,
-            subtotal: 0,
-            shippingFee: 0,
+      const order = await createOrder({
+        orderCode,
+        customer: {
+          fullName,
+          phone: phoneClean,
+          address: company ? `Công ty: ${company}` : 'N/A',
+        },
+        items: [
+          {
+            productId: 'telegram-quote',
+            productName: `${prodName} (SL: ${quantity})`,
+            price: 0,
+            quantity: qtyNum,
+            unit: 'Cuộn',
             total: 0,
-            paymentMethod: 'COD',
-            paymentStatus: 'pending',
-            orderStatus: 'pending',
-            printStatus: 'waiting',
-            note: noteText,
-            items: {
-              create: [
-                {
-                  productId: dbProduct.id,
-                  productName: `${prodName} (SL: ${quantity})`,
-                  price: 0,
-                  quantity: qtyNum,
-                  total: 0
-                }
-              ]
-            }
-          }
-        });
-
-        return newOrder;
+          },
+        ],
+        subtotal: 0,
+        shippingFee: 0,
+        total: 0,
+        paymentMethod: 'COD',
+        paymentStatus: 'pending',
+        orderStatus: 'pending',
+        printStatus: 'waiting',
+        note: noteText,
       });
 
       createdOrderId = order.id;
-      console.log(`[DB] ✅ Saved quote request to database from QuoteForm: ${order.orderCode}`);
+      console.log(`[Firestore] ✅ Saved quote request to database from QuoteForm: ${order.orderCode}`);
 
       if (createdOrderId) {
-        await PrinterService.sendToPrinter(createdOrderId);
+        await PrinterService.sendToPrinter(createdOrderId, order);
       }
     } catch (dbErr) {
-      console.error('[DB Save Quote Form Error]:', dbErr);
+      console.error('[Firestore Save Quote Form Error]:', dbErr);
     }
 
     const telegramMessage = `📦 <b>NEW QUOTE REQUEST (#${orderCode})</b>

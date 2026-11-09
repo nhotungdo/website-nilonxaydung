@@ -1,24 +1,37 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
-import 'supabase_service.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_service.dart';
 
-/// Service to interact with the products table on Supabase.
+/// Service to interact with the products collection on Cloud Firestore.
 class ProductApiService {
-  static SupabaseClient get _db => SupabaseService.client;
+  static FirebaseFirestore get _db => FirebaseService.db;
+  static CollectionReference get _productsCol => _db.collection('products');
 
   // ─────────────────────────────────────────────
   // FETCH ALL ACTIVE PRODUCTS
   // ─────────────────────────────────────────────
-  /// Trả về danh sách sản phẩm
   static Future<List<Map<String, dynamic>>> fetchProducts() async {
     try {
-      final data = await _db
-          .from('products')
-          .select('*')
-          .order('name', ascending: true);
-
-      return List<Map<String, dynamic>>.from(data);
+      final snap = await _productsCol.orderBy('name').get();
+      return snap.docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return {
+          'id': doc.id,
+          ...data,
+        };
+      }).toList();
     } catch (e) {
-      throw Exception('[ProductApiService] fetchProducts failed: $e');
+      try {
+        final snap = await _productsCol.get();
+        return snap.docs.map((doc) {
+          final data = doc.data() as Map<String, dynamic>;
+          return {
+            'id': doc.id,
+            ...data,
+          };
+        }).toList();
+      } catch (inner) {
+        throw Exception('[ProductApiService] fetchProducts failed: $e');
+      }
     }
   }
 
@@ -27,8 +40,15 @@ class ProductApiService {
   // ─────────────────────────────────────────────
   static Future<Map<String, dynamic>> createProduct(Map<String, dynamic> data) async {
     try {
-      final response = await _db.from('products').insert(data).select().single();
-      return response;
+      final docRef = await _productsCol.add({
+        ...data,
+        'createdAt': FieldValue.serverTimestamp(),
+        'updatedAt': FieldValue.serverTimestamp(),
+      });
+      return {
+        'id': docRef.id,
+        ...data,
+      };
     } catch (e) {
       throw Exception('[ProductApiService] createProduct failed: $e');
     }
@@ -39,8 +59,14 @@ class ProductApiService {
   // ─────────────────────────────────────────────
   static Future<Map<String, dynamic>> updateProduct(String id, Map<String, dynamic> data) async {
     try {
-      final response = await _db.from('products').update(data).eq('id', id).select().single();
-      return response;
+      await _productsCol.doc(id).set({
+        ...data,
+        'updatedAt': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true));
+      return {
+        'id': id,
+        ...data,
+      };
     } catch (e) {
       throw Exception('[ProductApiService] updateProduct failed: $e');
     }
@@ -51,7 +77,7 @@ class ProductApiService {
   // ─────────────────────────────────────────────
   static Future<void> deleteProduct(String id) async {
     try {
-      await _db.from('products').delete().eq('id', id);
+      await _productsCol.doc(id).delete();
     } catch (e) {
       throw Exception('[ProductApiService] deleteProduct failed: $e');
     }

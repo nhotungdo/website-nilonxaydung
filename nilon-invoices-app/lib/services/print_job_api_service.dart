@@ -1,25 +1,30 @@
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/print_job_model.dart';
-import 'supabase_service.dart';
+import 'firebase_service.dart';
 
-/// Service to interact with the print_jobs table on Supabase.
+/// Service to interact with the print_jobs collection on Cloud Firestore.
 class PrintJobApiService {
-  static SupabaseClient get _db => SupabaseService.client;
+  static FirebaseFirestore get _db => FirebaseService.db;
+  static CollectionReference get _jobsCol => _db.collection('print_jobs');
 
   // ─────────────────────────────────────────────
   // FETCH ALL PRINT JOBS
   // ─────────────────────────────────────────────
   static Future<List<PrintJobModel>> fetchJobs({int limit = 100}) async {
     try {
-      final data = await _db
-          .from('print_jobs')
-          .select('id, order_id, status, created_at, printer_name, orders(order_code, customers(full_name))')
-          .order('created_at', ascending: false)
-          .limit(limit);
-
-      return data.map((json) => PrintJobModel.fromSupabase(json)).toList();
+      final snap = await _jobsCol.orderBy('createdAt', descending: true).limit(limit).get();
+      return snap.docs
+          .map((doc) => PrintJobModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+          .toList();
     } catch (e) {
-      throw Exception('[PrintJobApiService] fetchJobs failed: $e');
+      try {
+        final snap = await _jobsCol.limit(limit).get();
+        return snap.docs
+            .map((doc) => PrintJobModel.fromMap(doc.id, doc.data() as Map<String, dynamic>))
+            .toList();
+      } catch (inner) {
+        throw Exception('[PrintJobApiService] fetchJobs failed: $e');
+      }
     }
   }
 
@@ -34,19 +39,27 @@ class PrintJobApiService {
   }) async {
     try {
       final payload = {
+        'orderId': orderId,
         'order_id': orderId,
-        'status': 'PENDING',
-        'printer_name': printerName ?? 'HP LaserJet 9000 (Kho A)',
-        'created_at': DateTime.now().toIso8601String(),
+        'orderCode': orderCode,
+        'order_code': orderCode,
+        'customerName': customerName,
+        'customer_name': customerName,
+        'status': 'WAITING',
+        'printerName': printerName ?? 'Máy in nhiệt K80',
+        'createdAt': FieldValue.serverTimestamp(),
       };
 
-      final data = await _db
-          .from('print_jobs')
-          .insert(payload)
-          .select('id, order_id, status, created_at, printer_name, orders(order_code, customers(full_name))')
-          .single();
-
-      return PrintJobModel.fromSupabase(data);
+      final docRef = await _jobsCol.add(payload);
+      return PrintJobModel(
+        id: docRef.id,
+        orderId: orderId,
+        orderCode: orderCode,
+        customerName: customerName,
+        status: 'WAITING',
+        createdAt: DateTime.now(),
+        printerName: printerName ?? 'Máy in nhiệt K80',
+      );
     } catch (e) {
       throw Exception('[PrintJobApiService] addJob failed: $e');
     }
@@ -57,36 +70,31 @@ class PrintJobApiService {
   // ─────────────────────────────────────────────
   static Future<void> deleteJob(String jobId) async {
     try {
-      await _db.from('print_jobs').delete().eq('id', jobId);
+      await _jobsCol.doc(jobId).delete();
     } catch (e) {
       throw Exception('[PrintJobApiService] deleteJob failed: $e');
     }
   }
 
   // ─────────────────────────────────────────────
-  // UPDATE JOB STATUS (retry → PENDING)
+  // UPDATE JOB STATUS
   // ─────────────────────────────────────────────
   static Future<void> updateStatus(String jobId, String status) async {
     try {
-      await _db
-          .from('print_jobs')
-          .update({'status': status})
-          .eq('id', jobId);
+      await _jobsCol.doc(jobId).update({'status': status});
     } catch (e) {
       throw Exception('[PrintJobApiService] updateStatus failed: $e');
     }
   }
 
   // ─────────────────────────────────────────────
-  // PRIORITIZE JOB (move to top by updating created_at)
+  // PRIORITIZE JOB
   // ─────────────────────────────────────────────
   static Future<void> prioritizeJob(String jobId) async {
     try {
-      // Set created_at to future so it sorts first
-      await _db
-          .from('print_jobs')
-          .update({'created_at': DateTime.now().add(const Duration(days: 1)).toIso8601String()})
-          .eq('id', jobId);
+      await _jobsCol.doc(jobId).update({
+        'createdAt': FieldValue.serverTimestamp(),
+      });
     } catch (e) {
       throw Exception('[PrintJobApiService] prioritizeJob failed: $e');
     }

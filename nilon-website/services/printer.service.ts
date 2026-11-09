@@ -1,26 +1,30 @@
-import { prisma } from '@/lib/prisma';
-import { Prisma } from '@prisma/client';
+import { adminDb } from '@/lib/firebase-admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export const PrinterService = {
-  async sendToPrinter(orderId: string) {
+  async sendToPrinter(orderId: string, orderData?: any) {
     try {
-      // Validate orderId format to prevent SQL injection
-      if (!orderId || typeof orderId !== 'string' || orderId.length > 100) {
+      if (!orderId || typeof orderId !== 'string') {
         throw new Error('Invalid orderId format');
       }
-      
-      // Sanitize orderId - only allow alphanumeric, hyphens, and underscores
-      const sanitizedOrderId = orderId.replace(/[^a-zA-Z0-9\-_]/g, '');
-      
-      // Use parameterized query to prevent SQL injection
-      await prisma.$executeRaw(
-        Prisma.sql`NOTIFY new_order, ${sanitizedOrderId}`
-      );
-      console.log(`🔊 Triggered PostgreSQL NOTIFY for new order: ${sanitizedOrderId}`);
+
+      // Add/update print job in Firestore
+      await adminDb.collection('print_jobs').add({
+        orderId,
+        orderCode: orderData?.orderCode || '',
+        customerName: orderData?.customer?.fullName || orderData?.customerName || '',
+        customerPhone: orderData?.customer?.phone || orderData?.customerPhone || '',
+        total: orderData?.total || orderData?.totalAmount || 0,
+        status: 'WAITING',
+        retryCount: 0,
+        createdAt: FieldValue.serverTimestamp(),
+      });
+
+      console.log(`🔊 [Firestore] Queued print job for order: ${orderId}`);
       return true;
-    } catch (error) {
-      console.error('Error triggering PostgreSQL NOTIFY:', error);
+    } catch (error: any) {
+      console.error('[Firestore] Error queuing print job:', error.message);
       return false;
     }
-  }
+  },
 };
